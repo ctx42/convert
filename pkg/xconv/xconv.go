@@ -23,8 +23,8 @@ func Lookup[From, To any]() Converter[From, To] {
 }
 
 // Converter represents a function that attempts lossless conversion from a
-// source value of type From to a target value of type To.
-// On success, it returns the converted value and a nil error.
-// On failure (e.g., truncation, overflow, or semantic loss), it returns the
-// zero value of To along with a non-nil error describing the issue.
+// source value of type From to a target value of type To. On success, it
+// returns the converted value and a nil error. On failure (e.g., truncation,
+// overflow, or semantic loss), it returns the zero value of To along with a
+// non-nil error describing the issue.
 type Converter[From, To any] func(from From) (to To, err error)

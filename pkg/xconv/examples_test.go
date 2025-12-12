@@ -41,15 +41,19 @@ func ExampleRegister() {
 	type A struct{ val int8 }
 	type B struct{ val int }
 
-	// Register a converter function between types A and B.
-	// If there was already a converter for that source-destination type pair,
-	// it will be returned.
-	old := xconv.Register(func(from A) (to B, err error) {
+	// Custom converter function matching [xconv.Converter] signature.
+	myConv := func(from A) (to B, err error) {
 		return B{val: int(from.val)}, nil
-	})
+	}
+
+	// Register a converter function between types A and B.
+	old := xconv.Register(myConv)
+
+	// If there was already a converter for that source-destination type pair,
+	// it will be returned, nil otherwise.
 	_ = old
 
-	// Lookup converter
+	// Lookup converter registered converter.
 	conv := xconv.Lookup[A, B]()
 
 	// Run conversion.
