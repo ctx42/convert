@@ -41,7 +41,7 @@ func Test_Int8ToUintptr_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, int8(have), tc.value)
+				assert.Equal(t, tc.value, int8(have))
 				return
 			}
 

@@ -36,7 +36,7 @@ func Test_Float64ToUint8_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, float64(have), tc.value)
+				assert.Equal(t, tc.value, float64(have))
 				return
 			}
 
@@ -53,7 +53,7 @@ func Test_Float64ToUint8_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, float64(have), tc.value)
+				assert.Equal(t, tc.value, float64(have))
 				return
 			}
 

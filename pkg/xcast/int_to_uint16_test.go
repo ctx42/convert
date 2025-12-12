@@ -48,7 +48,7 @@ func Test_IntToUint16_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, int(have), tc.value)
+				assert.Equal(t, tc.value, int(have))
 				return
 			}
 

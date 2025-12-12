@@ -40,7 +40,7 @@ func Test_Uint64ToFloat32_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, uint64(have), tc.value)
+				assert.Equal(t, tc.value, uint64(have))
 				return
 			}
 

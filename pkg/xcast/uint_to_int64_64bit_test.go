@@ -43,7 +43,7 @@ func Test_UintToInt64_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, uint(have), tc.value)
+				assert.Equal(t, tc.value, uint(have))
 				return
 			}
 

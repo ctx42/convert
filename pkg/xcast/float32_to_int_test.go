@@ -55,7 +55,7 @@ func Test_Float32ToInt_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, float32(have), tc.value)
+				assert.Equal(t, tc.value, float32(have))
 				return
 			}
 

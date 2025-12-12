@@ -32,7 +32,7 @@ func Test_Uint8ToUint32_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, uint8(have), tc.value)
+				assert.Equal(t, tc.value, uint8(have))
 				return
 			}
 

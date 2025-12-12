@@ -40,7 +40,7 @@ func Test_UintptrToFloat32_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, uintptr(have), tc.value)
+				assert.Equal(t, tc.value, uintptr(have))
 				return
 			}
 

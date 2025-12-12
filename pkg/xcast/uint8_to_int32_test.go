@@ -32,7 +32,7 @@ func Test_Uint8ToInt32_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, uint8(have), tc.value)
+				assert.Equal(t, tc.value, uint8(have))
 				return
 			}
 
@@ -49,7 +49,7 @@ func Test_Uint8ToInt32_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, uint8(have), tc.value)
+				assert.Equal(t, tc.value, uint8(have))
 				return
 			}
 
@@ -66,7 +66,7 @@ func Test_Uint8ToInt32_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, byte(have), tc.value)
+				assert.Equal(t, tc.value, byte(have))
 				return
 			}
 
@@ -83,7 +83,7 @@ func Test_Uint8ToInt32_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, byte(have), tc.value)
+				assert.Equal(t, tc.value, byte(have))
 				return
 			}
 

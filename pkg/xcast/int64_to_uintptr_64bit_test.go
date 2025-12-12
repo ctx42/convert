@@ -43,7 +43,7 @@ func Test_Int64ToUintptr_tabular(t *testing.T) {
 			if tc.err == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.want, have)
-				assert.Equal(t, int64(have), tc.value)
+				assert.Equal(t, tc.value, int64(have))
 				return
 			}
 
