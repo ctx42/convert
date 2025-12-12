@@ -22,8 +22,8 @@ func Test_Float64ToFloat32_tabular(t *testing.T) {
 			"fraction",
 			4.2,
 			0,
-			ErrUnsupported,
-			"non-integer float64 to float32: xcast not supported",
+			ErrInvValue,
+			"non-integer float64 to float32: invalid value",
 		},
 		{
 			"underflow",

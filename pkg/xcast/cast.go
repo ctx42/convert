@@ -52,7 +52,7 @@ var (
 	ErrInvValue = errors.New("invalid value")
 
 	// ErrUnsupported represents explicitly not supported conversion.
-	ErrUnsupported = errors.New("xcast not supported")
+	ErrUnsupported = errors.New("cast not supported")
 )
 
 // Safe integer boundaries for exact round-trip float32 to int32 conversions.

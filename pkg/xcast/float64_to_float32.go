@@ -18,7 +18,7 @@ import (
 func Float64ToFloat32(value float64) (float32, error) {
 	if value != math.Trunc(value) {
 		wMsg := "non-integer float64 to float32: %w"
-		return 0, fmt.Errorf(wMsg, ErrUnsupported)
+		return 0, fmt.Errorf(wMsg, ErrInvValue)
 	}
 	if value < Float32SafeIntMin {
 		return 0, fmt.Errorf("float64 %w for float32", ErrInvSafeRange)
