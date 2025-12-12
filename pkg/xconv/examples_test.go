@@ -5,7 +5,9 @@ package xconv_test
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/ctx42/convert/pkg/xcast"
 	"github.com/ctx42/convert/pkg/xconv"
 )
 
@@ -18,9 +20,26 @@ func ExampleLookup() {
 
 	// Check conversion error.
 
-	fmt.Printf("output: %[1]T(%[1]d) error: %v", have, err)
+	fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
 	// Output:
-	// output: uint8(42) error: <nil>
+	// output: uint8(42); error: <nil>
+}
+
+func ExampleLookup_time() {
+	// By default xcast.StringToTime converter (parser) is not registered.
+	xconv.Register(xcast.StringToTime(time.RFC3339))
+
+	conv := xconv.Lookup[string, time.Time]()
+
+	// Chack conv is not nil.
+
+	have, err := conv("2000-01-02T03:04:05Z")
+
+	// Check conversion error.
+
+	fmt.Printf("output: %[1]s; error: %v", have.Format(time.ANSIC), err)
+	// Output:
+	// output: Sun Jan  2 03:04:05 2000; error: <nil>
 }
 
 func ExampleLookup_error() {
@@ -32,9 +51,9 @@ func ExampleLookup_error() {
 
 	// Check conversion error.
 
-	fmt.Printf("output: %[1]T(%[1]d) error: %v", have, err)
+	fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
 	// Output:
-	// output: uint8(0) error: int value out of range for uint8
+	// output: uint8(0); error: int value out of range for uint8
 }
 
 func ExampleRegister() {
@@ -59,7 +78,11 @@ func ExampleRegister() {
 	// Run conversion.
 	have, err := conv(A{42})
 
-	fmt.Printf("output: %[1]T(%[1]d) error: %v", have, err)
+	fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
 	// Output:
-	// output: xconv_test.B({42}) error: <nil>
+	// output: xconv_test.B({42}); error: <nil>
+}
+
+func Example() {
+
 }

@@ -7,7 +7,7 @@
   * [Example Usage](#example-usage)
   * [Introduction](#introduction)
   * [Built-in Converters](#built-in-converters)
-  * [Dynamically Lookup Converters](#dynamically-lookup-converters)
+  * [Look Up Converters At Runtinme](#look-up-converters-at-runtinme)
   * [Register Custom Converters](#register-custom-converters)
   * [32bit vs. 64bit Systems](#32bit-vs-64bit-systems)
 <!-- TOC -->
@@ -28,6 +28,8 @@ go get github.com/ctx42/convert
 
 ## Example Usage
 
+### The `xcast` converters
+
 ```go
 // Successful cast.
 ui8, err := xcast.IntToUint8(42)
@@ -45,6 +47,39 @@ fmt.Printf("xcast.IntToUint8 output: %[1]T(%[1]g) error: %v\n", f32, err)
 // xcast.IntToUint8 output: uint8(42) error: <nil>
 // xcast.IntToUint8 output: uint8(0) error: int value out of range for uint8
 // xcast.IntToUint8 output: float32(0) error: int value out of safe range for float32
+```
+
+### At Runtime
+
+```go
+conv := xconv.Lookup[int, uint8]()
+
+// Chack conv is not nil.
+
+have, err := conv(42)
+
+// Check conversion error.
+
+fmt.Printf("output: %[1]T(%[1]d) error: %v", have, err)
+// Output:
+// output: uint8(42) error: <nil>
+```
+
+```go
+// By default xcast.StringToTime converter (parser) is not registered.
+xconv.Register(xcast.StringToTime(time.RFC3339))
+
+conv := xconv.Lookup[string, time.Time]()
+
+// Chack conv is not nil.
+
+have, err := conv("2000-01-02T03:04:05Z")
+
+// Check conversion error.
+
+fmt.Printf("output: %[1]s; error: %v", have.Format(time.ANSIC), err)
+// Output:
+// output: Sun Jan  2 03:04:05 2000; error: <nil>
 ```
 
 ## Introduction
@@ -71,23 +106,30 @@ Module is split into two packages:
 
 Package `xcast` provides 225 `Converter` functions between build-in types:
 
-- byte
-- uint8
-- uint16
-- uint32
-- uint64
-- uint
-- int8
-- int16
-- int32
-- int64
-- int
-- float32
-- float64
-- rune
-- uintqptr
+- `byte`
+- `uint8`
+- `uint16`
+- `uint32`
+- `uint64`
+- `uint`
+- `int8`
+- `int16`
+- `int32`
+- `int64`
+- `int`
+- `float32`
+- `float64`
+- `rune`
+- `uintqptr`
 
-## Dynamically Lookup Converters
+All converters for the above type pairs are automatically added to `xconv` 
+package-level registry.
+
+Converters that are not registered automatically are:
+
+- `xcast.StringToTime`
+
+## Look Up Converters At Runtinme
 
 Use `xconv` package to look up / register converts during runtime.
 
