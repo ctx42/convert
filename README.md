@@ -9,11 +9,14 @@
   * [Built-in Converters](#built-in-converters)
   * [Dynamically Lookup Converters](#dynamically-lookup-converters)
   * [Register Custom Converters](#register-custom-converters)
+  * [32bit vs. 64bit Systems](#32bit-vs-64bit-systems)
 <!-- TOC -->
 
 **convert** is a lightweight Go library for safe type conversions, preventing
 truncation, overflow, or semantic loss from invalid casts. It supports 
 conversions between common numeric types out of the box.
+
+It's safe to use on 32-bit and 64-bit systems.   
 
 ## Installation
 
@@ -130,3 +133,9 @@ fmt.Printf("output: %[1]T(%[1]d) error: %v", have, err)
 // Output:
 // output: xconv_test.B({42}) error: <nil>
 ```
+
+## 32bit vs. 64bit Systems
+
+In cases where its necessary module implements separate boundary checks for
+32-bit dnd 64-bit systems. See files in [xcast](pkg/xcast) directory with
+`_32bit` and `_64bit` strings in their fiolenames.
