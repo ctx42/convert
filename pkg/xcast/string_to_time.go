@@ -4,6 +4,7 @@
 package xcast
 
 import (
+	"errors"
 	"fmt"
 	"time"
 )
@@ -20,6 +21,12 @@ func StringToTime(format string) func(value string) (time.Time, error) {
 		}
 		t, err := time.Parse(format, value)
 		if err != nil {
+			var pe *time.ParseError
+			if errors.As(err, &pe) {
+				msg := "parsing %q string as %q time layout: %w"
+				err = fmt.Errorf(msg, value, pe.Layout, ErrInvValue)
+				return time.Time{}, err
+			}
 			return time.Time{}, fmt.Errorf("%w: %w", ErrInvValue, err)
 		}
 		return t, nil

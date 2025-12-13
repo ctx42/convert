@@ -51,6 +51,10 @@ var (
 	// ErrInvValue used when a value is not valid in a given conversion context.
 	ErrInvValue = errors.New("invalid value")
 
+	// ErrInvFormat used when a value's format is not valid in a given
+	// conversion context.
+	ErrInvFormat = errors.New("invalid format")
+
 	// ErrUnsupported represents explicitly not supported conversion.
 	ErrUnsupported = errors.New("cast not supported")
 )

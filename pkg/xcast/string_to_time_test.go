@@ -37,7 +37,7 @@ func Test_StringToTime_tabular(t *testing.T) {
 			"",
 		},
 		{
-			"error - not matching format",
+			"error - empty string",
 			"",
 			time.RFC3339,
 			time.Date(0000, 1, 1, 15, 42, 0, 0, time.UTC),
@@ -50,7 +50,7 @@ func Test_StringToTime_tabular(t *testing.T) {
 			time.Kitchen,
 			time.Date(0000, 1, 1, 15, 42, 0, 0, time.UTC),
 			ErrInvValue,
-			`invalid value: parsing time "2000-01-02T03:04:05Z": hour out of range`,
+			`parsing "2000-01-02T03:04:05Z" string as "3:04PM" time layout: invalid value`,
 		},
 	}
 
