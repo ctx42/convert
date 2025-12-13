@@ -14,7 +14,7 @@ import (
 // or truncation. Otherwise, it returns an error.
 func Float64ToInt8(value float64) (int8, error) {
 	if value != math.Trunc(value) {
-		wMsg := "int8 requires non-fractional float32: %w"
+		wMsg := "int8 requires non-fractional float64: %w"
 		return 0, fmt.Errorf(wMsg, ErrInvValue)
 	}
 	if value < math.MinInt8 || value > math.MaxInt8 {

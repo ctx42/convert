@@ -24,7 +24,7 @@ func Test_Float64ToInt8_tabular(t *testing.T) {
 			4.2,
 			0,
 			ErrInvValue,
-			"int8 requires non-fractional float32: invalid value",
+			"int8 requires non-fractional float64: invalid value",
 		},
 		{
 			"underflow",

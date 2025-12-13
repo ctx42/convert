@@ -5,6 +5,8 @@
 <!-- TOC -->
   * [Installation](#installation)
   * [Example Usage](#example-usage)
+    * [The `xcast` converters](#the-xcast-converters)
+    * [At Runtime](#at-runtime)
   * [Introduction](#introduction)
   * [Built-in Converters](#built-in-converters)
   * [Look Up Converters At Runtinme](#look-up-converters-at-runtinme)
