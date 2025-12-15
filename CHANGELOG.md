@@ -1,3 +1,6 @@
+## v0.3.0 (Mon, 15 Dec 2025 13:14:05 UTC)
+- Add new converters and make `xconv.Registry` operations thread safe.
+
 ## v0.2.0 (Sat, 13 Dec 2025 12:33:47 UTC)
 - feat: Add StringToTime converter (parser).
 - fix: Fix ErrUnsupported error message.
