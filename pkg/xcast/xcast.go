@@ -14,7 +14,6 @@ import (
 // from this list can be converted in either direction.
 func SupportedTypes() []reflect.Type {
 	return []reflect.Type{
-		reflect.TypeOf(byte(0)),
 		reflect.TypeOf(uint8(0)),
 		reflect.TypeOf(uint16(0)),
 		reflect.TypeOf(uint32(0)),
@@ -27,7 +26,6 @@ func SupportedTypes() []reflect.Type {
 		reflect.TypeOf(0),
 		reflect.TypeOf(float32(0)),
 		reflect.TypeOf(float64(0)),
-		reflect.TypeOf(rune(0)),
 		reflect.TypeOf(uintptr(0)),
 	}
 }

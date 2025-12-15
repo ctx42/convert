@@ -5,11 +5,13 @@ package xconv
 
 import (
 	"reflect"
+	"sync"
 )
 
 // Registry is a registry of [Converter] functions.
 type Registry struct {
-	m map[reflect.Type]map[reflect.Type]*wrapper // Source to destination types.
+	m  map[reflect.Type]map[reflect.Type]*wrapper // Source to destination.
+	mx sync.RWMutex                               // Guards the above map.
 }
 
 // NewRegistry returns a new instance of [Registry].
@@ -20,6 +22,9 @@ func NewRegistry() *Registry { return &Registry{} }
 // register registers the wrapped [Converter] function. If a wrapper for the
 // given [Converter] already exists, it is returned and the new one replaces it.
 func (reg *Registry) register(wrp *wrapper) *wrapper {
+	reg.mx.Lock()
+	defer reg.mx.Unlock()
+
 	if reg.m == nil {
 		reg.m = make(map[reflect.Type]map[reflect.Type]*wrapper, 20)
 	}
@@ -35,6 +40,9 @@ func (reg *Registry) register(wrp *wrapper) *wrapper {
 // lookup returns a [wrapper] registered for the given source-destination type
 // pair. Returns nil when a wrapper for a given pair doesn't exist.
 func (reg *Registry) lookup(from, to reflect.Type) *wrapper {
+	reg.mx.RLock()
+	defer reg.mx.RUnlock()
+
 	if reg.m == nil {
 		return nil
 	}
