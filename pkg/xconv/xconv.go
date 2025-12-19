@@ -4,6 +4,12 @@
 // Package xconv provides utilities for lossless type conversions.
 package xconv
 
+import (
+	"fmt"
+
+	"github.com/ctx42/convert/pkg/xcast"
+)
+
 // registry represents package level [Registry].
 var registry = &Registry{}
 
@@ -28,3 +34,21 @@ func Lookup[From, To any]() Converter[From, To] {
 // overflow, or semantic loss), it returns the zero value of To along with a
 // non-nil error describing the issue.
 type Converter[From, To any] func(from From) (to To, err error)
+
+// Caster is a non-generic version of [Converter]. The behavior is exactly the
+// same in terms of error handling.
+type Caster func(form any) (to any, err error)
+
+// ConverterToCaster return [Caster] based on [Converter].
+func ConverterToCaster[From, To any](conv Converter[From, To]) Caster {
+	return func(value any) (any, error) {
+		var ok bool
+		var from From
+		if from, ok = value.(From); !ok {
+			format := "%w: expected %T, got %T"
+			var to To
+			return to, fmt.Errorf(format, xcast.ErrInvType, from, value)
+		}
+		return conv(from)
+	}
+}

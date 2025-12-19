@@ -25,7 +25,7 @@ func Test_Register(t *testing.T) {
 		// --- Then ---
 		assert.Nil(t, have)
 		from, to := reflect.TypeFor[A](), reflect.TypeFor[B]()
-		assert.Same(t, cnv, registry.m[from][to].conv)
+		assert.Same(t, cnv, registry.m[from][to].cnv)
 	})
 
 	t.Run("register existing", func(t *testing.T) {
@@ -42,7 +42,7 @@ func Test_Register(t *testing.T) {
 		// --- Then ---
 		assert.Same(t, cnv0, have)
 		from, to := reflect.TypeFor[A](), reflect.TypeFor[B]()
-		assert.Same(t, cnv1, registry.m[from][to].conv)
+		assert.Same(t, cnv1, registry.m[from][to].cnv)
 	})
 }
 
@@ -65,5 +65,28 @@ func Test_Lookup(t *testing.T) {
 
 		// --- Then ---
 		assert.Same(t, xcast.IntToInt, have)
+	})
+}
+
+func Test_ConverterToCaster(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- When ---
+		cnv := ConverterToCaster(xcast.Float64ToInt)
+
+		// --- Then ---
+		have, err := cnv(float64(42))
+		assert.NoError(t, err)
+		assert.Equal(t, 42, have)
+	})
+
+	t.Run("invalid `from` type", func(t *testing.T) {
+		// --- When ---
+		cnv := ConverterToCaster(xcast.Float64ToInt)
+
+		// --- Then ---
+		have, err := cnv(42)
+		assert.ErrorIs(t, xcast.ErrInvType, err)
+		assert.ErrorEqual(t, "invalid type: expected float64, got int", err)
+		assert.Equal(t, 0, have)
 	})
 }

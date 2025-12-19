@@ -27,7 +27,7 @@ func Test_Uint64ToFloat64_tabular(t *testing.T) {
 			Float64SafeIntMax + 1,
 			0,
 			ErrInvSafeRange,
-			"float64 value out of safe range for float64",
+			"uint64 value out of safe range for float64",
 		},
 	}
 

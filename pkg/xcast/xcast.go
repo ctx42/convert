@@ -58,6 +58,9 @@ var (
 	// conversion context.
 	ErrInvFormat = errors.New("invalid format")
 
+	// ErrUndConv used when conversion is undefined for given types.
+	ErrUndConv = errors.New("conversion undefined")
+
 	// ErrUnsupported represents explicitly not supported conversion.
 	ErrUnsupported = errors.New("cast not supported")
 )

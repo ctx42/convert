@@ -11,7 +11,8 @@ import (
 // source-destination type pair.
 type wrapper struct {
 	from, to reflect.Type // Source and destination types.
-	conv     any          // A [Converter] matching from and to types.
+	cnv      any          // A [Converter] matching from and to types.
+	cst      Caster       // A non-generic [Converter].
 }
 
 // wrap creates a new wrapper instance for a given [Converter] function.
@@ -19,6 +20,7 @@ func wrap[From, To any](conv Converter[From, To]) *wrapper {
 	return &wrapper{
 		from: reflect.TypeFor[From](),
 		to:   reflect.TypeFor[To](),
-		conv: conv,
+		cnv:  conv,
+		cst:  ConverterToCaster(conv),
 	}
 }

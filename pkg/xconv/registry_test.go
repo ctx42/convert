@@ -145,7 +145,7 @@ func Test_RegisterConverter(t *testing.T) {
 		// --- Then ---
 		assert.Nil(t, have)
 		from, to := reflect.TypeFor[uint](), reflect.TypeFor[uint8]()
-		assert.Same(t, cnv, reg.m[from][to].conv)
+		assert.Same(t, cnv, reg.m[from][to].cnv)
 	})
 
 	t.Run("register already registered converter", func(t *testing.T) {
@@ -161,7 +161,7 @@ func Test_RegisterConverter(t *testing.T) {
 		// --- Then ---
 		assert.Same(t, cnv0, have)
 		from, to := reflect.TypeFor[uint](), reflect.TypeFor[uint8]()
-		assert.Same(t, cnv1, reg.m[from][to].conv)
+		assert.Same(t, cnv1, reg.m[from][to].cnv)
 	})
 
 	t.Run("it should never happen", func(t *testing.T) {
@@ -182,7 +182,7 @@ func Test_RegisterConverter(t *testing.T) {
 		// --- Then ---
 		assert.Nil(t, have)
 		from, to := reflect.TypeFor[uint](), reflect.TypeFor[uint8]()
-		assert.Same(t, cnv, reg.m[from][to].conv)
+		assert.Same(t, cnv, reg.m[from][to].cnv)
 	})
 }
 

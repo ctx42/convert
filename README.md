@@ -127,11 +127,11 @@ Package `xcast` provides 225 `Converter` functions between build-in types:
 All converters for the above type pairs are automatically added to `xconv` 
 package-level registry.
 
-Converters that are not registered automatically are:
+Some conversions are implemented only between specific pairs:
 
 - `xcast.StringToDuration`
 - `xcast.StringToString`
-- `xcast.StringToTime`
+- `xcast.StringToTime` - time must be in `time.RFC3339Nano` but you can register your on formats.
 
 ## Look Up Converters At Runtinme
 

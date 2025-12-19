@@ -13,10 +13,10 @@ import (
 // or truncation. Otherwise, it returns an error.
 func Int64ToFloat64(value int64) (float64, error) {
 	if value < Float64SafeIntMin {
-		return 0, fmt.Errorf("float64 %w for float64", ErrInvSafeRange)
+		return 0, fmt.Errorf("int64 %w for float64", ErrInvSafeRange)
 	}
 	if value > Float64SafeIntMax {
-		return 0, fmt.Errorf("float64 %w for float64", ErrInvSafeRange)
+		return 0, fmt.Errorf("int64 %w for float64", ErrInvSafeRange)
 	}
 	return float64(value), nil
 }

@@ -52,7 +52,7 @@ func (reg *Registry) lookup(from, to reflect.Type) *wrapper {
 	return nil
 }
 
-// RegisterConverter registers the [Converter] in the [Registry]. If a
+// RegisterConverter registers the [Converter] in the provided [Registry]. If a
 // converter for the same source-destination type pair already exists, it is
 // replaced, and the previous converter is returned; otherwise nil is returned.
 func RegisterConverter[From, To any](reg *Registry, conv Converter[From, To]) Converter[From, To] {
@@ -63,21 +63,21 @@ func RegisterConverter[From, To any](reg *Registry, conv Converter[From, To]) Co
 	if wrp == nil {
 		return nil
 	}
-	if h, ok := wrp.conv.(Converter[From, To]); ok {
+	if h, ok := wrp.cnv.(Converter[From, To]); ok {
 		return h
 	}
 	return nil
 }
 
 // LookupConverter returns the [Converter] for the given source-destination
-// type pair from the given [Registry]. Returns nil if no converter was
+// type pair from the provided [Registry]. Returns nil if no converter was
 // registered for the given source-destination type pair.
 func LookupConverter[From, To any](reg *Registry) Converter[From, To] {
 	wrp := reg.lookup(reflect.TypeFor[From](), reflect.TypeFor[To]())
 	if wrp == nil {
 		return nil
 	}
-	if h, ok := wrp.conv.(Converter[From, To]); ok {
+	if h, ok := wrp.cnv.(Converter[From, To]); ok {
 		return h
 	}
 	return nil

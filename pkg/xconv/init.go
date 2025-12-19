@@ -4,6 +4,8 @@
 package xconv
 
 import (
+	"time"
+
 	"github.com/ctx42/convert/pkg/xcast"
 )
 
@@ -131,6 +133,7 @@ func init() {
 	Register(xcast.IntToUintptr)
 	Register(xcast.StringToDuration)
 	Register(xcast.StringToString)
+	Register(xcast.StringToTime(time.RFC3339Nano))
 	Register(xcast.Uint16ToFloat32)
 	Register(xcast.Uint16ToFloat64)
 	Register(xcast.Uint16ToInt)

@@ -23,7 +23,7 @@ func Test_Int64ToFloat64_tabular(t *testing.T) {
 			Float64SafeIntMin - 1,
 			0,
 			ErrInvSafeRange,
-			"float64 value out of safe range for float64",
+			"int64 value out of safe range for float64",
 		},
 		{"min", Float64SafeIntMin, Float64SafeIntMin, nil, ""},
 		{"zero", 0, 0, nil, ""},
@@ -34,7 +34,7 @@ func Test_Int64ToFloat64_tabular(t *testing.T) {
 			Float64SafeIntMax + 1,
 			0,
 			ErrInvSafeRange,
-			"float64 value out of safe range for float64",
+			"int64 value out of safe range for float64",
 		},
 	}
 
