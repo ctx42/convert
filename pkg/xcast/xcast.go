@@ -14,19 +14,24 @@ import (
 // from this list can be converted in either direction.
 func SupportedTypes() []reflect.Type {
 	return []reflect.Type{
-		reflect.TypeOf(uint8(0)),
-		reflect.TypeOf(uint16(0)),
-		reflect.TypeOf(uint32(0)),
-		reflect.TypeOf(uint64(0)),
-		reflect.TypeOf(uint(0)),
+		reflect.TypeOf(0), // int
 		reflect.TypeOf(int8(0)),
 		reflect.TypeOf(int16(0)),
 		reflect.TypeOf(int32(0)),
 		reflect.TypeOf(int64(0)),
-		reflect.TypeOf(0),
+		reflect.TypeOf(uint(0)),
+		reflect.TypeOf(uint8(0)),
+		reflect.TypeOf(uint16(0)),
+		reflect.TypeOf(uint32(0)),
+		reflect.TypeOf(uint64(0)),
 		reflect.TypeOf(float32(0)),
 		reflect.TypeOf(float64(0)),
 		reflect.TypeOf(uintptr(0)),
+
+		// TODO(rz):
+		// reflect.TypeOf("string"),
+		// reflect.TypeOf(time.Time{}),
+		// reflect.TypeOf(time.Duration(0)),
 	}
 }
 

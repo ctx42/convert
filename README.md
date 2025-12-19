@@ -108,19 +108,19 @@ Module is split into two packages:
 
 Package `xcast` provides 225 `Converter` functions between build-in types:
 
-- `byte`
+- `uint`
 - `uint8`
 - `uint16`
 - `uint32`
 - `uint64`
-- `uint`
+- `int`
 - `int8`
 - `int16`
 - `int32`
 - `int64`
-- `int`
 - `float32`
 - `float64`
+- `byte`
 - `rune`
 - `uintqptr`
 
@@ -129,6 +129,8 @@ package-level registry.
 
 Converters that are not registered automatically are:
 
+- `xcast.StringToDuration`
+- `xcast.StringToString`
 - `xcast.StringToTime`
 
 ## Look Up Converters At Runtinme
