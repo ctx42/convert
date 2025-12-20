@@ -4,109 +4,52 @@
 
 <!-- TOC -->
   * [Installation](#installation)
-  * [Example Usage](#example-usage)
-    * [The `xcast` converters](#the-xcast-converters)
-    * [At Runtime](#at-runtime)
-  * [Introduction](#introduction)
-  * [Built-in Converters](#built-in-converters)
-  * [Look Up Converters At Runtinme](#look-up-converters-at-runtinme)
+  * [Converters](#converters)
+  * [Converter Registry](#converter-registry)
+  * [Converter Types](#converter-types)
   * [Register Custom Converters](#register-custom-converters)
+  * [Customize Converters](#customize-converters)
   * [32bit vs. 64bit Systems](#32bit-vs-64bit-systems)
 <!-- TOC -->
 
 **convert** is a lightweight Go library for safe type conversions, preventing
-truncation, overflow, or semantic loss from invalid casts. It supports 
-conversions between common numeric types out of the box.
+truncation, overflow, or semantic loss when converting between types. 
 
-It's safe to use on 32-bit and 64-bit systems.   
+It has support for 32-bit and 64-bit systems when converting numeric types.   
 
 ## Installation
 
-Install via `go get`:
+Install using `go get`:
 
 ```bash
 go get github.com/ctx42/convert
 ```
 
-## Example Usage
+## Converters
 
-### The `xcast` converters
+Use converter functions directly.
 
 ```go
-// Successful cast.
-ui8, err := xcast.IntToUint8(42)
-fmt.Printf("xcast.IntToUint8 output: %[1]T(%[1]d) error: %v\n", ui8, err)
+// Successful conversion.
+ui8, err := convert.IntToUint8(42)
+fmt.Printf("convert.IntToUint8 output: %[1]T(%[1]d) error: %v\n", ui8, err)
 
 // Value too big for uint8.
-ui8, err = xcast.IntToUint8(420)
-fmt.Printf("xcast.IntToUint8 output: %[1]T(%[1]d) error: %v\n", ui8, err)
+ui8, err = convert.IntToUint8(420)
+fmt.Printf("convert.IntToUint8 output: %[1]T(%[1]d) error: %v\n", ui8, err)
 
-// Unsafe cast.
-f32, err := xcast.IntToFloat32(xcast.Float32SafeIntMax + 1)
-fmt.Printf("xcast.IntToUint8 output: %[1]T(%[1]g) error: %v\n", f32, err)
+// Unsafe conversion.
+f32, err := convert.IntToFloat32(convert.Float32SafeIntMax + 1)
+fmt.Printf("convert.IntToUint8 output: %[1]T(%[1]g) error: %v\n", f32, err)
 
 // Output:
-// xcast.IntToUint8 output: uint8(42) error: <nil>
-// xcast.IntToUint8 output: uint8(0) error: int value out of range for uint8
-// xcast.IntToUint8 output: float32(0) error: int value out of safe range for float32
+// convert.IntToUint8 output: uint8(42) error: <nil>
+// convert.IntToUint8 output: uint8(0) error: int value out of range for uint8
+// convert.IntToUint8 output: float32(0) error: int value out of safe range for float32
 ```
 
-### At Runtime
-
-```go
-conv := xconv.Lookup[int, uint8]()
-
-// Chack conv is not nil.
-
-have, err := conv(42)
-
-// Check conversion error.
-
-fmt.Printf("output: %[1]T(%[1]d) error: %v", have, err)
-// Output:
-// output: uint8(42) error: <nil>
-```
-
-```go
-// By default xcast.StringToTime converter (parser) is not registered.
-xconv.Register(xcast.StringToTime(time.RFC3339))
-
-conv := xconv.Lookup[string, time.Time]()
-
-// Chack conv is not nil.
-
-have, err := conv("2000-01-02T03:04:05Z")
-
-// Check conversion error.
-
-fmt.Printf("output: %[1]s; error: %v", have.Format(time.ANSIC), err)
-// Output:
-// output: Sun Jan  2 03:04:05 2000; error: <nil>
-```
-
-## Introduction
-
-The main type used in the module is defined in the `xconv` package:
-
-```go
-// Converter represents a function that attempts lossless conversion from a
-// source value of type From to a target value of type To. On success, it 
-// returns the converted value and a nil error. On failure (e.g., truncation,
-// overflow, or semantic loss), it returns the zero value of To along with a
-// non-nil error describing the issue.
-type Converter[From, To any] func(from From) (to To, err error)
-```
-
-All build in converters match the `Converter`.
-
-Module is split into two packages:
-
-- `xcast` - converter functions like `Float32ToInt8`.
-- `xconvert` - registry of converters with the ability to register your own.
-
-## Built-in Converters
-
-Package `xcast` provides 225 `Converter` functions between build-in types:
+Package `convert` provides more than 200 converter functions between numeric
+types:
 
 - `uint`
 - `uint8`
@@ -124,31 +67,66 @@ Package `xcast` provides 225 `Converter` functions between build-in types:
 - `rune`
 - `uintqptr`
 
-All converters for the above type pairs are automatically added to `xconv` 
-package-level registry.
+As well as converters implemented only between specific type pairs:
 
-Some conversions are implemented only between specific type pairs:
+- `convert.StringToDuration`
+- `convert.StringToString`
+- `convert.StringToTime` - string must be in `time.RFC3339Nano` format.
 
-- `xcast.StringToDuration`
-- `xcast.StringToString`
-- `xcast.StringToTime` - time must be in `time.RFC3339Nano` but you can register your on formats.
+All of them pairs are automatically registered in the package-level registry.
 
-## Look Up Converters At Runtinme
+## Converter Registry
 
-Use `xconv` package to look up / register converts during runtime.
+To get a converter function for a pair of types at runtinme use `Lookup`
+function.
 
 ```go
-conv := xconv.Lookup[int, uint8]()
+cnv := convert.Lookup[int, uint8]()
 
-// Chack conv is not nil.
+// Chack cnv is not nil.
 
-have, err := conv(42)
+have, err := cnv(42)
 
 // Check conversion error.
 
-fmt.Printf("output: %[1]T(%[1]d) error: %v", have, err)
+fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
 // Output:
-// output: uint8(42) error: <nil>
+// output: uint8(42); error: <nil>
+```
+
+It returns a non-nil converter if the pair has been registered in the 
+package-level registry.
+
+## Converter Types
+
+All the converter functions provided by the package match generic `FromTo` type. 
+
+```go
+// FromTo represents a converter function that attempts lossless conversion of
+// a value from the type "From" to the "To" type. On success, it returns the
+// converted value and a nil error. On failure (e.g., truncation, underflow,
+// overflow, or semantic loss), it returns the zero value of "To" along with a
+// non-nil error describing the issue.
+type FromTo[From, To any] func(from From) (to To, err error)
+
+// AnyToAny is a non-generic version of [FromTo]. The behavior is exactly the
+// same in terms of error handling.
+type AnyToAny func(form any) (to any, err error)
+```
+
+Additionally, package defines non-generic `AnyToAny` type. Converter functions
+can be adapted to it with a helper.
+
+```go
+var cnv func(any) (any, error)
+
+cnv = convert.ToAnyAny(convert.Uint8ToUint8)
+
+have, err := cnv("wrong")
+
+fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
+// Output:
+// output: uint8(0); error: invalid type: expected uint8, got string
 ```
 
 ## Register Custom Converters
@@ -157,31 +135,55 @@ fmt.Printf("output: %[1]T(%[1]d) error: %v", have, err)
 type A struct{ val int8 }
 type B struct{ val int }
 
-// Custom converter function matching [xconv.Converter] signature.
-myConv := func(from A) (to B, err error) {
+// Custom converter function matching [convert.Converter] signature.
+my := func(from A) (to B, err error) {
     return B{val: int(from.val)}, nil
 }
 
 // Register a converter function between types A and B.
-old := xconv.Register(myConv)
+old := convert.Register(my)
 
 // If there was already a converter for that source-destination type pair,
 // it will be returned, nil otherwise.
 _ = old
 
 // Lookup converter registered converter.
-conv := xconv.Lookup[A, B]()
+cnv := convert.Lookup[A, B]()
 
 // Run conversion.
-have, err := conv(A{42})
+have, err := cnv(A{42})
 
-fmt.Printf("output: %[1]T(%[1]d) error: %v", have, err)
+fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
 // Output:
-// output: xconv_test.B({42}) error: <nil>
+// output: convert_test.B({42}); error: <nil>
+```
+
+## Customize Converters
+
+Some converters, like `convert.StringToTime`, are added to package-level
+registry with sane defaults but you can customize them by overwriting the
+defeult configuration.
+
+```go
+// Register a converter function between types A and B.
+def := convert.Register(convert.StringToTime(time.Kitchen))
+
+// The default converter is returned in case you want to restore it.
+defer convert.Register(def)
+
+// Lookup converter registered converter.
+cnv := convert.Lookup[string, time.Time]()
+
+// Run conversion.
+have, err := cnv("4:20AM")
+
+fmt.Printf("output: %s; error: %v", have, err)
+// Output:
+// output: 0000-01-01 04:20:00 +0000 UTC; error: <nil>
 ```
 
 ## 32bit vs. 64bit Systems
 
 In cases where its necessary module implements separate boundary checks for
-32-bit dnd 64-bit systems. See files in [xcast](pkg/xcast) directory with
-`_32bit` and `_64bit` strings in their fiolenames.
+32-bit and 64-bit systems. See files in [convert](pkg/convert) directory with
+`_32bit` and `_64bit` strings in their filenames.
