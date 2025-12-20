@@ -1,3 +1,6 @@
+## v0.6.0 (Sat, 20 Dec 2025 21:47:00 UTC)
+- Better code organization and naming.
+
 ## v0.5.0 (Sat, 20 Dec 2025 10:05:55 UTC)
 - Better naming.
 
