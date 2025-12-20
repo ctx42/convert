@@ -35,12 +35,12 @@ func Lookup[From, To any]() Converter[From, To] {
 // non-nil error describing the issue.
 type Converter[From, To any] func(from From) (to To, err error)
 
-// Caster is a non-generic version of [Converter]. The behavior is exactly the
-// same in terms of error handling.
-type Caster func(form any) (to any, err error)
+// AnyConverter is a non-generic version of [Converter]. The behavior is
+// exactly the same in terms of error handling.
+type AnyConverter func(form any) (to any, err error)
 
-// ConverterToCaster return [Caster] based on [Converter].
-func ConverterToCaster[From, To any](conv Converter[From, To]) Caster {
+// AsAnyConverter returns [AnyConverter] based on [Converter].
+func AsAnyConverter[From, To any](conv Converter[From, To]) AnyConverter {
 	return func(value any) (any, error) {
 		var ok bool
 		var from From

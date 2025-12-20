@@ -127,7 +127,7 @@ Package `xcast` provides 225 `Converter` functions between build-in types:
 All converters for the above type pairs are automatically added to `xconv` 
 package-level registry.
 
-Some conversions are implemented only between specific pairs:
+Some conversions are implemented only between specific type pairs:
 
 - `xcast.StringToDuration`
 - `xcast.StringToString`

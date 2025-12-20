@@ -8,6 +8,8 @@
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$" />
     <framework value="gotest" />
-    <method v="2" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="go test all 32bit" run_configuration_type="GoTestRunConfiguration" />
+    </method>
   </configuration>
 </component>

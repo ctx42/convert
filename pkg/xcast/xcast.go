@@ -62,7 +62,7 @@ var (
 	ErrUndConv = errors.New("conversion undefined")
 
 	// ErrUnsupported represents explicitly not supported conversion.
-	ErrUnsupported = errors.New("cast not supported")
+	ErrUnsupported = errors.New("not supported cast")
 )
 
 // Safe integer boundaries for exact round-trip float32 to int32 conversions.

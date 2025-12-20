@@ -68,10 +68,10 @@ func Test_Lookup(t *testing.T) {
 	})
 }
 
-func Test_ConverterToCaster(t *testing.T) {
+func Test_AsAnyConverter(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- When ---
-		cnv := ConverterToCaster(xcast.Float64ToInt)
+		cnv := AsAnyConverter(xcast.Float64ToInt)
 
 		// --- Then ---
 		have, err := cnv(float64(42))
@@ -81,7 +81,7 @@ func Test_ConverterToCaster(t *testing.T) {
 
 	t.Run("invalid `from` type", func(t *testing.T) {
 		// --- When ---
-		cnv := ConverterToCaster(xcast.Float64ToInt)
+		cnv := AsAnyConverter(xcast.Float64ToInt)
 
 		// --- Then ---
 		have, err := cnv(42)
