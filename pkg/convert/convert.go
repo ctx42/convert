@@ -62,8 +62,8 @@ var (
 	// conversion context.
 	ErrInvFormat = errors.New("invalid format")
 
-	// ErrUndConv used when conversion is undefined for given types.
-	ErrUndConv = errors.New("conversion undefined")
+	// ErrUnkConv used when conversion is undefined for given types.
+	ErrUnkConv = errors.New("conversion undefined")
 
 	// ErrUnsupported represents explicitly not supported conversion.
 	ErrUnsupported = errors.New("not supported cast")
@@ -139,6 +139,7 @@ const (
 
 func init() {
 	Register(BoolToBool)
+	Register(DurationToInt64)
 	Register(Float32ToFloat32)
 	Register(Float32ToFloat64)
 	Register(Float32ToInt)

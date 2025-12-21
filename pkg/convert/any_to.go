@@ -28,7 +28,7 @@ func AnyToIntUsing(reg *Registry, value any) (int, error) {
 	wrp := reg.lookup(from, typInt)
 	if wrp == nil {
 		format := "%w: from %T to int"
-		return 0, fmt.Errorf(format, ErrUndConv, value)
+		return 0, fmt.Errorf(format, ErrUnkConv, value)
 	}
 	ret, err := wrp.cst(value)
 	if err != nil {
@@ -48,7 +48,7 @@ func AnyToInt64Using(reg *Registry, value any) (int64, error) {
 	wrp := reg.lookup(from, typInt64)
 	if wrp == nil {
 		format := "%w: from %T to int64"
-		return 0, fmt.Errorf(format, ErrUndConv, value)
+		return 0, fmt.Errorf(format, ErrUnkConv, value)
 	}
 	ret, err := wrp.cst(value)
 	if err != nil {
@@ -68,7 +68,7 @@ func AnyToUintUsing(reg *Registry, value any) (uint, error) {
 	wrp := reg.lookup(from, typUint)
 	if wrp == nil {
 		format := "%w: from %T to uint"
-		return 0, fmt.Errorf(format, ErrUndConv, value)
+		return 0, fmt.Errorf(format, ErrUnkConv, value)
 	}
 	ret, err := wrp.cst(value)
 	if err != nil {
@@ -90,7 +90,7 @@ func AnyToUint64Using(reg *Registry, value any) (uint64, error) {
 	wrp := reg.lookup(from, typUint64)
 	if wrp == nil {
 		format := "%w: from %T to uint64"
-		return 0, fmt.Errorf(format, ErrUndConv, value)
+		return 0, fmt.Errorf(format, ErrUnkConv, value)
 	}
 	ret, err := wrp.cst(value)
 	if err != nil {
@@ -112,7 +112,7 @@ func AnyToFloat64Using(reg *Registry, value any) (float64, error) {
 	wrp := reg.lookup(from, typFloat64)
 	if wrp == nil {
 		format := "%w: from %T to float64"
-		return 0, fmt.Errorf(format, ErrUndConv, value)
+		return 0, fmt.Errorf(format, ErrUnkConv, value)
 	}
 	ret, err := wrp.cst(value)
 	if err != nil {

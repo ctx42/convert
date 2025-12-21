@@ -28,7 +28,7 @@ func Test_AnyToInt(t *testing.T) {
 			"error - undefined conversion",
 			http.Cookie{},
 			0,
-			ErrUndConv,
+			ErrUnkConv,
 			"conversion undefined: from http.Cookie to int",
 		},
 		{
@@ -74,7 +74,7 @@ func Test_AnyToInt64(t *testing.T) {
 			"error - undefined conversion",
 			http.Cookie{},
 			0,
-			ErrUndConv,
+			ErrUnkConv,
 			"conversion undefined: from http.Cookie to int64",
 		},
 		{
@@ -120,7 +120,7 @@ func Test_AnyToUint(t *testing.T) {
 			"error - undefined conversion",
 			http.Cookie{},
 			0,
-			ErrUndConv,
+			ErrUnkConv,
 			"conversion undefined: from http.Cookie to uint",
 		},
 		{
@@ -166,7 +166,7 @@ func Test_AnyToUint64(t *testing.T) {
 			"error - undefined conversion",
 			http.Cookie{},
 			0,
-			ErrUndConv,
+			ErrUnkConv,
 			"conversion undefined: from http.Cookie to uint64",
 		},
 		{
@@ -212,7 +212,7 @@ func Test_AnyToFloat64(t *testing.T) {
 			"error - undefined conversion",
 			http.Cookie{},
 			0.0,
-			ErrUndConv,
+			ErrUnkConv,
 			"conversion undefined: from http.Cookie to float64",
 		},
 		{
