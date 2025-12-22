@@ -101,11 +101,12 @@ func SupportedTypes() []reflect.Type {
 		reflect.TypeOf(float32(0)),
 		reflect.TypeOf(float64(0)),
 		reflect.TypeOf(uintptr(0)),
+		reflect.TypeOf(time.Duration(0)),
 
 		// TODO(rz):
 		// reflect.TypeOf("string"),
 		// reflect.TypeOf(time.Time{}),
-		// reflect.TypeOf(time.Duration(0)),
+		// reflect.TypeOf(false),
 	}
 }
 
@@ -139,7 +140,22 @@ const (
 
 func init() {
 	Register(BoolToBool)
+	Register(DurationToByte)
+	Register(DurationToDuration)
+	Register(DurationToFloat32)
+	Register(DurationToFloat64)
+	Register(DurationToInt)
+	Register(DurationToInt16)
+	Register(DurationToInt32)
 	Register(DurationToInt64)
+	Register(DurationToInt8)
+	Register(DurationToUint)
+	Register(DurationToUint16)
+	Register(DurationToUint32)
+	Register(DurationToUint64)
+	Register(DurationToUint8)
+	Register(DurationToUintptr)
+	Register(Float32ToDuration)
 	Register(Float32ToFloat32)
 	Register(Float32ToFloat64)
 	Register(Float32ToInt)
@@ -155,6 +171,7 @@ func init() {
 	Register(Float32ToUint8)
 	Register(Float32ToUint8)
 	Register(Float32ToUintptr)
+	Register(Float64ToDuration)
 	Register(Float64ToFloat32)
 	Register(Float64ToFloat64)
 	Register(Float64ToInt)
@@ -170,6 +187,7 @@ func init() {
 	Register(Float64ToUint8)
 	Register(Float64ToUint8)
 	Register(Float64ToUintptr)
+	Register(Int16ToDuration)
 	Register(Int16ToFloat32)
 	Register(Int16ToFloat64)
 	Register(Int16ToInt)
@@ -185,6 +203,7 @@ func init() {
 	Register(Int16ToUint8)
 	Register(Int16ToUint8)
 	Register(Int16ToUintptr)
+	Register(Int32ToDuration)
 	Register(Int32ToFloat32)
 	Register(Int32ToFloat32)
 	Register(Int32ToFloat64)
@@ -215,6 +234,7 @@ func init() {
 	Register(Int32ToUint8)
 	Register(Int32ToUintptr)
 	Register(Int32ToUintptr)
+	Register(Int64ToDuration)
 	Register(Int64ToFloat32)
 	Register(Int64ToFloat64)
 	Register(Int64ToInt)
@@ -230,6 +250,7 @@ func init() {
 	Register(Int64ToUint8)
 	Register(Int64ToUint8)
 	Register(Int64ToUintptr)
+	Register(Int8ToDuration)
 	Register(Int8ToFloat32)
 	Register(Int8ToFloat64)
 	Register(Int8ToInt)
@@ -245,6 +266,7 @@ func init() {
 	Register(Int8ToUint8)
 	Register(Int8ToUint8)
 	Register(Int8ToUintptr)
+	Register(IntToDuration)
 	Register(IntToFloat32)
 	Register(IntToFloat64)
 	Register(IntToInt)
@@ -263,6 +285,7 @@ func init() {
 	Register(StringToDuration)
 	Register(StringToString)
 	Register(StringToTime(time.RFC3339Nano))
+	Register(Uint16ToDuration)
 	Register(Uint16ToFloat32)
 	Register(Uint16ToFloat64)
 	Register(Uint16ToInt)
@@ -278,6 +301,7 @@ func init() {
 	Register(Uint16ToUint8)
 	Register(Uint16ToUint8)
 	Register(Uint16ToUintptr)
+	Register(Uint32ToDuration)
 	Register(Uint32ToFloat32)
 	Register(Uint32ToFloat64)
 	Register(Uint32ToInt)
@@ -293,6 +317,7 @@ func init() {
 	Register(Uint32ToUint8)
 	Register(Uint32ToUint8)
 	Register(Uint32ToUintptr)
+	Register(Uint64ToDuration)
 	Register(Uint64ToFloat32)
 	Register(Uint64ToFloat64)
 	Register(Uint64ToInt)
@@ -308,6 +333,7 @@ func init() {
 	Register(Uint64ToUint8)
 	Register(Uint64ToUint8)
 	Register(Uint64ToUintptr)
+	Register(Uint8ToDuration)
 	Register(Uint8ToFloat32)
 	Register(Uint8ToFloat32)
 	Register(Uint8ToFloat64)
@@ -338,6 +364,7 @@ func init() {
 	Register(Uint8ToUint8)
 	Register(Uint8ToUintptr)
 	Register(Uint8ToUintptr)
+	Register(UintToDuration)
 	Register(UintToFloat32)
 	Register(UintToFloat64)
 	Register(UintToInt)
@@ -353,6 +380,7 @@ func init() {
 	Register(UintToUint8)
 	Register(UintToUint8)
 	Register(UintToUintptr)
+	Register(UintptrToDuration)
 	Register(UintptrToFloat32)
 	Register(UintptrToFloat64)
 	Register(UintptrToInt)

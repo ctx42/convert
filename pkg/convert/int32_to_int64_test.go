@@ -6,6 +6,7 @@ package convert
 import (
 	"math"
 	"testing"
+	"time"
 
 	"github.com/ctx42/testing/pkg/assert"
 )
@@ -56,6 +57,23 @@ func Test_Int32ToInt64_tabular(t *testing.T) {
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, int64(0), have)
+		})
+
+		t.Run("RuneToDuration "+tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := RuneToDuration(tc.value)
+
+			// --- Then ---
+			if tc.err == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, time.Duration(tc.want), have)
+				assert.Equal(t, tc.value, int32(have))
+				return
+			}
+
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, time.Duration(0), have)
 		})
 	}
 }

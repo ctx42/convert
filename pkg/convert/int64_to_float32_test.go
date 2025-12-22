@@ -5,6 +5,7 @@ package convert
 
 import (
 	"testing"
+	"time"
 
 	"github.com/ctx42/testing/pkg/assert"
 )
@@ -40,9 +41,26 @@ func Test_Int64ToFloat32_tabular(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		t.Run(tc.testN, func(t *testing.T) {
+		t.Run("Int64ToFloat32 "+tc.testN, func(t *testing.T) {
 			// --- When ---
 			have, err := Int64ToFloat32(tc.value)
+
+			// --- Then ---
+			if tc.err == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.want, have)
+				assert.Equal(t, tc.value, int64(have))
+				return
+			}
+
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, float32(0), have)
+		})
+
+		t.Run("DurationToFloat32 "+tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := DurationToFloat32(time.Duration(tc.value))
 
 			// --- Then ---
 			if tc.err == nil {

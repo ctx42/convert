@@ -6,6 +6,7 @@ package convert
 import (
 	"math"
 	"testing"
+	"time"
 
 	"github.com/ctx42/testing/pkg/assert"
 )
@@ -60,6 +61,40 @@ func Test_Int64ToUint8_tabular(t *testing.T) {
 		t.Run("Int64ToByte "+tc.testN, func(t *testing.T) {
 			// --- When ---
 			have, err := Int64ToByte(tc.value)
+
+			// --- Then ---
+			if tc.err == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.want, have)
+				assert.Equal(t, tc.value, int64(have))
+				return
+			}
+
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, uint8(0), have)
+		})
+
+		t.Run("DurationToUint8 "+tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := DurationToUint8(time.Duration(tc.value))
+
+			// --- Then ---
+			if tc.err == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.want, have)
+				assert.Equal(t, tc.value, int64(have))
+				return
+			}
+
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, uint8(0), have)
+		})
+
+		t.Run("DurationToByte "+tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := DurationToByte(time.Duration(tc.value))
 
 			// --- Then ---
 			if tc.err == nil {

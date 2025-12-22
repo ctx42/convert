@@ -9,6 +9,7 @@ import (
 	"math"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/ctx42/testing/pkg/assert"
 )
@@ -41,7 +42,7 @@ func Test_AnyToInt64(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		t.Run(tc.testN, func(t *testing.T) {
+		t.Run("AnyToInt64 "+tc.testN, func(t *testing.T) {
 			// --- When ---
 			have, err := AnyToInt64(tc.value)
 
@@ -55,6 +56,22 @@ func Test_AnyToInt64(t *testing.T) {
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, int64(0), have)
+		})
+
+		t.Run("AnyToDuration "+tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := AnyToDuration(tc.value)
+
+			// --- Then ---
+			if tc.err == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, time.Duration(tc.want), have)
+				return
+			}
+
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, time.Duration(0), have)
 		})
 	}
 }

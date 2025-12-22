@@ -8,6 +8,7 @@ package convert
 import (
 	"math"
 	"testing"
+	"time"
 
 	"github.com/ctx42/testing/pkg/assert"
 )
@@ -42,9 +43,26 @@ func Test_Int64ToUint_tabular(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		t.Run(tc.testN, func(t *testing.T) {
+		t.Run("Int64ToUint "+tc.testN, func(t *testing.T) {
 			// --- When ---
 			have, err := Int64ToUint(tc.value)
+
+			// --- Then ---
+			if tc.err == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.want, have)
+				assert.Equal(t, tc.value, int64(have))
+				return
+			}
+
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, uint(0), have)
+		})
+
+		t.Run("DurationToUint "+tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := DurationToUint(time.Duration(tc.value))
 
 			// --- Then ---
 			if tc.err == nil {
