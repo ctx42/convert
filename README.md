@@ -7,6 +7,7 @@
   * [Converters](#converters)
   * [Converter Registry](#converter-registry)
   * [Converter Types](#converter-types)
+  * [AnyToXXX Converters.](#anytoxxx-converters)
   * [Register Custom Converters](#register-custom-converters)
   * [Customize Converters](#customize-converters)
   * [32bit vs. 64bit Systems](#32bit-vs-64bit-systems)
@@ -66,6 +67,7 @@ types:
 - `byte`
 - `rune`
 - `uintqptr`
+- `time.Duration`
 
 As well as converters implemented only between specific type pairs:
 
@@ -128,6 +130,28 @@ fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
 // Output:
 // output: uint8(0); error: invalid type: expected uint8, got string
 ```
+
+## AnyToXXX Converters.
+
+Module also provides a set of functions which can convert `any` type to a given
+type:
+
+- `AnyToByte`
+- `AnyToDuration`
+- `AnyToFloat32`
+- `AnyToFloat64`
+- `AnyToInt`
+- `AnyToInt8`
+- `AnyToInt16`
+- `AnyToInt32`
+- `AnyToInt64`
+- `AnyToUint`
+- `AnyToUint8`
+- `AnyToUint16`
+- `AnyToUint32`
+- `AnyToUint64`
+- `AnyToUintptr`
+- `AnyToRune`
 
 ## Register Custom Converters
 
