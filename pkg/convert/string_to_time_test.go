@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
+// SPDX-FileCopyrightText: (c) 2026 Rafal Zajac <rzajac@gmail.com>
 // SPDX-License-Identifier: MIT
 
 package convert
@@ -14,9 +14,9 @@ func Test_StringToTime_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		value  string
+		src    string
 		format string
-		want   time.Time
+		dst    time.Time
 		err    error
 		msg    string
 	}{
@@ -42,7 +42,7 @@ func Test_StringToTime_tabular(t *testing.T) {
 			time.RFC3339,
 			time.Date(0000, 1, 1, 15, 42, 0, 0, time.UTC),
 			ErrInvValue,
-			"cannot convert (parse) an empty string to time.Time: invalid value",
+			"invalid value: from string to time.Time",
 		},
 		{
 			"error - not matching format",
@@ -50,19 +50,19 @@ func Test_StringToTime_tabular(t *testing.T) {
 			time.Kitchen,
 			time.Date(0000, 1, 1, 15, 42, 0, 0, time.UTC),
 			ErrInvValue,
-			`parsing "2000-01-02T03:04:05Z" string as "3:04PM" time layout: invalid value`,
+			"invalid value: from string to time.Time",
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := StringToTime(tc.format)(tc.value)
+			have, err := StringToTime(tc.format)(tc.src)
 
 			// --- Then ---
 			if tc.err == nil {
 				assert.NoError(t, err)
-				assert.Exact(t, tc.want, have)
+				assert.Exact(t, tc.dst, have)
 				return
 			}
 

@@ -1,0 +1,8 @@
+Represents a file content generated for conversion from uint32 to uint32.
+---
+package pkg
+
+// Uint32ToUint32 safely converts uint32 value to uint32.
+func Uint32ToUint32(src uint32) (dst uint32, err error) {
+	return src, nil
+}

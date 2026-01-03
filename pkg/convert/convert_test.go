@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
+// SPDX-FileCopyrightText: (c) 2026 Rafal Zajac <rzajac@gmail.com>
 // SPDX-License-Identifier: MIT
 
 package convert
@@ -16,23 +16,23 @@ func Test_Register(t *testing.T) {
 		// --- Given ---
 		type A struct{}
 		type B struct{}
-		cnv := func(from A) (to B, err error) { return to, nil }
+		cnv := func(src A) (dst B, err error) { return dst, nil }
 
 		// --- When ---
 		have := Register(cnv)
 
 		// --- Then ---
 		assert.Nil(t, have)
-		from, to := reflect.TypeFor[A](), reflect.TypeFor[B]()
-		assert.Same(t, cnv, registry.m[from][to].cnv)
+		src, dst := reflect.TypeFor[A](), reflect.TypeFor[B]()
+		assert.Same(t, cnv, registry.m[src][dst].cnv)
 	})
 
 	t.Run("register existing", func(t *testing.T) {
 		// --- Given ---
 		type A struct{}
 		type B struct{}
-		cnv0 := func(from A) (to B, err error) { return to, nil }
-		cnv1 := func(from A) (to B, err error) { return to, nil }
+		cnv0 := func(src A) (dst B, err error) { return dst, nil }
+		cnv1 := func(src A) (dst B, err error) { return dst, nil }
 		Register(cnv0)
 
 		// --- When ---
@@ -40,8 +40,8 @@ func Test_Register(t *testing.T) {
 
 		// --- Then ---
 		assert.Same(t, cnv0, have)
-		from, to := reflect.TypeFor[A](), reflect.TypeFor[B]()
-		assert.Same(t, cnv1, registry.m[from][to].cnv)
+		src, dst := reflect.TypeFor[A](), reflect.TypeFor[B]()
+		assert.Same(t, cnv1, registry.m[src][dst].cnv)
 	})
 }
 
@@ -85,9 +85,42 @@ func Test_ToAnyAny(t *testing.T) {
 		// --- Then ---
 		have, err := cnv(42)
 		assert.ErrorIs(t, ErrInvType, err)
-		assert.ErrorEqual(t, "invalid type: expected float64, got int", err)
+		assert.ErrorEqual(t, "invalid type: expected float64 got int", err)
 		assert.Equal(t, 0, have)
 	})
+}
+
+func Test_NewOptions(t *testing.T) {
+	t.Run("without options", func(t *testing.T) {
+		// --- When ---
+		have := NewOptions()
+
+		// --- Then ---
+		assert.Same(t, registry, have.reg)
+	})
+
+	t.Run("with options", func(t *testing.T) {
+		// --- Given ---
+		reg := NewRegistry()
+
+		// --- When ---
+		have := NewOptions(WithRegistry(reg))
+
+		// --- Then ---
+		assert.Same(t, reg, have.reg)
+	})
+}
+
+func Test_WithRegistry(t *testing.T) {
+	// --- Given ---
+	ops := &Options{}
+	reg := NewRegistry()
+
+	// --- When ---
+	WithRegistry(reg)(ops)
+
+	// --- Then ---
+	assert.Same(t, reg, ops.reg)
 }
 
 func Test_init(t *testing.T) {
@@ -96,40 +129,54 @@ func Test_init(t *testing.T) {
 		types := SupportedTypes()
 
 		// --- When ---
-		for _, from := range types {
-			for _, to := range types {
-				assert.NotNil(t, registry.lookup(from, to), "%s -> %s", from, to)
+		for _, src := range types {
+			for _, dst := range types {
+				assert.NotNil(t, registry.lookup(src, dst), "%s -> %s", src, dst)
 			}
 		}
 	})
 
-	t.Run("StringToString", func(t *testing.T) {
+	t.Run("BoolToBool", func(t *testing.T) {
 		// --- Given ---
-		from := reflect.TypeFor[string]()
-		to := reflect.TypeFor[string]()
+		src := reflect.TypeFor[bool]()
+		dst := reflect.TypeFor[bool]()
 
 		// --- When ---
-		have := registry.lookup(from, to)
+		have := registry.lookup(src, dst)
 
 		// --- Then ---
-		assert.Equal(t, from, have.from)
-		assert.Equal(t, to, have.to)
+		assert.Equal(t, src, have.src)
+		assert.Equal(t, dst, have.dst)
+		assert.Same(t, BoolToBool, have.cnv)
+	})
+
+	t.Run("StringToString", func(t *testing.T) {
+		// --- Given ---
+		src := reflect.TypeFor[string]()
+		dst := reflect.TypeFor[string]()
+
+		// --- When ---
+		have := registry.lookup(src, dst)
+
+		// --- Then ---
+		assert.Equal(t, src, have.src)
+		assert.Equal(t, dst, have.dst)
 		assert.Same(t, StringToString, have.cnv)
 	})
 
 	t.Run("StringToTime", func(t *testing.T) {
 		// --- Given ---
-		from := reflect.TypeFor[string]()
-		to := reflect.TypeFor[time.Time]()
+		src := reflect.TypeFor[string]()
+		dst := reflect.TypeFor[time.Time]()
 
 		// --- When ---
-		have := registry.lookup(from, to)
+		have := registry.lookup(src, dst)
 
 		// --- Then ---
-		assert.Equal(t, from, have.from)
-		assert.Equal(t, to, have.to)
+		assert.Equal(t, src, have.src)
+		assert.Equal(t, dst, have.dst)
 
-		cnv := have.cnv.(FromTo[string, time.Time])
+		cnv := have.cnv.(SrcToDst[string, time.Time])
 		hTim, err := cnv("2000-01-02T03:04:05Z")
 		assert.NoError(t, err)
 		wTim := time.Date(2000, time.January, 2, 3, 4, 5, 0, time.UTC)
@@ -138,15 +185,15 @@ func Test_init(t *testing.T) {
 
 	t.Run("StringToDuration", func(t *testing.T) {
 		// --- Given ---
-		from := reflect.TypeFor[string]()
-		to := reflect.TypeFor[time.Duration]()
+		src := reflect.TypeFor[string]()
+		dst := reflect.TypeFor[time.Duration]()
 
 		// --- When ---
-		have := registry.lookup(from, to)
+		have := registry.lookup(src, dst)
 
 		// --- Then ---
-		assert.Equal(t, from, have.from)
-		assert.Equal(t, to, have.to)
+		assert.Equal(t, src, have.src)
+		assert.Equal(t, dst, have.dst)
 		assert.Same(t, StringToDuration, have.cnv)
 	})
 }

@@ -1,0 +1,15 @@
+Represents a file content generated for conversion from uint64 to int32.
+---
+package pkg
+
+import (
+	"math"
+)
+
+// Uint64ToInt32 safely converts uint64 value to int32.
+func Uint64ToInt32(src uint64) (dst int32, err error) {
+	if src > math.MaxInt32 {
+		return 0, NewError(ErrInvRange, "uint64", "int32")
+	}
+	return int32(src), nil
+}

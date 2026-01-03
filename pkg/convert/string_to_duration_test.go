@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
+// SPDX-FileCopyrightText: (c) 2026 Rafal Zajac <rzajac@gmail.com>
 // SPDX-License-Identifier: MIT
 
 package convert
@@ -14,10 +14,10 @@ func Test_StringToDuration_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		value string
-		want  time.Duration
-		err   error
-		msg   string
+		src string
+		dst time.Duration
+		err error
+		msg string
 	}{
 		{
 			"success",
@@ -31,26 +31,26 @@ func Test_StringToDuration_tabular(t *testing.T) {
 			"",
 			0,
 			ErrInvValue,
-			"cannot convert (parse) an empty string to time.Duration: invalid value",
+			"invalid value: from string to time.Duration",
 		},
 		{
 			"error - not matching format",
 			"abc",
 			0,
 			ErrInvValue,
-			`cannot convert (parse) "abc" as time.Duration: invalid value`,
+			"invalid value: from string to time.Duration",
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := StringToDuration(tc.value)
+			have, err := StringToDuration(tc.src)
 
 			// --- Then ---
 			if tc.err == nil {
 				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
+				assert.Equal(t, tc.dst, have)
 				return
 			}
 

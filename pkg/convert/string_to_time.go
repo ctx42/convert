@@ -1,11 +1,9 @@
-// SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
+// SPDX-FileCopyrightText: (c) 2026 Rafal Zajac <rzajac@gmail.com>
 // SPDX-License-Identifier: MIT
 
 package convert
 
 import (
-	"errors"
-	"fmt"
 	"time"
 )
 
@@ -14,21 +12,14 @@ import (
 // [time.Parse] rules. If parsing fails, the returned function yields a zero
 // [time.Time] and an error describing the issue.
 func StringToTime(layout string) func(value string) (time.Time, error) {
-	return func(value string) (time.Time, error) {
-		if value == "" {
-			format := "cannot convert (parse) an empty string to time.Time: %w"
-			return time.Time{}, fmt.Errorf(format, ErrInvValue)
+	return func(src string) (time.Time, error) {
+		if src == "" {
+			return time.Time{}, NewError(ErrInvValue, "string", "time.Time")
 		}
-		t, err := time.Parse(layout, value)
+		dst, err := time.Parse(layout, src)
 		if err != nil {
-			var pe *time.ParseError
-			if errors.As(err, &pe) {
-				msg := "parsing %q string as %q time layout: %w"
-				err = fmt.Errorf(msg, value, pe.Layout, ErrInvValue)
-				return time.Time{}, err
-			}
-			return time.Time{}, fmt.Errorf("%w: %w", ErrInvValue, err)
+			return time.Time{}, NewError(ErrInvValue, "string", "time.Time")
 		}
-		return t, nil
+		return dst, nil
 	}
 }

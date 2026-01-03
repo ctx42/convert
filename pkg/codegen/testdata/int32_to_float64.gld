@@ -1,0 +1,8 @@
+Represents a file content generated for conversion from int32 to float64.
+---
+package pkg
+
+// Int32ToFloat64 safely converts int32 value to float64.
+func Int32ToFloat64(src int32) (dst float64, err error) {
+	return float64(src), nil
+}

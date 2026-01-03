@@ -1,0 +1,11 @@
+Represents a file content generated for conversion from uint64 to float32.
+---
+package pkg
+
+// Uint64ToFloat32 safely converts uint64 value to float32.
+func Uint64ToFloat32(src uint64) (dst float32, err error) {
+	if src > Float32SafeIntMax {
+		return 0, NewError(ErrInvSafeRange, "uint64", "float32")
+	}
+	return float32(src), nil
+}

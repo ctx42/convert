@@ -1,0 +1,55 @@
+Represents a file content generated for testing conversion function
+from any type to float32.
+---
+package pkg
+
+import (
+	"github.com/ctx42/testing/pkg/assert"
+	"net/http"
+	"testing"
+)
+
+func Test_AnyToFloat32_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value any
+		want  float32
+		err   error
+		msg   string
+	}{
+		{"success from integer", 42, 42.0, nil, ""},
+		{
+			"error - undefined conversion",
+			http.Cookie{},
+			0,
+			ErrUnkConv,
+			"conversion undefined: from http.Cookie to float32",
+		},
+		{
+			"error - safe overflow",
+			Float32SafeIntMax + 1,
+			0,
+			ErrInvSafeRange,
+			"value out of safe range: from int to float32",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := AnyToFloat32(tc.value)
+
+			// --- Then ---
+			if tc.err == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.want, have)
+				return
+			}
+
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, float32(0), have)
+		})
+	}
+}

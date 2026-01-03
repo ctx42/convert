@@ -1,0 +1,49 @@
+Represents a file content generated for testing conversion function
+from uint64 to uint32.
+---
+package pkg
+
+import (
+	"github.com/ctx42/testing/pkg/assert"
+	"math"
+	"testing"
+)
+
+func Test_Uint64ToUint32_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value uint64
+		want  uint32
+		err   error
+		msg   string
+	}{
+		{
+			"error - overflow",
+			math.MaxUint32 + 1,
+			0,
+			ErrInvRange,
+			"value out of range: from uint64 to uint32",
+		},
+		{"success", 42, 42, nil, ""},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Uint64ToUint32(tc.value)
+
+			// --- Then ---
+			if tc.err == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.want, have)
+				assert.Equal(t, tc.value, uint64(have))
+				return
+			}
+
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, uint32(0), have)
+		})
+	}
+}

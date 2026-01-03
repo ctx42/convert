@@ -10,13 +10,11 @@
   * [AnyToXXX Converters.](#anytoxxx-converters)
   * [Register Custom Converters](#register-custom-converters)
   * [Customize Converters](#customize-converters)
-  * [32bit vs. 64bit Systems](#32bit-vs-64bit-systems)
 <!-- TOC -->
 
-**convert** is a lightweight Go library for safe type conversions, preventing
-truncation, overflow, or semantic loss when converting between types. 
-
-It has support for 32-bit and 64-bit systems when converting numeric types.   
+**convert** is a lightweight Go library that performs safe type conversions 
+while preventing truncation, overflow, or unintended semantic changes between 
+values of different types.
 
 ## Installation
 
@@ -71,6 +69,7 @@ types:
 
 As well as converters implemented only between specific type pairs:
 
+- `convert.BoolToBool`
 - `convert.StringToDuration`
 - `convert.StringToString`
 - `convert.StringToTime` - string must be in `time.RFC3339Nano` format.
@@ -79,13 +78,12 @@ All of them pairs are automatically registered in the package-level registry.
 
 ## Converter Registry
 
-To get a converter function for a pair of types at runtinme use `Lookup`
+To get a converter function for a pair of types at runtime use `Lookup`
 function.
-
 ```go
 cnv := convert.Lookup[int, uint8]()
 
-// Chack cnv is not nil.
+// Check cnv is not nil.
 
 have, err := cnv(42)
 
@@ -101,19 +99,19 @@ package-level registry.
 
 ## Converter Types
 
-All the converter functions provided by the package match generic `FromTo` type. 
+All the converter functions provided by the package match generic `SrcTo` type. 
 
 ```go
-// FromTo represents a converter function that attempts lossless conversion of
+// SrcDst represents a converter function that attempts lossless conversion of
 // a value from the type "From" to the "To" type. On success, it returns the
 // converted value and a nil error. On failure (e.g., truncation, underflow,
 // overflow, or semantic loss), it returns the zero value of "To" along with a
 // non-nil error describing the issue.
-type FromTo[From, To any] func(from From) (to To, err error)
+type SrcDst[Src, Dst any] func(Src) (Dst, error)
 
-// AnyToAny is a non-generic version of [FromTo]. The behavior is exactly the
-// same in terms of error handling.
-type AnyToAny func(form any) (to any, err error)
+// AnyToAny is a non-generic version of [SrcDst]. The behavior is exactly the
+// same in terms of conversion and error handling.
+type AnyToAny func(any) (any, error)
 ```
 
 Additionally, package defines non-generic `AnyToAny` type. Converter functions
@@ -160,8 +158,8 @@ type A struct{ val int8 }
 type B struct{ val int }
 
 // Custom converter function matching [convert.Converter] signature.
-my := func(from A) (to B, err error) {
-    return B{val: int(from.val)}, nil
+my := func(src A) (dst B, err error) {
+    return B{val: int(src.val)}, nil
 }
 
 // Register a converter function between types A and B.
@@ -185,8 +183,8 @@ fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
 ## Customize Converters
 
 Some converters, like `convert.StringToTime`, are added to package-level
-registry with sane defaults but you can customize them by overwriting the
-defeult configuration.
+registry with sane defaults, but you can customize them by overwriting the
+default configuration.
 
 ```go
 // Register a converter function between types A and B.
@@ -206,8 +204,3 @@ fmt.Printf("output: %s; error: %v", have, err)
 // output: 0000-01-01 04:20:00 +0000 UTC; error: <nil>
 ```
 
-## 32bit vs. 64bit Systems
-
-In cases where its necessary module implements separate boundary checks for
-32-bit and 64-bit systems. See files in [convert](pkg/convert) directory with
-`_32bit` and `_64bit` strings in their filenames.

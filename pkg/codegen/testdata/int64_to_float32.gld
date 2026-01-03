@@ -1,0 +1,14 @@
+Represents a file content generated for conversion from int64 to float32.
+---
+package pkg
+
+// Int64ToFloat32 safely converts int64 value to float32.
+func Int64ToFloat32(src int64) (dst float32, err error) {
+	if src < Float32SafeIntMin {
+		return 0, NewError(ErrInvSafeRange, "int64", "float32")
+	}
+	if src > Float32SafeIntMax {
+		return 0, NewError(ErrInvSafeRange, "int64", "float32")
+	}
+	return float32(src), nil
+}

@@ -1,0 +1,28 @@
+Represents a file content generated for conversion from float64 to int32.
+---
+package pkg
+
+import (
+	"math"
+)
+
+// Float64ToInt32 safely converts float64 value to int32.
+func Float64ToInt32(src float64) (dst int32, err error) {
+	f64 := src
+	if math.IsNaN(f64) {
+		return 0, NewError(ErrInvValue, "float64", "int32")
+	}
+	if math.IsInf(f64, 0) {
+		return 0, NewError(ErrInvValue, "float64", "int32")
+	}
+	if f64 != math.Trunc(f64) {
+		return 0, NewError(ErrFraction, "float64", "int32")
+	}
+	if src < math.MinInt32 {
+		return 0, NewError(ErrInvRange, "float64", "int32")
+	}
+	if src > math.MaxInt32 {
+		return 0, NewError(ErrInvRange, "float64", "int32")
+	}
+	return int32(src), nil
+}

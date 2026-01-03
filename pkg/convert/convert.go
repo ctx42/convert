@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
+// SPDX-FileCopyrightText: (c) 2026 Rafal Zajac <rzajac@gmail.com>
 // SPDX-License-Identifier: MIT
 
 // Package convert provides utilities for lossless type conversions.
@@ -6,7 +6,6 @@ package convert
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"time"
 )
@@ -18,27 +17,27 @@ var registry = &Registry{}
 // If a converter for the same source-destination type pair already exists,
 // it is replaced, and the previous converter is returned; otherwise nil is
 // returned.
-func Register[From, To any](cnv FromTo[From, To]) FromTo[From, To] {
+func Register[Src, Dst any](cnv SrcToDst[Src, Dst]) SrcToDst[Src, Dst] {
 	return RegisterConverter(registry, cnv)
 }
 
 // Lookup returns the converter for the given source-destination type pair from
 // the package-level [Registry]. Returns nil if no converter was registered for
 // the given source-destination type pair.
-func Lookup[From, To any]() FromTo[From, To] {
-	return LookupConverter[From, To](registry)
+func Lookup[Src, Dst any]() SrcToDst[Src, Dst] {
+	return LookupConverter[Src, Dst](registry)
 }
 
-// FromTo represents a converter function that attempts lossless conversion of
-// a value from the type "From" to the "To" type. On success, it returns the
+// SrcToDst represents a converter function that attempts lossless conversion
+// of a value from the type "From" to the "To" type. On success, it returns the
 // converted value and a nil error. On failure (e.g., truncation, underflow,
 // overflow, or semantic loss), it returns the zero value of "To" along with a
 // non-nil error describing the issue.
-type FromTo[From, To any] func(from From) (to To, err error)
+type SrcToDst[Src, Dst any] func(Src) (Dst, error)
 
-// AnyToAny is a non-generic version of [FromTo]. The behavior is exactly the
-// same in terms of error handling.
-type AnyToAny func(form any) (to any, err error)
+// AnyToAny is a non-generic version of [SrcToDst]. The behavior is exactly the
+// same in terms of conversion and error handling.
+type AnyToAny func(any) (any, error)
 
 // Sentinel errors.
 var (
@@ -58,6 +57,10 @@ var (
 	// ErrInvValue used when a value is not valid in a given conversion context.
 	ErrInvValue = errors.New("invalid value")
 
+	// ErrFraction used when a value must not be a floating-point number with a
+	// fraction in a given conversion context.
+	ErrFraction = errors.New("must be a whole number")
+
 	// ErrInvFormat used when a value's format is not valid in a given
 	// conversion context.
 	ErrInvFormat = errors.New("invalid format")
@@ -69,18 +72,42 @@ var (
 	ErrUnsupported = errors.New("not supported cast")
 )
 
-// ToAnyAny returns [AnyToAny] based on [FromTo].
-func ToAnyAny[From, To any](conv FromTo[From, To]) AnyToAny {
+// ToAnyAny returns [AnyToAny] based on [SrcToDst].
+func ToAnyAny[Src, Dst any](conv SrcToDst[Src, Dst]) AnyToAny {
 	return func(value any) (any, error) {
 		var ok bool
-		var from From
-		if from, ok = value.(From); !ok {
-			format := "%w: expected %T, got %T"
-			var to To
-			return to, fmt.Errorf(format, ErrInvType, from, value)
+		var src Src
+		if src, ok = value.(Src); !ok {
+			var dst Dst
+			return dst, NewError(ErrInvType, src, value).
+				Format("%v: expected %T got %T")
 		}
-		return conv(from)
+		return conv(src)
 	}
+}
+
+// Option is a signature for a conversion option function.
+type Option func(*Options)
+
+// Options represent conversion function options.
+type Options struct {
+	reg *Registry
+}
+
+// NewOptions constructs an instance of [Options].
+//
+// By default, the package-level registry is used.
+func NewOptions(ops ...Option) Options {
+	opts := Options{reg: registry}
+	for _, op := range ops {
+		op(&opts)
+	}
+	return opts
+}
+
+// WithRegistry returns an [Option] for setting the registry for conversions.
+func WithRegistry(reg *Registry) Option {
+	return func(ops *Options) { ops.reg = reg }
 }
 
 // SupportedTypes returns a slice of [reflect.Type] instances containing all
@@ -101,45 +128,53 @@ func SupportedTypes() []reflect.Type {
 		reflect.TypeOf(float32(0)),
 		reflect.TypeOf(float64(0)),
 		reflect.TypeOf(uintptr(0)),
-		reflect.TypeOf(time.Duration(0)),
-
-		// TODO(rz):
-		// reflect.TypeOf("string"),
-		// reflect.TypeOf(time.Time{}),
-		// reflect.TypeOf(false),
 	}
 }
 
-// Safe integer boundaries for exact round-trip float32 to int32 conversions.
-// The float32 can exactly represent all integers in the range [-2^24+1,2^24-1].
-// Outside this range, some integers cannot be represented precisely, and
-// conversion to / from integers will lose information or round incorrectly.
+// Safe integer boundaries for the exact round-trip of float32 to integer
+// conversions. The float32 can exactly represent all integers in the range
+// [-2^24+1,2^24-1]. Outside this range, some integers cannot be represented
+// precisely, and conversion to / from integers will lose information or round
+// incorrectly.
 const (
-	// Float32SafeIntMin represents the smallest int32 exactly representable by
-	// the float32 type.
-	Float32SafeIntMin = -(1 << 24) + 1
+	// Float32SafeBits number of bits in a safe range [-2^24+1,2^24-1].
+	Float32SafeBits = 24
 
-	// Float32SafeIntMax represents the biggest int32 exactly representable by
-	// the float32 type.
-	Float32SafeIntMax = 1<<24 - 1
+	// Float32SafeIntMin represents the smallest integer exactly representable
+	// by the float32 type.
+	Float32SafeIntMin = -(1 << Float32SafeBits) + 1
+
+	// Float32SafeIntMax represents the biggest integer exactly representable
+	// by the float32 type.
+	Float32SafeIntMax = 1<<Float32SafeBits - 1
 )
 
-// Safe integer boundaries for round-trip float64 to int64 conversions. The
-// float64 can exactly represent all integers in the range [-2^53+1,2^53-1].
-// Outside this range, some integers cannot be represented precisely, and
-// conversion to / from integers will lose information or round incorrectly.
+// Safe integer boundaries for the exact round-trip of float64 to integer
+// conversions. The float64 can exactly represent all integers in the range
+// [-2^53+1,2^53-1]. Outside this range, some integers cannot be represented
+// precisely, and conversion to / from integers will lose information or round
+// incorrectly.
 const (
+	// Float64SafeBits number of bits in a safe range [-2^53+1,2^53-1].
+	Float64SafeBits = 53
+
 	// Float64SafeIntMin represents the smallest int exactly representable by
 	// the float64 type.
-	Float64SafeIntMin = -(1 << 53) + 1
+	Float64SafeIntMin = -(1 << Float64SafeBits) + 1
 
 	// Float64SafeIntMax represents the biggest int exactly representable by
 	// the float64 type.
-	Float64SafeIntMax = 1<<53 - 1
+	Float64SafeIntMax = 1<<Float64SafeBits - 1
 )
 
 func init() {
+	// Converters implemented by hand.
 	Register(BoolToBool)
+	Register(StringToDuration)
+	Register(StringToString)
+	Register(StringToTime(time.RFC3339Nano))
+
+	// Generated numeric converters.
 	Register(DurationToByte)
 	Register(DurationToDuration)
 	Register(DurationToFloat32)
@@ -282,9 +317,6 @@ func init() {
 	Register(IntToUint8)
 	Register(IntToUint8)
 	Register(IntToUintptr)
-	Register(StringToDuration)
-	Register(StringToString)
-	Register(StringToTime(time.RFC3339Nano))
 	Register(Uint16ToDuration)
 	Register(Uint16ToFloat32)
 	Register(Uint16ToFloat64)

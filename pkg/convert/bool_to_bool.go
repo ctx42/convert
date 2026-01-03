@@ -1,7 +1,7 @@
-// SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
+// SPDX-FileCopyrightText: (c) 2026 Rafal Zajac <rzajac@gmail.com>
 // SPDX-License-Identifier: MIT
 
 package convert
 
 // BoolToBool is a nop function converting a given boolean value to boolean.
-func BoolToBool(value bool) (bool, error) { return value, nil }
+func BoolToBool(src bool) (bool, error) { return src, nil }

@@ -1,0 +1,11 @@
+Represents a file content generated for conversion from int16 to uint32.
+---
+package pkg
+
+// Int16ToUint32 safely converts int16 value to uint32.
+func Int16ToUint32(src int16) (dst uint32, err error) {
+	if src < 0 {
+		return 0, NewError(ErrInvRange, "int16", "uint32")
+	}
+	return uint32(src), nil
+}

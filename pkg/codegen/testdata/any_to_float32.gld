@@ -1,0 +1,27 @@
+Represents a file content generated for conversion from any type to float32.
+---
+package pkg
+
+import (
+	"reflect"
+)
+
+// typFloat32 is reflected float32.
+var typFloat32 = reflect.TypeFor[float32]()
+
+// AnyToFloat32 converts the given value to float32
+// using the package-level registry.
+func AnyToFloat32(value any, opts ...Option) (float32, error) {
+	ops := NewOptions(opts...)
+	src := reflect.TypeOf(value)
+	wrp := ops.reg.lookup(src, typFloat32)
+	if wrp == nil {
+		format := "%v: from %T to %v"
+		return 0, NewError(ErrUnkConv, value, "float32").Format(format)
+	}
+	ret, err := wrp.cst(value)
+	if err != nil {
+		return 0, err
+	}
+	return ret.(float32), nil // nolint: forcetypeassert
+}

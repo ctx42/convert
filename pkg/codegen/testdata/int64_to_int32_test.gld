@@ -1,0 +1,56 @@
+Represents a file content generated for testing conversion function
+from int64 to int32.
+---
+package pkg
+
+import (
+	"github.com/ctx42/testing/pkg/assert"
+	"math"
+	"testing"
+)
+
+func Test_Int64ToInt32_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value int64
+		want  int32
+		err   error
+		msg   string
+	}{
+		{
+			"error - underflow",
+			math.MinInt32 - 1,
+			0,
+			ErrInvRange,
+			"value out of range: from int64 to int32",
+		},
+		{
+			"error - overflow",
+			math.MaxInt32 + 1,
+			0,
+			ErrInvRange,
+			"value out of range: from int64 to int32",
+		},
+		{"success", 42, 42, nil, ""},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Int64ToInt32(tc.value)
+
+			// --- Then ---
+			if tc.err == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.want, have)
+				assert.Equal(t, tc.value, int64(have))
+				return
+			}
+
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, int32(0), have)
+		})
+	}
+}

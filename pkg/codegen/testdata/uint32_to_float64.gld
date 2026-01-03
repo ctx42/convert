@@ -1,0 +1,8 @@
+Represents a file content generated for conversion from uint32 to float64.
+---
+package pkg
+
+// Uint32ToFloat64 safely converts uint32 value to float64.
+func Uint32ToFloat64(src uint32) (dst float64, err error) {
+	return float64(src), nil
+}

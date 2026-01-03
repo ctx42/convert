@@ -1,0 +1,28 @@
+Represents a file content generated for conversion from float32 to int16.
+---
+package pkg
+
+import (
+	"math"
+)
+
+// Float32ToInt16 safely converts float32 value to int16.
+func Float32ToInt16(src float32) (dst int16, err error) {
+	f64 := float64(src)
+	if math.IsNaN(f64) {
+		return 0, NewError(ErrInvValue, "float32", "int16")
+	}
+	if math.IsInf(f64, 0) {
+		return 0, NewError(ErrInvValue, "float32", "int16")
+	}
+	if f64 != math.Trunc(f64) {
+		return 0, NewError(ErrFraction, "float32", "int16")
+	}
+	if src < math.MinInt16 {
+		return 0, NewError(ErrInvRange, "float32", "int16")
+	}
+	if src > math.MaxInt16 {
+		return 0, NewError(ErrInvRange, "float32", "int16")
+	}
+	return int16(src), nil
+}

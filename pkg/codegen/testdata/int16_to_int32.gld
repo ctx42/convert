@@ -1,0 +1,8 @@
+Represents a file content generated for conversion from int16 to int32.
+---
+package pkg
+
+// Int16ToInt32 safely converts int16 value to int32.
+func Int16ToInt32(src int16) (dst int32, err error) {
+	return int32(src), nil
+}

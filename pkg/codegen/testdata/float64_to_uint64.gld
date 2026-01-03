@@ -1,0 +1,28 @@
+Represents a file content generated for conversion from float64 to uint64.
+---
+package pkg
+
+import (
+	"math"
+)
+
+// Float64ToUint64 safely converts float64 value to uint64.
+func Float64ToUint64(src float64) (dst uint64, err error) {
+	f64 := src
+	if math.IsNaN(f64) {
+		return 0, NewError(ErrInvValue, "float64", "uint64")
+	}
+	if math.IsInf(f64, 0) {
+		return 0, NewError(ErrInvValue, "float64", "uint64")
+	}
+	if f64 != math.Trunc(f64) {
+		return 0, NewError(ErrFraction, "float64", "uint64")
+	}
+	if src < 0 {
+		return 0, NewError(ErrInvRange, "float64", "uint64")
+	}
+	if f64 > Float64SafeIntMax {
+		return 0, NewError(ErrInvSafeRange, "float64", "uint64")
+	}
+	return uint64(src), nil
+}
