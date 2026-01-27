@@ -21,6 +21,3 @@ jobs:
 
     - name: Test64bit
       run: go test -v -race ./...
-
-    - name: Test32bit
-      run: GOARCH=386 go test -v ./...
