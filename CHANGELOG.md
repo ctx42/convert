@@ -1,3 +1,6 @@
+## v0.7.1 (Tue, 27 Jan 2026 16:07:55 UTC)
+- Remove test run for 32bit systems.
+
 ## v0.7.0 (Tue, 27 Jan 2026 16:05:18 UTC)
 - Add `time.Duration` converters and improve names.
 - Rearrange code.
