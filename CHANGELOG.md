@@ -1,3 +1,11 @@
+## v0.7.0 (Tue, 27 Jan 2026 16:05:18 UTC)
+- Add `time.Duration` converters and improve names.
+- Rearrange code.
+- Implement `AnyToXXX` conversion functions:.
+- Implement missing conversion functions for time.Duration.
+- Update README.md.
+- Implement generators for numeric conversion functions.
+
 ## v0.6.0 (Sat, 20 Dec 2025 21:47:00 UTC)
 - Better code organization and naming.
 
