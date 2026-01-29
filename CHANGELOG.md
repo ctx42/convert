@@ -1,3 +1,7 @@
+## v0.8.0 (Thu, 29 Jan 2026 10:23:12 UTC)
+- style: Rearrange code.
+- feat!: Rename error variables for improved clarity.
+
 ## v0.7.1 (Tue, 27 Jan 2026 16:07:55 UTC)
 - Remove test run for 32bit systems.
 
