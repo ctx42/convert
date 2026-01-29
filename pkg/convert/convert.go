@@ -48,8 +48,8 @@ var (
 	// lead to precision loss.
 	ErrInvSafeRange = errors.New("value out of safe range")
 
-	// ErrUnkType used when conversion for a type is not defined.
-	ErrUnkType = errors.New("unknown type")
+	// ErrUnsType used when conversion for a type is not defined.
+	ErrUnsType = errors.New("unsupported type")
 
 	// ErrInvType used when a type is not valid in a given conversion context.
 	ErrInvType = errors.New("invalid type")
@@ -68,8 +68,8 @@ var (
 	// ErrUnkConv used when conversion is undefined for given types.
 	ErrUnkConv = errors.New("conversion undefined")
 
-	// ErrUnsupported represents explicitly not supported conversion.
-	ErrUnsupported = errors.New("not supported cast")
+	// ErrUns represents explicitly not supported conversion.
+	ErrUns = errors.New("unsupported conversion")
 )
 
 // ToAnyAny returns [AnyToAny] based on [SrcToDst].
