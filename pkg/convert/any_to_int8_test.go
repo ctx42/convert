@@ -6,8 +6,8 @@
 package convert
 
 import (
+	"github.com/ctx42/convert/internal/test"
 	"github.com/ctx42/testing/pkg/assert"
-	"net/http"
 	"testing"
 )
 
@@ -23,10 +23,10 @@ func Test_AnyToInt8_tabular(t *testing.T) {
 		{"success from float64", 42.0, 42, nil, ""},
 		{
 			"error - undefined conversion",
-			http.Cookie{},
+			test.Type{},
 			0,
 			ErrUnkConv,
-			"conversion undefined: from http.Cookie to int8",
+			"conversion undefined: from test.Type to int8",
 		},
 		{
 			"error - fraction",

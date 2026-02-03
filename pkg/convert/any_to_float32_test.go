@@ -6,8 +6,8 @@
 package convert
 
 import (
+	"github.com/ctx42/convert/internal/test"
 	"github.com/ctx42/testing/pkg/assert"
-	"net/http"
 	"testing"
 )
 
@@ -23,10 +23,10 @@ func Test_AnyToFloat32_tabular(t *testing.T) {
 		{"success from integer", 42, 42.0, nil, ""},
 		{
 			"error - undefined conversion",
-			http.Cookie{},
+			test.Type{},
 			0,
 			ErrUnkConv,
-			"conversion undefined: from http.Cookie to float32",
+			"conversion undefined: from test.Type to float32",
 		},
 		{
 			"error - safe overflow",

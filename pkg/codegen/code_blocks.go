@@ -330,14 +330,14 @@ var cbTstAnyToDstIntToFloat = MustCodeBlock("cbTstAnyToDstIntToFloat", `
 // cbTstErrUndefinedConv is an error test case when an undefined conversion is
 // attempted.
 var cbTstErrUndefinedConv = MustCodeBlock("cbTstErrUndefinedConv", `
-import net/http
+import github.com/ctx42/convert/internal/test
 
 {
 	"error - undefined conversion",
-	http.Cookie{},
+	test.Type{},
 	0,
 	ErrUnkConv,
-	"conversion undefined: from http.Cookie to {{.dst.Code}}",
+	"conversion undefined: from test.Type to {{.dst.Code}}",
 },
 `)
 
