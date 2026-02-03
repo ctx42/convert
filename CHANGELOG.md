@@ -1,3 +1,6 @@
+## v0.8.1 (Tue, 03 Feb 2026 09:10:28 UTC)
+- test: Do not use `http.Cookie` in tests.
+
 ## v0.8.0 (Thu, 29 Jan 2026 10:23:12 UTC)
 - style: Rearrange code.
 - feat!: Rename error variables for improved clarity.
