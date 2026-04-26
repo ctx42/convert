@@ -1,3 +1,6 @@
+## v0.8.2 (Sun, 26 Apr 2026 13:37:20 UTC)
+- chore: update dependencies.
+
 ## v0.8.1 (Tue, 03 Feb 2026 09:10:28 UTC)
 - test: Do not use `http.Cookie` in tests.
 
