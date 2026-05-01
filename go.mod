@@ -1,5 +1,5 @@
 module github.com/ctx42/convert
 
-go 1.25
+go 1.26
 
-require github.com/ctx42/testing v0.46.0
+require github.com/ctx42/testing v0.47.0
