@@ -1,3 +1,7 @@
+## v0.9.1 (Wed, 13 May 2026 07:49:40 UTC)
+- chore: remove email from SPDX headers and bump testing to v0.48.0.
+- docs: fix typos and wrong names in README and doc comments.
+
 ## v0.9.0 (Fri, 01 May 2026 19:28:01 UTC)
 - chore: Update to Go 1.26 and update dependencies.
 
