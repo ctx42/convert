@@ -7,7 +7,7 @@
   * [Converters](#converters)
   * [Converter Registry](#converter-registry)
   * [Converter Types](#converter-types)
-  * [AnyToXXX Converters.](#anytoxxx-converters)
+  * [AnyToXXX Converters](#anytoxxx-converters)
   * [Register Custom Converters](#register-custom-converters)
   * [Customize Converters](#customize-converters)
 <!-- TOC -->
@@ -39,12 +39,12 @@ fmt.Printf("convert.IntToUint8 output: %[1]T(%[1]d) error: %v\n", ui8, err)
 
 // Unsafe conversion.
 f32, err := convert.IntToFloat32(convert.Float32SafeIntMax + 1)
-fmt.Printf("convert.IntToUint8 output: %[1]T(%[1]g) error: %v\n", f32, err)
+fmt.Printf("convert.IntToFloat32 output: %[1]T(%[1]g) error: %v\n", f32, err)
 
 // Output:
 // convert.IntToUint8 output: uint8(42) error: <nil>
-// convert.IntToUint8 output: uint8(0) error: int value out of range for uint8
-// convert.IntToUint8 output: float32(0) error: int value out of safe range for float32
+// convert.IntToUint8 output: uint8(0) error: value out of range: from int to uint8
+// convert.IntToFloat32 output: float32(0) error: value out of safe range: from int to float32
 ```
 
 Package `convert` provides more than 200 converter functions between numeric
@@ -64,7 +64,7 @@ types:
 - `float64`
 - `byte`
 - `rune`
-- `uintqptr`
+- `uintptr`
 - `time.Duration`
 
 As well as converters implemented only between specific type pairs:
@@ -99,18 +99,18 @@ package-level registry.
 
 ## Converter Types
 
-All the converter functions provided by the package match generic `SrcTo` type. 
+All the converter functions provided by the package match the `SrcToDst` type.
 
 ```go
-// SrcDst represents a converter function that attempts lossless conversion of
-// a value from the type "From" to the "To" type. On success, it returns the
-// converted value and a nil error. On failure (e.g., truncation, underflow,
-// overflow, or semantic loss), it returns the zero value of "To" along with a
-// non-nil error describing the issue.
-type SrcDst[Src, Dst any] func(Src) (Dst, error)
+// SrcToDst represents a converter function that attempts lossless conversion
+// of a value from the type "Src" to the "Dst" type. On success, it returns
+// the converted value and a nil error. On failure (e.g., truncation,
+// underflow, overflow, or semantic loss), it returns the zero value of "Dst"
+// along with a non-nil error describing the issue.
+type SrcToDst[Src, Dst any] func(Src) (Dst, error)
 
-// AnyToAny is a non-generic version of [SrcDst]. The behavior is exactly the
-// same in terms of conversion and error handling.
+// AnyToAny is a non-generic version of [SrcToDst]. The behavior is exactly
+// the same in terms of conversion and error handling.
 type AnyToAny func(any) (any, error)
 ```
 
@@ -129,7 +129,7 @@ fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
 // output: uint8(0); error: invalid type: expected uint8, got string
 ```
 
-## AnyToXXX Converters.
+## AnyToXXX Converters
 
 Module also provides a set of functions which can convert `any` type to a given
 type:
@@ -157,7 +157,7 @@ type:
 type A struct{ val int8 }
 type B struct{ val int }
 
-// Custom converter function matching [convert.Converter] signature.
+// Custom converter function matching [convert.SrcToDst] signature.
 my := func(src A) (dst B, err error) {
     return B{val: int(src.val)}, nil
 }

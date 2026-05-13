@@ -7,9 +7,8 @@ import (
 	"time"
 )
 
-// StringToDuration returns a parser function that converts a string to a
-// [time.Duration]. If parsing fails, the returned function yields a zero
-// [time.Duration] and an error describing the issue.
+// StringToDuration converts a string to a [time.Duration]. If parsing fails,
+// it returns a zero [time.Duration] and an error describing the issue.
 func StringToDuration(src string) (time.Duration, error) {
 	if src == "" {
 		return 0, NewError(ErrInvValue, "string", "time.Duration")
