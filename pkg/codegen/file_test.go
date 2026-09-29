@@ -78,6 +78,32 @@ func Test_file_renderImports(t *testing.T) {
 		assert.Equal(t, want, have)
 	})
 
+	t.Run("only empty import strings", func(t *testing.T) {
+		// --- Given ---
+		fil := newFile("pkg")
+		fil.addImport("", "")
+
+		// --- When ---
+		have := fil.renderImports()
+
+		// --- Then ---
+		assert.Empty(t, have)
+	})
+
+	t.Run("duplicates are rendered once", func(t *testing.T) {
+		// --- Given ---
+		fil := newFile("pkg")
+		fil.addImport("xyz", "abc", "xyz")
+
+		// --- When ---
+		have := fil.renderImports()
+
+		// --- Then ---
+		want := "import (\n\t\"abc\"\n\t\"xyz\"\n)\n\n"
+		assert.Equal(t, want, have)
+		assert.Equal(t, []string{"xyz", "abc", "xyz"}, fil.imps)
+	})
+
 	t.Run("imports are sorted alphabetically ", func(t *testing.T) {
 		// --- Given ---
 		fil := newFile("pkg")

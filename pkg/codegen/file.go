@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"slices"
-	"sort"
 	"strings"
 )
 
@@ -40,21 +39,22 @@ func (fil *file) addImport(imps ...string) {
 	fil.imps = append(fil.imps, imps...)
 }
 
-// writeImports returns the formatted Go imports code block.
+// renderImports returns the formatted Go imports code block with sorted,
+// de-duplicated, non-empty import paths. Returns an empty string when there
+// are no import paths to render.
 func (fil *file) renderImports() string {
-	if len(fil.imps) == 0 {
+	imps := slices.DeleteFunc(slices.Clone(fil.imps), func(imp string) bool {
+		return imp == ""
+	})
+	if len(imps) == 0 {
 		return ""
 	}
-	imps := slices.Clone(fil.imps)
-	sort.Strings(imps)
-	fil.imps = slices.Compact(imps)
+	slices.Sort(imps)
+	imps = slices.Compact(imps)
 
 	buf := &strings.Builder{}
 	buf.WriteString("import (\n")
 	for _, imp := range imps {
-		if imp == "" {
-			continue
-		}
 		buf.WriteString("\t\"")
 		buf.WriteString(imp)
 		buf.WriteString("\"\n")
