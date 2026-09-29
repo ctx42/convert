@@ -54,9 +54,34 @@ func Test_Registry_register(t *testing.T) {
 		assert.Same(t, have, wrp0)
 		assert.Same(t, wrp1, reg.m[src][dst])
 	})
+
+	t.Run("nil registry", func(t *testing.T) {
+		// --- Given ---
+		var reg *Registry
+		wrp := wrap(func(from uint) (uint8, error) { return uint8(from), nil })
+
+		// --- When ---
+		have := reg.register(wrp)
+
+		// --- Then ---
+		assert.Nil(t, have)
+	})
 }
 
 func Test_Registry_lookup(t *testing.T) {
+	t.Run("nil registry", func(t *testing.T) {
+		// --- Given ---
+		var reg *Registry
+		src := reflect.TypeFor[uint]()
+		dst := reflect.TypeFor[uint8]()
+
+		// --- When ---
+		have := reg.lookup(src, dst)
+
+		// --- Then ---
+		assert.Nil(t, have)
+	})
+
 	t.Run("empty registry", func(t *testing.T) {
 		// --- Given ---
 		src := reflect.TypeFor[uint]()
@@ -184,6 +209,21 @@ func Test_RegisterConverter(t *testing.T) {
 		from, to := reflect.TypeFor[uint](), reflect.TypeFor[uint8]()
 		assert.Same(t, cnv, reg.m[from][to].cnv)
 	})
+
+	t.Run("nil registry", func(t *testing.T) {
+		// --- Given ---
+		type regType struct{}
+		cnv := func(regType) (string, error) { return "reg", nil }
+
+		// --- When ---
+		have := RegisterConverter(nil, cnv)
+
+		// --- Then ---
+		assert.Nil(t, have)
+		src := reflect.TypeFor[regType]()
+		dst := reflect.TypeFor[string]()
+		assert.Nil(t, registry.lookup(src, dst))
+	})
 }
 
 func Test_LookupConverter(t *testing.T) {
@@ -206,6 +246,14 @@ func Test_LookupConverter(t *testing.T) {
 
 		// --- When ---
 		have := LookupConverter[uint, uint8](reg)
+
+		// --- Then ---
+		assert.Nil(t, have)
+	})
+
+	t.Run("nil registry", func(t *testing.T) {
+		// --- When ---
+		have := LookupConverter[uint, uint8](nil)
 
 		// --- Then ---
 		assert.Nil(t, have)

@@ -70,6 +70,10 @@ var (
 
 	// ErrUns represents explicitly not supported conversion.
 	ErrUns = errors.New("unsupported conversion")
+
+	// ErrNilRegistry used when a conversion is attempted with a nil
+	// [Registry], for example one set with [WithRegistry].
+	ErrNilRegistry = errors.New("nil registry")
 )
 
 // ToAnyAny returns [AnyToAny] based on [SrcToDst].
@@ -106,6 +110,7 @@ func NewOptions(ops ...Option) Options {
 }
 
 // WithRegistry returns an [Option] for setting the registry for conversions.
+// Conversions using a nil registry fail with [ErrNilRegistry].
 func WithRegistry(reg *Registry) Option {
 	return func(ops *Options) { ops.reg = reg }
 }

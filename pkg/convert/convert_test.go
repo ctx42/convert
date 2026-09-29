@@ -112,15 +112,28 @@ func Test_NewOptions(t *testing.T) {
 }
 
 func Test_WithRegistry(t *testing.T) {
-	// --- Given ---
-	ops := &Options{}
-	reg := NewRegistry()
+	t.Run("set", func(t *testing.T) {
+		// --- Given ---
+		ops := &Options{}
+		reg := NewRegistry()
 
-	// --- When ---
-	WithRegistry(reg)(ops)
+		// --- When ---
+		WithRegistry(reg)(ops)
 
-	// --- Then ---
-	assert.Same(t, reg, ops.reg)
+		// --- Then ---
+		assert.Same(t, reg, ops.reg)
+	})
+
+	t.Run("nil", func(t *testing.T) {
+		// --- Given ---
+		ops := &Options{reg: NewRegistry()}
+
+		// --- When ---
+		WithRegistry(nil)(ops)
+
+		// --- Then ---
+		assert.Nil(t, ops.reg)
+	})
 }
 
 func Test_MaxUintptr(t *testing.T) {

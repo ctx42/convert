@@ -11,6 +11,21 @@ import (
 	"testing"
 )
 
+func Test_AnyToByte(t *testing.T) {
+	t.Run("error - nil registry", func(t *testing.T) {
+		// --- Given ---
+		opt := WithRegistry(nil)
+
+		// --- When ---
+		have, err := AnyToByte(42, opt)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrNilRegistry, err)
+		assert.ErrorEqual(t, "nil registry: from int to byte", err)
+		assert.Equal(t, byte(0), have)
+	})
+}
+
 func Test_AnyToByte_tabular(t *testing.T) {
 	tt := []struct {
 		testN string

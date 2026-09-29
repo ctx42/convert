@@ -16,10 +16,13 @@ var typUint = reflect.TypeFor[uint]()
 // using the package-level registry.
 func AnyToUint(value any, opts ...Option) (uint, error) {
 	ops := NewOptions(opts...)
+	format := "%v: from %T to %v"
+	if ops.reg == nil {
+		return 0, NewError(ErrNilRegistry, value, "uint").Format(format)
+	}
 	src := reflect.TypeOf(value)
 	wrp := ops.reg.lookup(src, typUint)
 	if wrp == nil {
-		format := "%v: from %T to %v"
 		return 0, NewError(ErrUnkConv, value, "uint").Format(format)
 	}
 	ret, err := wrp.cst(value)

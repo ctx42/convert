@@ -11,6 +11,21 @@ import (
 	"testing"
 )
 
+func Test_AnyToFloat32(t *testing.T) {
+	t.Run("error - nil registry", func(t *testing.T) {
+		// --- Given ---
+		opt := WithRegistry(nil)
+
+		// --- When ---
+		have, err := AnyToFloat32(42, opt)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrNilRegistry, err)
+		assert.ErrorEqual(t, "nil registry: from int to float32", err)
+		assert.Equal(t, float32(0), have)
+	})
+}
+
 func Test_AnyToFloat32_tabular(t *testing.T) {
 	tt := []struct {
 		testN string

@@ -16,10 +16,13 @@ var typUint8 = reflect.TypeFor[uint8]()
 // using the package-level registry.
 func AnyToUint8(value any, opts ...Option) (uint8, error) {
 	ops := NewOptions(opts...)
+	format := "%v: from %T to %v"
+	if ops.reg == nil {
+		return 0, NewError(ErrNilRegistry, value, "uint8").Format(format)
+	}
 	src := reflect.TypeOf(value)
 	wrp := ops.reg.lookup(src, typUint8)
 	if wrp == nil {
-		format := "%v: from %T to %v"
 		return 0, NewError(ErrUnkConv, value, "uint8").Format(format)
 	}
 	ret, err := wrp.cst(value)

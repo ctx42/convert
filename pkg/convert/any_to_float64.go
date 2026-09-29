@@ -16,10 +16,13 @@ var typFloat64 = reflect.TypeFor[float64]()
 // using the package-level registry.
 func AnyToFloat64(value any, opts ...Option) (float64, error) {
 	ops := NewOptions(opts...)
+	format := "%v: from %T to %v"
+	if ops.reg == nil {
+		return 0, NewError(ErrNilRegistry, value, "float64").Format(format)
+	}
 	src := reflect.TypeOf(value)
 	wrp := ops.reg.lookup(src, typFloat64)
 	if wrp == nil {
-		format := "%v: from %T to %v"
 		return 0, NewError(ErrUnkConv, value, "float64").Format(format)
 	}
 	ret, err := wrp.cst(value)

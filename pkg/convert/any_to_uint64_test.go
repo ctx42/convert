@@ -11,6 +11,21 @@ import (
 	"testing"
 )
 
+func Test_AnyToUint64(t *testing.T) {
+	t.Run("error - nil registry", func(t *testing.T) {
+		// --- Given ---
+		opt := WithRegistry(nil)
+
+		// --- When ---
+		have, err := AnyToUint64(42, opt)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrNilRegistry, err)
+		assert.ErrorEqual(t, "nil registry: from int to uint64", err)
+		assert.Equal(t, uint64(0), have)
+	})
+}
+
 func Test_AnyToUint64_tabular(t *testing.T) {
 	tt := []struct {
 		testN string

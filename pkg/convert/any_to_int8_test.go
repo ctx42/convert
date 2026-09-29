@@ -11,6 +11,21 @@ import (
 	"testing"
 )
 
+func Test_AnyToInt8(t *testing.T) {
+	t.Run("error - nil registry", func(t *testing.T) {
+		// --- Given ---
+		opt := WithRegistry(nil)
+
+		// --- When ---
+		have, err := AnyToInt8(42, opt)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrNilRegistry, err)
+		assert.ErrorEqual(t, "nil registry: from int to int8", err)
+		assert.Equal(t, int8(0), have)
+	})
+}
+
 func Test_AnyToInt8_tabular(t *testing.T) {
 	tt := []struct {
 		testN string

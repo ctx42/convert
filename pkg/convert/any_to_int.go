@@ -16,10 +16,13 @@ var typInt = reflect.TypeFor[int]()
 // using the package-level registry.
 func AnyToInt(value any, opts ...Option) (int, error) {
 	ops := NewOptions(opts...)
+	format := "%v: from %T to %v"
+	if ops.reg == nil {
+		return 0, NewError(ErrNilRegistry, value, "int").Format(format)
+	}
 	src := reflect.TypeOf(value)
 	wrp := ops.reg.lookup(src, typInt)
 	if wrp == nil {
-		format := "%v: from %T to %v"
 		return 0, NewError(ErrUnkConv, value, "int").Format(format)
 	}
 	ret, err := wrp.cst(value)

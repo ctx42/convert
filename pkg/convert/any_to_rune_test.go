@@ -11,6 +11,21 @@ import (
 	"testing"
 )
 
+func Test_AnyToRune(t *testing.T) {
+	t.Run("error - nil registry", func(t *testing.T) {
+		// --- Given ---
+		opt := WithRegistry(nil)
+
+		// --- When ---
+		have, err := AnyToRune(42, opt)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrNilRegistry, err)
+		assert.ErrorEqual(t, "nil registry: from int to rune", err)
+		assert.Equal(t, rune(0), have)
+	})
+}
+
 func Test_AnyToRune_tabular(t *testing.T) {
 	tt := []struct {
 		testN string

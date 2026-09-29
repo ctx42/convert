@@ -11,6 +11,21 @@ import (
 	"testing"
 )
 
+func Test_AnyToInt16(t *testing.T) {
+	t.Run("error - nil registry", func(t *testing.T) {
+		// --- Given ---
+		opt := WithRegistry(nil)
+
+		// --- When ---
+		have, err := AnyToInt16(42, opt)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrNilRegistry, err)
+		assert.ErrorEqual(t, "nil registry: from int to int16", err)
+		assert.Equal(t, int16(0), have)
+	})
+}
+
 func Test_AnyToInt16_tabular(t *testing.T) {
 	tt := []struct {
 		testN string

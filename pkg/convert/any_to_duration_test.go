@@ -12,6 +12,21 @@ import (
 	"time"
 )
 
+func Test_AnyToDuration(t *testing.T) {
+	t.Run("error - nil registry", func(t *testing.T) {
+		// --- Given ---
+		opt := WithRegistry(nil)
+
+		// --- When ---
+		have, err := AnyToDuration(42, opt)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrNilRegistry, err)
+		assert.ErrorEqual(t, "nil registry: from int to time.Duration", err)
+		assert.Equal(t, time.Duration(0), have)
+	})
+}
+
 func Test_AnyToDuration_tabular(t *testing.T) {
 	tt := []struct {
 		testN string

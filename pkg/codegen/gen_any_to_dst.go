@@ -87,6 +87,14 @@ func (gen *GenAnyToDst) convFuncBody() error {
 // testFunc generates code for the conversion function tests.
 func (gen *GenAnyToDst) testFunc() error {
 	gen.addImport("testing", "github.com/ctx42/testing/pkg/assert")
+
+	data := map[string]any{"dst": gen.dst}
+	gen.addImport(cbTstAnyToDst.Imports()...)
+	if err := cbTstAnyToDst.Render(gen.code, 0, data); err != nil {
+		return err
+	}
+	gen.writeCode("\n")
+
 	gen.writeCode("func ")
 	gen.writeCode("Test_AnyTo%s_tabular", gen.dst.Title())
 	gen.writeCode("(t *testing.T) {\n")

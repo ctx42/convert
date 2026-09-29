@@ -31,10 +31,13 @@ var cbAnyToDstFuncBody = MustCodeBlock("cbAnyToDstFuncBody", `
 import reflect
 
 ops := NewOptions(opts...)
+format := "%v: from %T to %v"
+if ops.reg == nil {
+	return 0, NewError(ErrNilRegistry, value, "{{.dst.Code}}").Format(format)
+}
 src := reflect.TypeOf(value)
 wrp := ops.reg.lookup(src, typ{{.dst.Title}})
 if wrp == nil {
-	format := "%v: from %T to %v"
 	return 0, NewError(ErrUnkConv, value, "{{.dst.Code}}").Format(format)
 }
 ret, err := wrp.cst(value)
@@ -124,6 +127,27 @@ tt := []struct {
 	err   error
 	msg   string
 }{
+`)
+
+// -----------------------------------------------------------------------------
+
+// cbTstAnyToDst defines a test for a conversion function between any type
+// and a given type, run with a nil registry.
+var cbTstAnyToDst = MustCodeBlock("cbTstAnyToDst", `
+func Test_AnyTo{{.dst.Title}}(t *testing.T) {
+	t.Run("error - nil registry", func(t *testing.T) {
+		// --- Given ---
+		opt := WithRegistry(nil)
+
+		// --- When ---
+		have, err := AnyTo{{.dst.Title}}(42, opt)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrNilRegistry, err)
+		assert.ErrorEqual(t, "nil registry: from int to {{.dst.Code}}", err)
+		assert.Equal(t, {{.dst.Code}}(0), have)
+	})
+}
 `)
 
 // -----------------------------------------------------------------------------

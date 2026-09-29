@@ -17,10 +17,13 @@ var typDuration = reflect.TypeFor[time.Duration]()
 // using the package-level registry.
 func AnyToDuration(value any, opts ...Option) (time.Duration, error) {
 	ops := NewOptions(opts...)
+	format := "%v: from %T to %v"
+	if ops.reg == nil {
+		return 0, NewError(ErrNilRegistry, value, "time.Duration").Format(format)
+	}
 	src := reflect.TypeOf(value)
 	wrp := ops.reg.lookup(src, typDuration)
 	if wrp == nil {
-		format := "%v: from %T to %v"
 		return 0, NewError(ErrUnkConv, value, "time.Duration").Format(format)
 	}
 	ret, err := wrp.cst(value)
