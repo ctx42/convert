@@ -53,6 +53,20 @@ return ret.({{.dst.Code}}), nil // nolint: forcetypeassert
 
 // -----------------------------------------------------------------------------
 
+// cbRegisterFunc defines a function registering the given converters in the
+// package-level registry.
+var cbRegisterFunc = MustCodeBlock("cbRegisterFunc", `
+// registerNumeric registers the generated numeric converters in the
+// package-level registry.
+func registerNumeric() {
+{{- range .names}}
+	Register({{.}})
+{{- end}}
+}
+`)
+
+// -----------------------------------------------------------------------------
+
 // cbCondition evaluates a specific condition.
 var cbCondition = MustCodeBlock("cbCondition", `
 if {{.var}} {{.cond}} {{.value.Code}} {

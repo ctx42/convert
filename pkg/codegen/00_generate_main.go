@@ -53,6 +53,11 @@ func main() {
 		_, _ = fmt.Fprint(os.Stderr, err)
 		os.Exit(1)
 	}
+
+	if err = generateRegister(pkgName, pkgPath); err != nil {
+		_, _ = fmt.Fprint(os.Stderr, err)
+		os.Exit(1)
+	}
 }
 
 // generateNumericConverters writes a conversion function file and its test
@@ -147,6 +152,37 @@ func generateAnyToNumericConverters(pkgName, pkgPath string) error {
 		}
 	}
 	return nil
+}
+
+// generateRegister writes the file with the function registering the
+// converters between every pair of numericTypes, except the byte and rune
+// aliases. They are identical to uint8 and int32, so their converters would
+// only replace ones already registered for the same type pair.
+func generateRegister(pkgName, pkgPath string) error {
+	opts := []codegen.Option{
+		codegen.WithCopyright(fmt.Sprintf(copyright, time.Now().Year())),
+		codegen.WithGeneratedBy(generatedBy),
+	}
+
+	var types []codegen.Type
+	for _, typ := range numericTypes() {
+		if typ.Code() == "byte" || typ.Code() == "rune" {
+			continue
+		}
+		types = append(types, typ)
+	}
+
+	buf := &bytes.Buffer{}
+	gen := codegen.NewGenRegister(pkgName, opts...)
+	if err := gen.GenerateCode(buf, types); err != nil {
+		return err
+	}
+
+	pth := filepath.Join(pkgPath, "numeric_register.go")
+	if verbose {
+		fmt.Printf(" %s\n", pth)
+	}
+	return os.WriteFile(pth, buf.Bytes(), 0644)
 }
 
 // numericTypes returns the numeric types, including aliases, for which

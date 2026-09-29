@@ -1,0 +1,13 @@
+Represents a file content generated for registering converters between int8
+and time.Duration.
+---
+package pkg
+
+// registerNumeric registers the generated numeric converters in the
+// package-level registry.
+func registerNumeric() {
+	Register(Int8ToInt8)
+	Register(Int8ToDuration)
+	Register(DurationToInt8)
+	Register(DurationToDuration)
+}
