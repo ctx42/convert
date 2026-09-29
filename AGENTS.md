@@ -43,7 +43,7 @@ The module provides **lossless numeric type conversions** in Go and is split int
 - **`gen_src_to_dst.go`** — `GenSrcToDst` generates `XToY(src X) (Y, error)` functions and their tabular tests by iterating `Type.ConvActions`.
 - **`gen_any_to_dst.go`** — `GenAnyToDst` generates `AnyToY(value any, opts ...Option) (Y, error)` functions and their tests.
 - **`00_generate.go`** — `//go:generate go run 00_generate_main.go` trigger.
-- **`00_generate_main.go`** — `//go:build ignore` main program. Calls `GenerateNumericConverters` (all `X_to_Y` pairs) and `GenerateAnyToNumericConverters` (all `any_to_Y` files). `NumericTypes()` defines the canonical type list including aliases (`byte`, `rune`, `time.Duration`).
+- **`00_generate_main.go`** — `//go:build ignore` main program. Calls `generateNumericConverters` (all `X_to_Y` pairs) and `generateAnyToNumericConverters` (all `any_to_Y` files). `numericTypes()` defines the canonical type list including aliases (`byte`, `rune`, `time.Duration`).
 
 ### Key design invariants
 

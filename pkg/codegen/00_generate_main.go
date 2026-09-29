@@ -42,27 +42,29 @@ func main() {
 	pkgName := "convert"
 	pkgPath := filepath.Join(cwd, "../../pkg", pkgName)
 	pkgPath = filepath.Clean(pkgPath)
-	if err = GenerateNumericConverters(pkgName, pkgPath); err != nil {
+	if err = generateNumericConverters(pkgName, pkgPath); err != nil {
 		_, _ = fmt.Fprint(os.Stderr, err)
 		os.Exit(1)
 	}
 
 	pkgPath = filepath.Join(cwd, "../../pkg", pkgName)
 	pkgPath = filepath.Clean(pkgPath)
-	if err = GenerateAnyToNumericConverters(pkgName, pkgPath); err != nil {
+	if err = generateAnyToNumericConverters(pkgName, pkgPath); err != nil {
 		_, _ = fmt.Fprint(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func GenerateNumericConverters(pkgName, pkgPath string) error {
+// generateNumericConverters writes a conversion function file and its test
+// file to pkgPath for every pair of numericTypes.
+func generateNumericConverters(pkgName, pkgPath string) error {
 	opts := []codegen.Option{
 		codegen.WithCopyright(fmt.Sprintf(copyright, time.Now().Year())),
 		codegen.WithGeneratedBy(generatedBy),
 	}
 
 	gen := codegen.NewGenSrcToDst(pkgName, opts...)
-	nts := NumericTypes()
+	nts := numericTypes()
 	buf := &bytes.Buffer{}
 
 	for _, src := range nts {
@@ -102,14 +104,16 @@ func GenerateNumericConverters(pkgName, pkgPath string) error {
 	return nil
 }
 
-func GenerateAnyToNumericConverters(pkgName, pkgPath string) error {
+// generateAnyToNumericConverters writes an AnyToX function file and its test
+// file to pkgPath for every one of numericTypes.
+func generateAnyToNumericConverters(pkgName, pkgPath string) error {
 	opts := []codegen.Option{
 		codegen.WithCopyright(fmt.Sprintf(copyright, time.Now().Year())),
 		codegen.WithGeneratedBy(generatedBy),
 	}
 
 	gen := codegen.NewGenAnyToDst(pkgName, opts...)
-	nts := NumericTypes()
+	nts := numericTypes()
 	buf := &bytes.Buffer{}
 
 	for _, dst := range nts {
@@ -145,8 +149,9 @@ func GenerateAnyToNumericConverters(pkgName, pkgPath string) error {
 	return nil
 }
 
-// NumericTypes returns a list of numeric types.
-func NumericTypes() []codegen.Type {
+// numericTypes returns the numeric types, including aliases, for which
+// converters are generated.
+func numericTypes() []codegen.Type {
 	return []codegen.Type{
 		codegen.NumericType[int](),
 		codegen.NumericType[int8](),
