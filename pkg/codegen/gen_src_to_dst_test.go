@@ -27,8 +27,11 @@ func Test_NewGenSrcToDst(t *testing.T) {
 	})
 
 	t.Run("with options", func(t *testing.T) {
+		// --- Given ---
+		opt := WithCopyright("copyright")
+
 		// --- When ---
-		have := NewGenSrcToDst("pkg", WithVerbose)
+		have := NewGenSrcToDst("pkg", opt)
 
 		// --- Then ---
 		assert.Equal(t, "pkg", have.pkg)
@@ -36,7 +39,7 @@ func Test_NewGenSrcToDst(t *testing.T) {
 		assert.Cap(t, 20, have.imps)
 		assert.Equal(t, Type{}, have.src)
 		assert.Equal(t, Type{}, have.dst)
-		assert.Equal(t, Options{verbose: true}, have.ops)
+		assert.Equal(t, Options{copyright: "copyright"}, have.ops)
 	})
 }
 

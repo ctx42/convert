@@ -43,14 +43,3 @@ func Test_WithGeneratedBy(t *testing.T) {
 	// --- Then ---
 	assert.Equal(t, "abc", ops.generatedBy)
 }
-
-func Test_WithVerbose(t *testing.T) {
-	// --- Given ---
-	ops := &Options{}
-
-	// --- When ---
-	WithVerbose(ops)
-
-	// --- Then ---
-	assert.True(t, ops.verbose)
-}

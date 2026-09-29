@@ -25,15 +25,18 @@ func Test_NewGenAnyToDst(t *testing.T) {
 	})
 
 	t.Run("with options", func(t *testing.T) {
+		// --- Given ---
+		opt := WithCopyright("copyright")
+
 		// --- When ---
-		have := NewGenAnyToDst("pkg", WithVerbose)
+		have := NewGenAnyToDst("pkg", opt)
 
 		// --- Then ---
 		assert.Equal(t, "pkg", have.pkg)
 		assert.NotNil(t, have.code)
 		assert.Cap(t, 20, have.imps)
 		assert.Equal(t, Type{}, have.dst)
-		assert.Equal(t, Options{verbose: true}, have.ops)
+		assert.Equal(t, Options{copyright: "copyright"}, have.ops)
 	})
 }
 

@@ -10,7 +10,6 @@ type Option func(*Options)
 type Options struct {
 	copyright   string // Copyright header.
 	generatedBy string // Line informing code was generated.
-	verbose     bool   // Verbose mode.
 }
 
 // NewOptions returns a new instance of [Options].
@@ -31,6 +30,3 @@ func WithCopyright(copyright string) Option {
 func WithGeneratedBy(by string) Option {
 	return func(ops *Options) { ops.generatedBy = by }
 }
-
-// WithVerbose is an [Option] turning on verbose mode.
-func WithVerbose(ops *Options) { ops.verbose = true }
