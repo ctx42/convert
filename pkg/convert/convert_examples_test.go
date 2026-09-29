@@ -75,7 +75,7 @@ func ExampleRegister() {
 	type A struct{ val int8 }
 	type B struct{ val int }
 
-	// Custom converter function matching [convert.Converter] signature.
+	// Custom converter function matching [convert.SrcToDst] signature.
 	my := func(src A) (dst B, err error) {
 		return B{val: int(src.val)}, nil
 	}

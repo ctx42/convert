@@ -98,8 +98,8 @@ func MinPlatformInteger(typ Type) *Value {
 
 // MaxPlatformInteger returns a [Value] representing the maximum value of the
 // given platform-sized integer type, valid on both 32-bit and 64-bit
-// platforms. For uintptr it is the MaxUintptr constant of the convert
-// package.
+// platforms. For uintptr it is
+// [github.com/ctx42/convert/pkg/convert.MaxUintptr].
 func MaxPlatformInteger(typ Type) *Value {
 	switch {
 	case typ.Name() == "uintptr":
@@ -115,8 +115,8 @@ func MaxPlatformInteger(typ Type) *Value {
 // the given floating-point size.
 //
 // See:
-//   - [convert.Float32SafeIntMin]
-//   - [convert.Float64SafeIntMin]
+//   - [github.com/ctx42/convert/pkg/convert.Float32SafeIntMin]
+//   - [github.com/ctx42/convert/pkg/convert.Float64SafeIntMin]
 func MinSafeFloat(size int) *Value {
 	return NewValue(fmt.Sprintf("Float%dSafeIntMin", size))
 }
@@ -125,8 +125,8 @@ func MinSafeFloat(size int) *Value {
 // the given floating-point size.
 //
 // See:
-//   - [convert.Float32SafeIntmax]
-//   - [convert.Float64SafeIntmax]
+//   - [github.com/ctx42/convert/pkg/convert.Float32SafeIntMax]
+//   - [github.com/ctx42/convert/pkg/convert.Float64SafeIntMax]
 func MaxSafeFloat(size int) *Value {
 	return NewValue(fmt.Sprintf("Float%dSafeIntMax", size))
 }

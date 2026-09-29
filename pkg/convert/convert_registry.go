@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-// Registry is a registry of [FromTo] functions.
+// Registry is a registry of [SrcToDst] converter functions.
 type Registry struct {
 	m  map[reflect.Type]map[reflect.Type]*wrapper // Source to destination.
 	mx sync.RWMutex                               // Guards the above map.
@@ -19,8 +19,9 @@ type Registry struct {
 // Use [RegisterConverter] and [LookupConverter] functions to operate on it.
 func NewRegistry() *Registry { return &Registry{} }
 
-// register registers the wrapped [FromTo] function. If a wrapper for the
-// given [FromTo] already exists, it is returned and the new one replaces it.
+// register registers the wrapped [SrcToDst] function. If a wrapper for the
+// same source-destination type pair already exists, it is returned and the
+// new one replaces it.
 // Does nothing and returns nil for a nil registry.
 func (reg *Registry) register(wrp *wrapper) *wrapper {
 	if reg == nil {
@@ -60,7 +61,7 @@ func (reg *Registry) lookup(from, to reflect.Type) *wrapper {
 	return nil
 }
 
-// RegisterConverter registers the [FromTo] in the provided [Registry]. If a
+// RegisterConverter registers the [SrcToDst] in the provided [Registry]. If a
 // converter for the same source-destination type pair already exists, it is
 // replaced, and the previous converter is returned; otherwise nil is returned.
 // Registers nothing and returns nil when the registry is nil.
@@ -78,7 +79,7 @@ func RegisterConverter[Src, Dst any](reg *Registry, conv SrcToDst[Src, Dst]) Src
 	return nil
 }
 
-// LookupConverter returns the [FromTo] for the given source-destination
+// LookupConverter returns the [SrcToDst] for the given source-destination
 // type pair from the provided [Registry]. Returns nil if no converter was
 // registered for the given source-destination type pair, or the registry is
 // nil.
