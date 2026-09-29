@@ -120,19 +120,20 @@ func WithRegistry(reg *Registry) Option {
 // from this list can be converted in either direction.
 func SupportedTypes() []reflect.Type {
 	return []reflect.Type{
-		reflect.TypeOf(0), // int
-		reflect.TypeOf(int8(0)),
-		reflect.TypeOf(int16(0)),
-		reflect.TypeOf(int32(0)),
-		reflect.TypeOf(int64(0)),
-		reflect.TypeOf(uint(0)),
-		reflect.TypeOf(uint8(0)),
-		reflect.TypeOf(uint16(0)),
-		reflect.TypeOf(uint32(0)),
-		reflect.TypeOf(uint64(0)),
-		reflect.TypeOf(float32(0)),
-		reflect.TypeOf(float64(0)),
-		reflect.TypeOf(uintptr(0)),
+		reflect.TypeFor[int](),
+		reflect.TypeFor[int8](),
+		reflect.TypeFor[int16](),
+		reflect.TypeFor[int32](),
+		reflect.TypeFor[int64](),
+		reflect.TypeFor[uint](),
+		reflect.TypeFor[uint8](),
+		reflect.TypeFor[uint16](),
+		reflect.TypeFor[uint32](),
+		reflect.TypeFor[uint64](),
+		reflect.TypeFor[float32](),
+		reflect.TypeFor[float64](),
+		reflect.TypeFor[uintptr](),
+		reflect.TypeFor[time.Duration](),
 	}
 }
 
