@@ -13,12 +13,13 @@ import (
 // [time.Time] and an error describing the issue.
 func StringToTime(layout string) func(value string) (time.Time, error) {
 	return func(src string) (time.Time, error) {
+		cnvErr := NewError(ErrInvValue, "string", "time.Time")
 		if src == "" {
-			return time.Time{}, NewError(ErrInvValue, "string", "time.Time")
+			return time.Time{}, cnvErr
 		}
 		dst, err := time.Parse(layout, src)
 		if err != nil {
-			return time.Time{}, NewError(ErrInvValue, "string", "time.Time")
+			return time.Time{}, cnvErr.WithCause(err)
 		}
 		return dst, nil
 	}

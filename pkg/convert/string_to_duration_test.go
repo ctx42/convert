@@ -10,6 +10,22 @@ import (
 	"github.com/ctx42/testing/pkg/assert"
 )
 
+func Test_StringToDuration(t *testing.T) {
+	t.Run("error - parse error cause", func(t *testing.T) {
+		// --- When ---
+		have, err := StringToDuration("abc")
+
+		// --- Then ---
+		wMsg := "invalid value: from string to time.Duration"
+		assert.ErrorEqual(t, wMsg, err)
+		assert.ErrorIs(t, ErrInvValue, err)
+		var cnvErr Error
+		assert.ErrorAs(t, &cnvErr, err)
+		assert.ErrorEqual(t, "time: invalid duration \"abc\"", cnvErr.Cause)
+		assert.Equal(t, time.Duration(0), have)
+	})
+}
+
 func Test_StringToDuration_tabular(t *testing.T) {
 	tt := []struct {
 		testN string

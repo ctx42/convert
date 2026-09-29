@@ -10,6 +10,23 @@ import (
 	"github.com/ctx42/testing/pkg/assert"
 )
 
+func Test_StringToTime(t *testing.T) {
+	t.Run("error - parse error cause", func(t *testing.T) {
+		// --- Given ---
+		cnv := StringToTime(time.Kitchen)
+
+		// --- When ---
+		have, err := cnv("abc")
+
+		// --- Then ---
+		assert.ErrorEqual(t, "invalid value: from string to time.Time", err)
+		assert.ErrorIs(t, ErrInvValue, err)
+		var pErr *time.ParseError
+		assert.ErrorAs(t, &pErr, err)
+		assert.Zero(t, have)
+	})
+}
+
 func Test_StringToTime_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
