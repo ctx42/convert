@@ -11,20 +11,10 @@ import (
 
 // Float64ToFloat32 safely converts float64 value to float32.
 func Float64ToFloat32(src float64) (dst float32, err error) {
-	f64 := src
-	if math.IsNaN(f64) {
-		return 0, NewError(ErrInvValue, "float64", "float32")
+	if !math.IsInf(src, 0) && math.Abs(src) > math.MaxFloat32 {
+		return 0, NewError(ErrInvRange, "float64", "float32")
 	}
-	if math.IsInf(f64, 0) {
-		return 0, NewError(ErrInvValue, "float64", "float32")
-	}
-	if f64 != math.Trunc(f64) {
-		return 0, NewError(ErrFraction, "float64", "float32")
-	}
-	if f64 < Float32SafeIntMin {
-		return 0, NewError(ErrInvSafeRange, "float64", "float32")
-	}
-	if f64 > Float32SafeIntMax {
+	if !math.IsNaN(src) && float64(float32(src)) != src {
 		return 0, NewError(ErrInvSafeRange, "float64", "float32")
 	}
 	return float32(src), nil

@@ -63,6 +63,14 @@ const (
 	// CheckFloatSafeToIntMax verify the source float is representable as
 	// integer without loss of precision.
 	CheckFloatSafeToIntMax ActionName = "check_safe_float_int_max"
+
+	// CheckFloatRange verify the finite source float is within the range of
+	// the destination floating-point type.
+	CheckFloatRange ActionName = "check_float_range"
+
+	// CheckFloatExact verify the source float is exactly representable by the
+	// destination floating-point type.
+	CheckFloatExact ActionName = "check_float_exact"
 )
 
 // actionOrder lists action names in the order the generated code performs
@@ -74,6 +82,8 @@ var actionOrder = []ActionName{
 	CheckIsNumber,
 	CheckIsFinite,
 	CheckIsWhole,
+	CheckFloatRange,
+	CheckFloatExact,
 	CheckIsNonNegative,
 	CheckUnderflows,
 	CheckOverflows,

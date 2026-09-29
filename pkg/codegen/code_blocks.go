@@ -95,6 +95,31 @@ if math.IsNaN({{.var}}) {
 
 // -----------------------------------------------------------------------------
 
+// cbFloatRange checks that a finite floating-point value is within the
+// destination floating-point type range.
+var cbFloatRange = MustCodeBlock("cbFloatRange", `
+import math
+
+if !math.IsInf({{.var}}, 0) && math.Abs({{.var}}) > {{.value.Code}} {
+	return 0, NewError(ErrInvRange, "{{.src.Code}}", "{{.dst.Code}}")
+}
+`)
+
+// -----------------------------------------------------------------------------
+
+// cbFloatExact checks that a floating-point value is exactly representable by
+// the destination floating-point type. NaN is never equal to itself, so it is
+// excluded from the check.
+var cbFloatExact = MustCodeBlock("cbFloatExact", `
+import math
+
+if !math.IsNaN({{.var}}) && {{.src.Code}}({{.dst.Code}}({{.var}})) != {{.var}} {
+	return 0, NewError(ErrInvSafeRange, "{{.src.Code}}", "{{.dst.Code}}")
+}
+`)
+
+// -----------------------------------------------------------------------------
+
 // cbCastToFloat64 casts a variable to float64 if needed.
 var cbCastToFloat64 = MustCodeBlock("cbCastToFloat64", `
 {{if eq .src.Name "float64" -}} 
@@ -114,6 +139,66 @@ var typ{{.type.Title}} = reflect.TypeFor[{{.type.Code}}]()
 
 // -----------------------------------------------------------------------------
 // ------------------------- Converter Functions Tests -------------------------
+// -----------------------------------------------------------------------------
+
+// cbTstFloatToFloat defines a test for a conversion function between two
+// floating-point types, checking NaN and infinities are preserved.
+var cbTstFloatToFloat = MustCodeBlock("cbTstFloatToFloat", `
+import math
+
+func Test_{{.src.Title}}To{{.dst.Title}}(t *testing.T) {
+	t.Run("NaN", func(t *testing.T) {
+		// --- Given ---
+		src := {{.nan}}
+
+		// --- When ---
+		have, err := {{.src.Title}}To{{.dst.Title}}(src)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.True(t, math.IsNaN(float64(have)))
+	})
+
+	t.Run("positive infinity", func(t *testing.T) {
+		// --- Given ---
+		src := {{.pinf}}
+
+		// --- When ---
+		have, err := {{.src.Title}}To{{.dst.Title}}(src)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.True(t, math.IsInf(float64(have), 1))
+	})
+
+	t.Run("negative infinity", func(t *testing.T) {
+		// --- Given ---
+		src := {{.ninf}}
+
+		// --- When ---
+		have, err := {{.src.Title}}To{{.dst.Title}}(src)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.True(t, math.IsInf(float64(have), -1))
+	})
+}
+`)
+
+// -----------------------------------------------------------------------------
+
+// cbTstErrPrecision is an error test case when a value is not exactly
+// representable by the destination type.
+var cbTstErrPrecision = MustCodeBlock("cbTstErrPrecision", `
+{
+	"error - precision loss",
+	0.1,
+	0,
+	ErrInvSafeRange,
+	"value out of safe range: from {{.src.Code}} to {{.dst.Code}}",
+},
+`)
+
 // -----------------------------------------------------------------------------
 
 // cbTstSrcToDstTT defines tabular test cases for conversion functions between

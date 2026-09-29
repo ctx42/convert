@@ -5,18 +5,7 @@
 
 package convert
 
-import (
-	"math"
-)
-
 // Float32ToFloat64 safely converts float32 value to float64.
 func Float32ToFloat64(src float32) (dst float64, err error) {
-	f64 := float64(src)
-	if math.IsNaN(f64) {
-		return 0, NewError(ErrInvValue, "float32", "float64")
-	}
-	if math.IsInf(f64, 0) {
-		return 0, NewError(ErrInvValue, "float32", "float64")
-	}
 	return float64(src), nil
 }

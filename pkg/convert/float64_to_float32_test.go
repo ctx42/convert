@@ -11,6 +11,44 @@ import (
 	"testing"
 )
 
+func Test_Float64ToFloat32(t *testing.T) {
+	t.Run("NaN", func(t *testing.T) {
+		// --- Given ---
+		src := math.NaN()
+
+		// --- When ---
+		have, err := Float64ToFloat32(src)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.True(t, math.IsNaN(float64(have)))
+	})
+
+	t.Run("positive infinity", func(t *testing.T) {
+		// --- Given ---
+		src := math.Inf(1)
+
+		// --- When ---
+		have, err := Float64ToFloat32(src)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.True(t, math.IsInf(float64(have), 1))
+	})
+
+	t.Run("negative infinity", func(t *testing.T) {
+		// --- Given ---
+		src := math.Inf(-1)
+
+		// --- When ---
+		have, err := Float64ToFloat32(src)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.True(t, math.IsInf(float64(have), -1))
+	})
+}
+
 func Test_Float64ToFloat32_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
@@ -21,47 +59,29 @@ func Test_Float64ToFloat32_tabular(t *testing.T) {
 		msg   string
 	}{
 		{
-			"error - must be a number",
-			math.NaN(),
+			"error - overflow",
+			math.MaxFloat64,
 			0,
-			ErrInvValue,
-			"invalid value: from float64 to float32",
+			ErrInvRange,
+			"value out of range: from float64 to float32",
 		},
 		{
-			"error - negative infinity",
-			math.Inf(-1),
+			"error - negative overflow",
+			-math.MaxFloat64,
 			0,
-			ErrInvValue,
-			"invalid value: from float64 to float32",
+			ErrInvRange,
+			"value out of range: from float64 to float32",
 		},
 		{
-			"error - positive infinity",
-			math.Inf(1),
-			0,
-			ErrInvValue,
-			"invalid value: from float64 to float32",
-		},
-		{
-			"error - fraction",
-			4.2,
-			0,
-			ErrFraction,
-			"must be a whole number: from float64 to float32",
-		},
-		{
-			"error - safe underflow",
-			Float32SafeIntMin - 1,
+			"error - precision loss",
+			0.1,
 			0,
 			ErrInvSafeRange,
 			"value out of safe range: from float64 to float32",
 		},
-		{
-			"error - safe overflow",
-			Float32SafeIntMax + 1,
-			0,
-			ErrInvSafeRange,
-			"value out of safe range: from float64 to float32",
-		},
+		{"fraction", 0.5, 0.5, nil, ""},
+		{"large", 1e10, 1e10, nil, ""},
+		{"max", math.MaxFloat32, math.MaxFloat32, nil, ""},
 		{"success", 42, 42, nil, ""},
 	}
 

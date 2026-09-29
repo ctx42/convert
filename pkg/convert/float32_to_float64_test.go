@@ -11,6 +11,44 @@ import (
 	"testing"
 )
 
+func Test_Float32ToFloat64(t *testing.T) {
+	t.Run("NaN", func(t *testing.T) {
+		// --- Given ---
+		src := float32(math.NaN())
+
+		// --- When ---
+		have, err := Float32ToFloat64(src)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.True(t, math.IsNaN(float64(have)))
+	})
+
+	t.Run("positive infinity", func(t *testing.T) {
+		// --- Given ---
+		src := float32(math.Inf(1))
+
+		// --- When ---
+		have, err := Float32ToFloat64(src)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.True(t, math.IsInf(float64(have), 1))
+	})
+
+	t.Run("negative infinity", func(t *testing.T) {
+		// --- Given ---
+		src := float32(math.Inf(-1))
+
+		// --- When ---
+		have, err := Float32ToFloat64(src)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.True(t, math.IsInf(float64(have), -1))
+	})
+}
+
 func Test_Float32ToFloat64_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
@@ -20,27 +58,6 @@ func Test_Float32ToFloat64_tabular(t *testing.T) {
 		err   error
 		msg   string
 	}{
-		{
-			"error - must be a number",
-			float32(math.NaN()),
-			0,
-			ErrInvValue,
-			"invalid value: from float32 to float64",
-		},
-		{
-			"error - negative infinity",
-			float32(math.Inf(-1)),
-			0,
-			ErrInvValue,
-			"invalid value: from float32 to float64",
-		},
-		{
-			"error - positive infinity",
-			float32(math.Inf(1)),
-			0,
-			ErrInvValue,
-			"invalid value: from float32 to float64",
-		},
 		{"success", 42, 42, nil, ""},
 	}
 

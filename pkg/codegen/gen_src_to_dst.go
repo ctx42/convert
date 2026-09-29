@@ -199,6 +199,25 @@ func (gen *GenSrcToDst) convFuncBody(actions []Action) error {
 				return err
 			}
 
+		case CheckFloatRange:
+			data := map[string]any{
+				"src":   gen.src,
+				"dst":   gen.dst,
+				"var":   "src",
+				"value": act,
+			}
+			gen.addImport(cbFloatRange.Imports()...)
+			if err := cbFloatRange.Render(gen.code, 1, data); err != nil {
+				return err
+			}
+
+		case CheckFloatExact:
+			data := map[string]any{"src": gen.src, "dst": gen.dst, "var": "src"}
+			gen.addImport(cbFloatExact.Imports()...)
+			if err := cbFloatExact.Render(gen.code, 1, data); err != nil {
+				return err
+			}
+
 		case CheckFloatSafeToIntMax:
 			data := map[string]any{
 				"src":   gen.src,
@@ -268,6 +287,9 @@ func (gen *GenSrcToDst) testFunc() error {
 	common, only32, only64 := gen.testActions()
 
 	gen.addImport("testing", "github.com/ctx42/testing/pkg/assert")
+	if err := gen.floatTestFunc(); err != nil {
+		return err
+	}
 	gen.writeCode("func ")
 
 	format := "Test_%sTo%s_tabular"
@@ -283,6 +305,38 @@ func (gen *GenSrcToDst) testFunc() error {
 		return err
 	}
 	return gen.platformTestFunc(64, only64)
+}
+
+// floatTestFunc generates code for the conversion function test checking NaN
+// and infinities are preserved when converting between two different
+// floating-point types. Generates nothing for other conversions.
+func (gen *GenSrcToDst) floatTestFunc() error {
+	if !gen.src.IsFloat() || !gen.dst.IsFloat() {
+		return nil
+	}
+	if gen.src.Code() == gen.dst.Code() {
+		return nil
+	}
+
+	special := func(expr string) string {
+		if gen.src.Size() == 64 {
+			return expr
+		}
+		return gen.src.Code() + "(" + expr + ")"
+	}
+	data := map[string]any{
+		"src":  gen.src,
+		"dst":  gen.dst,
+		"nan":  special("math.NaN()"),
+		"pinf": special("math.Inf(1)"),
+		"ninf": special("math.Inf(-1)"),
+	}
+	gen.addImport(cbTstFloatToFloat.Imports()...)
+	if err := cbTstFloatToFloat.Render(gen.code, 0, data); err != nil {
+		return err
+	}
+	gen.writeCode("\n")
+	return nil
 }
 
 // testFuncBody generates code for the conversion function tests.
@@ -453,6 +507,48 @@ func (gen *GenSrcToDst) testCases(actions []Action) error {
 			gen.addImport(cbTstErrIsWhole.Imports()...)
 			if err := cbTstErrIsWhole.Render(gen.code, 2, data); err != nil {
 				return err
+			}
+
+		case CheckFloatRange:
+			gen.addImport(act.Imports()...)
+			for _, row := range [][2]string{
+				{"overflow", "math.MaxFloat64"},
+				{"negative overflow", "-math.MaxFloat64"},
+			} {
+				data := map[string]any{
+					"src":   gen.src,
+					"dst":   gen.dst,
+					"name":  row[0],
+					"value": row[1],
+				}
+				block := cbTstErrInvalidRange
+				gen.addImport(block.Imports()...)
+				if err := block.Render(gen.code, 2, data); err != nil {
+					return err
+				}
+			}
+
+		case CheckFloatExact:
+			data := map[string]any{"src": gen.src, "dst": gen.dst}
+			gen.addImport(cbTstErrPrecision.Imports()...)
+			if err := cbTstErrPrecision.Render(gen.code, 2, data); err != nil {
+				return err
+			}
+			for _, row := range [][2]string{
+				{"fraction", "0.5"},
+				{"large", "1e10"},
+				{"max", "math.MaxFloat32"},
+			} {
+				data := map[string]any{
+					"name":      row[0],
+					"src_value": row[1],
+					"dst_value": row[1],
+				}
+				block := cbTstSrcToDstSuccess
+				gen.addImport(block.Imports()...)
+				if err := block.Render(gen.code, 2, data); err != nil {
+					return err
+				}
 			}
 
 		case CheckIntSafeToFloatMin, CheckFloatSafeToIntMin:

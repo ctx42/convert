@@ -224,27 +224,18 @@ func (typ Type) floatConvActions(target Type) []Action {
 	var actions []Action
 
 	if typ.IsFloat() && target.IsFloat() {
-		actions = append(
-			actions,
-			NewAction(CastToFloat64, nil),
-			NewAction(CheckIsNumber, nil),
-			NewAction(CheckIsFinite, nil),
-		)
-
+		// Every value of a narrower floating-point type is exactly
+		// representable by a wider one, including NaN and infinities.
 		if typ.Bits() <= target.Bits() {
-			return append(actions, NewAction(CastDirectly, nil))
+			return []Action{NewAction(CastDirectly, nil)}
 		}
 
-		minTgt := MinSafeFloat(target.Size())
-		maxTgt := MaxSafeFloat(target.Size())
-
-		return append(
-			actions,
-			NewAction(CheckIsWhole, nil),
-			NewAction(CheckFloatSafeToIntMin, minTgt),
-			NewAction(CheckFloatSafeToIntMax, maxTgt),
+		name := fmt.Sprintf("MaxFloat%d", target.Size())
+		return []Action{
+			NewAction(CheckFloatRange, NewValue("math", name)),
+			NewAction(CheckFloatExact, nil),
 			NewAction(CastDirectly, nil),
-		)
+		}
 	}
 
 	if target.IsInteger() {
