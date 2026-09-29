@@ -18,24 +18,8 @@ func Test_DurationToByte_tabular(t *testing.T) {
 
 		value time.Duration
 		want  byte
-		err   error
-		msg   string
 	}{
-		{
-			"error - negative",
-			-1,
-			0,
-			ErrInvRange,
-			"value out of range: from time.Duration to byte",
-		},
-		{
-			"error - overflow",
-			math.MaxUint8 + 1,
-			0,
-			ErrInvRange,
-			"value out of range: from time.Duration to byte",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -44,13 +28,41 @@ func Test_DurationToByte_tabular(t *testing.T) {
 			have, err := DurationToByte(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, time.Duration(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, time.Duration(have))
+		})
+	}
+}
 
+func Test_DurationToByte_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value time.Duration
+		err   error
+		msg   string
+	}{
+		{
+			"error - negative",
+			-1,
+			ErrInvRange,
+			"value out of range: from time.Duration to byte",
+		},
+		{
+			"error - overflow",
+			math.MaxUint8 + 1,
+			ErrInvRange,
+			"value out of range: from time.Duration to byte",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := DurationToByte(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, byte(0), have)

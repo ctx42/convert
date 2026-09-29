@@ -17,24 +17,8 @@ func Test_DurationToFloat64_tabular(t *testing.T) {
 
 		value time.Duration
 		want  float64
-		err   error
-		msg   string
 	}{
-		{
-			"error - safe underflow",
-			Float64SafeIntMin - 1,
-			0,
-			ErrInvSafeRange,
-			"value out of safe range: from time.Duration to float64",
-		},
-		{
-			"error - safe overflow",
-			Float64SafeIntMax + 1,
-			0,
-			ErrInvSafeRange,
-			"value out of safe range: from time.Duration to float64",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -43,13 +27,41 @@ func Test_DurationToFloat64_tabular(t *testing.T) {
 			have, err := DurationToFloat64(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, time.Duration(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, time.Duration(have))
+		})
+	}
+}
 
+func Test_DurationToFloat64_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value time.Duration
+		err   error
+		msg   string
+	}{
+		{
+			"error - safe underflow",
+			Float64SafeIntMin - 1,
+			ErrInvSafeRange,
+			"value out of safe range: from time.Duration to float64",
+		},
+		{
+			"error - safe overflow",
+			Float64SafeIntMax + 1,
+			ErrInvSafeRange,
+			"value out of safe range: from time.Duration to float64",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := DurationToFloat64(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, float64(0), have)

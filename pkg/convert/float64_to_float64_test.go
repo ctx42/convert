@@ -16,11 +16,9 @@ func Test_Float64ToFloat64_tabular(t *testing.T) {
 
 		value float64
 		want  float64
-		err   error
-		msg   string
 	}{
-		{"min", Float64SafeIntMin, Float64SafeIntMin, nil, ""},
-		{"max", Float64SafeIntMax, Float64SafeIntMax, nil, ""},
+		{"min", Float64SafeIntMin, Float64SafeIntMin},
+		{"max", Float64SafeIntMax, Float64SafeIntMax},
 	}
 
 	for _, tc := range tt {
@@ -29,16 +27,9 @@ func Test_Float64ToFloat64_tabular(t *testing.T) {
 			have, err := Float64ToFloat64(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, float64(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, float64(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, float64(have))
 		})
 	}
 }

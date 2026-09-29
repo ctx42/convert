@@ -11,6 +11,15 @@ import (
 )
 
 func Test_StringToDuration(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- When ---
+		have, err := StringToDuration("4h2s")
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, 4*time.Hour+2*time.Second, have)
+	})
+
 	t.Run("error - parse error cause", func(t *testing.T) {
 		// --- When ---
 		have, err := StringToDuration("abc")
@@ -26,33 +35,23 @@ func Test_StringToDuration(t *testing.T) {
 	})
 }
 
-func Test_StringToDuration_tabular(t *testing.T) {
+func Test_StringToDuration_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
 		src string
-		dst time.Duration
 		err error
 		msg string
 	}{
 		{
-			"success",
-			"4h2s",
-			4*time.Hour + 2*time.Second,
-			nil,
-			"",
-		},
-		{
 			"error - empty string",
 			"",
-			0,
 			ErrInvValue,
 			"invalid value: from string to time.Duration",
 		},
 		{
 			"error - not matching format",
 			"abc",
-			0,
 			ErrInvValue,
 			"invalid value: from string to time.Duration",
 		},
@@ -64,12 +63,6 @@ func Test_StringToDuration_tabular(t *testing.T) {
 			have, err := StringToDuration(tc.src)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.dst, have)
-				return
-			}
-
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, time.Duration(0), have)

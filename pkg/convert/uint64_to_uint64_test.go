@@ -17,11 +17,9 @@ func Test_Uint64ToUint64_tabular(t *testing.T) {
 
 		value uint64
 		want  uint64
-		err   error
-		msg   string
 	}{
-		{"min", 0, 0, nil, ""},
-		{"max", math.MaxUint64, math.MaxUint64, nil, ""},
+		{"min", 0, 0},
+		{"max", math.MaxUint64, math.MaxUint64},
 	}
 
 	for _, tc := range tt {
@@ -30,16 +28,9 @@ func Test_Uint64ToUint64_tabular(t *testing.T) {
 			have, err := Uint64ToUint64(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uint64(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, uint64(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uint64(have))
 		})
 	}
 }

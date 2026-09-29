@@ -17,11 +17,9 @@ func Test_Int8ToInt8_tabular(t *testing.T) {
 
 		value int8
 		want  int8
-		err   error
-		msg   string
 	}{
-		{"min", math.MinInt8, math.MinInt8, nil, ""},
-		{"max", math.MaxInt8, math.MaxInt8, nil, ""},
+		{"min", math.MinInt8, math.MinInt8},
+		{"max", math.MaxInt8, math.MaxInt8},
 	}
 
 	for _, tc := range tt {
@@ -30,16 +28,9 @@ func Test_Int8ToInt8_tabular(t *testing.T) {
 			have, err := Int8ToInt8(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, int8(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, int8(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, int8(have))
 		})
 	}
 }

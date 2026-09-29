@@ -17,10 +17,8 @@ func Test_Uint16ToDuration_tabular(t *testing.T) {
 
 		value uint16
 		want  time.Duration
-		err   error
-		msg   string
 	}{
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -29,16 +27,9 @@ func Test_Uint16ToDuration_tabular(t *testing.T) {
 			have, err := Uint16ToDuration(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uint16(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, time.Duration(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uint16(have))
 		})
 	}
 }

@@ -32,21 +32,39 @@ func Test_AnyToInt16_tabular(t *testing.T) {
 
 		value any
 		want  int16
+	}{
+		{"success from float64", 42.0, 42},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := AnyToInt16(tc.value)
+
+			// --- Then ---
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+		})
+	}
+}
+
+func Test_AnyToInt16_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value any
 		err   error
 		msg   string
 	}{
-		{"success from float64", 42.0, 42, nil, ""},
 		{
 			"error - undefined conversion",
 			test.Type{},
-			0,
 			ErrUnkConv,
 			"conversion undefined: from test.Type to int16",
 		},
 		{
 			"error - fraction",
 			4.2,
-			0,
 			ErrFraction,
 			"must be a whole number: from float64 to int16",
 		},
@@ -58,12 +76,6 @@ func Test_AnyToInt16_tabular(t *testing.T) {
 			have, err := AnyToInt16(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				return
-			}
-
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, int16(0), have)

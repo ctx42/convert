@@ -19,10 +19,8 @@ func Test_UintptrToDuration_tabular(t *testing.T) {
 
 		value uintptr
 		want  time.Duration
-		err   error
-		msg   string
 	}{
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -31,16 +29,9 @@ func Test_UintptrToDuration_tabular(t *testing.T) {
 			have, err := UintptrToDuration(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uintptr(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, time.Duration(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uintptr(have))
 		})
 	}
 }
@@ -54,14 +45,12 @@ func Test_UintptrToDuration_64bit_tabular(t *testing.T) {
 		testN string
 
 		value uint64
-		want  time.Duration
 		err   error
 		msg   string
 	}{
 		{
 			"error - overflow",
 			math.MaxInt64 + 1,
-			0,
 			ErrInvRange,
 			"value out of range: from uintptr to time.Duration",
 		},
@@ -78,7 +67,7 @@ func Test_UintptrToDuration_64bit_tabular(t *testing.T) {
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, tc.want, have)
+			assert.Equal(t, time.Duration(0), have)
 		})
 	}
 }

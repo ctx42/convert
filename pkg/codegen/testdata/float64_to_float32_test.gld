@@ -53,34 +53,11 @@ func Test_Float64ToFloat32_tabular(t *testing.T) {
 
 		value float64
 		want  float32
-		err   error
-		msg   string
 	}{
-		{
-			"error - overflow",
-			math.MaxFloat64,
-			0,
-			ErrInvRange,
-			"value out of range: from float64 to float32",
-		},
-		{
-			"error - negative overflow",
-			-math.MaxFloat64,
-			0,
-			ErrInvRange,
-			"value out of range: from float64 to float32",
-		},
-		{
-			"error - precision loss",
-			0.1,
-			0,
-			ErrInvSafeRange,
-			"value out of safe range: from float64 to float32",
-		},
-		{"fraction", 0.5, 0.5, nil, ""},
-		{"large", 1e10, 1e10, nil, ""},
-		{"max", math.MaxFloat32, math.MaxFloat32, nil, ""},
-		{"success", 42, 42, nil, ""},
+		{"fraction", 0.5, 0.5},
+		{"large", 1e10, 1e10},
+		{"max", math.MaxFloat32, math.MaxFloat32},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -89,13 +66,47 @@ func Test_Float64ToFloat32_tabular(t *testing.T) {
 			have, err := Float64ToFloat32(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, float64(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, float64(have))
+		})
+	}
+}
 
+func Test_Float64ToFloat32_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value float64
+		err   error
+		msg   string
+	}{
+		{
+			"error - overflow",
+			math.MaxFloat64,
+			ErrInvRange,
+			"value out of range: from float64 to float32",
+		},
+		{
+			"error - negative overflow",
+			-math.MaxFloat64,
+			ErrInvRange,
+			"value out of range: from float64 to float32",
+		},
+		{
+			"error - precision loss",
+			0.1,
+			ErrInvSafeRange,
+			"value out of safe range: from float64 to float32",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Float64ToFloat32(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, float32(0), have)

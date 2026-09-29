@@ -17,52 +17,8 @@ func Test_Float32ToByte_tabular(t *testing.T) {
 
 		value float32
 		want  byte
-		err   error
-		msg   string
 	}{
-		{
-			"error - must be a number",
-			float32(math.NaN()),
-			0,
-			ErrInvValue,
-			"invalid value: from float32 to byte",
-		},
-		{
-			"error - negative infinity",
-			float32(math.Inf(-1)),
-			0,
-			ErrInvValue,
-			"invalid value: from float32 to byte",
-		},
-		{
-			"error - positive infinity",
-			float32(math.Inf(1)),
-			0,
-			ErrInvValue,
-			"invalid value: from float32 to byte",
-		},
-		{
-			"error - fraction",
-			4.2,
-			0,
-			ErrFraction,
-			"must be a whole number: from float32 to byte",
-		},
-		{
-			"error - negative",
-			-1,
-			0,
-			ErrInvRange,
-			"value out of range: from float32 to byte",
-		},
-		{
-			"error - overflow",
-			math.MaxUint8 + 1,
-			0,
-			ErrInvRange,
-			"value out of range: from float32 to byte",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -71,13 +27,65 @@ func Test_Float32ToByte_tabular(t *testing.T) {
 			have, err := Float32ToByte(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, float32(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, float32(have))
+		})
+	}
+}
 
+func Test_Float32ToByte_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value float32
+		err   error
+		msg   string
+	}{
+		{
+			"error - must be a number",
+			float32(math.NaN()),
+			ErrInvValue,
+			"invalid value: from float32 to byte",
+		},
+		{
+			"error - negative infinity",
+			float32(math.Inf(-1)),
+			ErrInvValue,
+			"invalid value: from float32 to byte",
+		},
+		{
+			"error - positive infinity",
+			float32(math.Inf(1)),
+			ErrInvValue,
+			"invalid value: from float32 to byte",
+		},
+		{
+			"error - fraction",
+			4.2,
+			ErrFraction,
+			"must be a whole number: from float32 to byte",
+		},
+		{
+			"error - negative",
+			-1,
+			ErrInvRange,
+			"value out of range: from float32 to byte",
+		},
+		{
+			"error - overflow",
+			math.MaxUint8 + 1,
+			ErrInvRange,
+			"value out of range: from float32 to byte",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Float32ToByte(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, byte(0), have)

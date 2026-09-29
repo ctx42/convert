@@ -17,17 +17,8 @@ func Test_UintptrToUint8_tabular(t *testing.T) {
 
 		value uintptr
 		want  uint8
-		err   error
-		msg   string
 	}{
-		{
-			"error - overflow",
-			math.MaxUint8 + 1,
-			0,
-			ErrInvRange,
-			"value out of range: from uintptr to uint8",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -36,13 +27,35 @@ func Test_UintptrToUint8_tabular(t *testing.T) {
 			have, err := UintptrToUint8(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uintptr(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uintptr(have))
+		})
+	}
+}
 
+func Test_UintptrToUint8_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value uintptr
+		err   error
+		msg   string
+	}{
+		{
+			"error - overflow",
+			math.MaxUint8 + 1,
+			ErrInvRange,
+			"value out of range: from uintptr to uint8",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := UintptrToUint8(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, uint8(0), have)

@@ -16,17 +16,8 @@ func Test_UintptrToFloat32_tabular(t *testing.T) {
 
 		value uintptr
 		want  float32
-		err   error
-		msg   string
 	}{
-		{
-			"error - safe overflow",
-			Float32SafeIntMax + 1,
-			0,
-			ErrInvSafeRange,
-			"value out of safe range: from uintptr to float32",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -35,13 +26,35 @@ func Test_UintptrToFloat32_tabular(t *testing.T) {
 			have, err := UintptrToFloat32(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uintptr(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uintptr(have))
+		})
+	}
+}
 
+func Test_UintptrToFloat32_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value uintptr
+		err   error
+		msg   string
+	}{
+		{
+			"error - safe overflow",
+			Float32SafeIntMax + 1,
+			ErrInvSafeRange,
+			"value out of safe range: from uintptr to float32",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := UintptrToFloat32(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, float32(0), have)

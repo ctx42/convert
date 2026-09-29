@@ -120,6 +120,103 @@ func Test_file_renderImports(t *testing.T) {
 	})
 }
 
+func Test_file_tabularTest(t *testing.T) {
+	t.Run("without header", func(t *testing.T) {
+		// --- Given ---
+		fil := newFile("pkg")
+		table := MustCodeBlock("table", "tt := []int{\n")
+		loop := MustCodeBlock("loop", "import abc\nuse({{.v}}, tt)\n")
+		data := map[string]any{"v": 1}
+
+		// --- When ---
+		err := fil.tabularTest("Test_A", nil, table, loop, "\t\t1,\n", data)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		want := "" +
+			"func Test_A(t *testing.T) {\n" +
+			"\ttt := []int{\n" +
+			"\t\t1,\n" +
+			"\t}\n" +
+			"\n" +
+			"\tuse(1, tt)\n" +
+			"}\n"
+		assert.Equal(t, want, fil.code.String())
+		assert.Equal(t, []string{"abc"}, fil.imps)
+	})
+
+	t.Run("with header after other code", func(t *testing.T) {
+		// --- Given ---
+		fil := newFile("pkg")
+		fil.writeCode("code\n")
+		header := MustCodeBlock("header", "import xyz\nskip()\n")
+		table := MustCodeBlock("table", "tt := []int{\n")
+		loop := MustCodeBlock("loop", "use(tt)\n")
+
+		// --- When ---
+		err := fil.tabularTest("Test_A", header, table, loop, "", nil)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		want := "" +
+			"code\n" +
+			"\n" +
+			"func Test_A(t *testing.T) {\n" +
+			"\tskip()\n" +
+			"\n" +
+			"\ttt := []int{\n" +
+			"\t}\n" +
+			"\n" +
+			"\tuse(tt)\n" +
+			"}\n"
+		assert.Equal(t, want, fil.code.String())
+		assert.Equal(t, []string{"xyz"}, fil.imps)
+	})
+
+	t.Run("error - header", func(t *testing.T) {
+		// --- Given ---
+		fil := newFile("pkg")
+		header := MustCodeBlock("header", "{{.missing}}\n")
+		table := MustCodeBlock("table", "tt\n")
+		loop := MustCodeBlock("loop", "loop\n")
+		data := map[string]any{}
+
+		// --- When ---
+		err := fil.tabularTest("Test_A", header, table, loop, "", data)
+
+		// --- Then ---
+		assert.ErrorContain(t, `map has no entry for key "missing"`, err)
+	})
+
+	t.Run("error - table", func(t *testing.T) {
+		// --- Given ---
+		fil := newFile("pkg")
+		table := MustCodeBlock("table", "{{.missing}}\n")
+		loop := MustCodeBlock("loop", "loop\n")
+		data := map[string]any{}
+
+		// --- When ---
+		err := fil.tabularTest("Test_A", nil, table, loop, "", data)
+
+		// --- Then ---
+		assert.ErrorContain(t, `map has no entry for key "missing"`, err)
+	})
+
+	t.Run("error - loop", func(t *testing.T) {
+		// --- Given ---
+		fil := newFile("pkg")
+		table := MustCodeBlock("table", "tt\n")
+		loop := MustCodeBlock("loop", "{{.missing}}\n")
+		data := map[string]any{}
+
+		// --- When ---
+		err := fil.tabularTest("Test_A", nil, table, loop, "", data)
+
+		// --- Then ---
+		assert.ErrorContain(t, `map has no entry for key "missing"`, err)
+	})
+}
+
 func Test_file_reset(t *testing.T) {
 	// --- Given ---
 	fil := newFile("pkg")

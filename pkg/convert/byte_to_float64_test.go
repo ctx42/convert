@@ -16,10 +16,8 @@ func Test_ByteToFloat64_tabular(t *testing.T) {
 
 		value byte
 		want  float64
-		err   error
-		msg   string
 	}{
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -28,16 +26,9 @@ func Test_ByteToFloat64_tabular(t *testing.T) {
 			have, err := ByteToFloat64(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, byte(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, float64(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, byte(have))
 		})
 	}
 }

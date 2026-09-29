@@ -17,11 +17,9 @@ func Test_UintToUint_tabular(t *testing.T) {
 
 		value uint
 		want  uint
-		err   error
-		msg   string
 	}{
-		{"min", 0, 0, nil, ""},
-		{"max", math.MaxUint, math.MaxUint, nil, ""},
+		{"min", 0, 0},
+		{"max", math.MaxUint, math.MaxUint},
 	}
 
 	for _, tc := range tt {
@@ -30,16 +28,9 @@ func Test_UintToUint_tabular(t *testing.T) {
 			have, err := UintToUint(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uint(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, uint(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uint(have))
 		})
 	}
 }

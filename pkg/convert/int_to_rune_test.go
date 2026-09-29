@@ -18,10 +18,8 @@ func Test_IntToRune_tabular(t *testing.T) {
 
 		value int
 		want  rune
-		err   error
-		msg   string
 	}{
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -30,16 +28,9 @@ func Test_IntToRune_tabular(t *testing.T) {
 			have, err := IntToRune(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, int(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, rune(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, int(have))
 		})
 	}
 }
@@ -53,21 +44,18 @@ func Test_IntToRune_64bit_tabular(t *testing.T) {
 		testN string
 
 		value int64
-		want  rune
 		err   error
 		msg   string
 	}{
 		{
 			"error - underflow",
 			math.MinInt32 - 1,
-			0,
 			ErrInvRange,
 			"value out of range: from int to rune",
 		},
 		{
 			"error - overflow",
 			math.MaxInt32 + 1,
-			0,
 			ErrInvRange,
 			"value out of range: from int to rune",
 		},
@@ -84,7 +72,7 @@ func Test_IntToRune_64bit_tabular(t *testing.T) {
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, tc.want, have)
+			assert.Equal(t, rune(0), have)
 		})
 	}
 }

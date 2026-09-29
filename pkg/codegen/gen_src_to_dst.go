@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"slices"
+	"strings"
 )
 
 // GenSrcToDst represents the code generator for converters between values of
@@ -290,18 +291,43 @@ func (gen *GenSrcToDst) testFunc() error {
 	if err := gen.floatTestFunc(); err != nil {
 		return err
 	}
-	gen.writeCode("func ")
 
-	format := "Test_%sTo%s_tabular"
-	gen.writeCode(format, gen.src.Title(), gen.dst.Title())
-
-	gen.writeCode("(t *testing.T) {\n")
-	if err := gen.testFuncBody(common); err != nil {
+	succ, errs, err := gen.testCases(common)
+	if err != nil {
 		return err
 	}
-	gen.writeCode("}\n")
+	data := map[string]any{
+		"src":     gen.src,
+		"dst":     gen.dst,
+		"carrier": gen.src.Code(),
+	}
+	prefix := fmt.Sprintf("Test_%sTo%s", gen.src.Title(), gen.dst.Title())
+	err = gen.tabularTest(
+		prefix+"_tabular",
+		nil,
+		cbTstSrcToDstTT,
+		cbTstSrcToDstLoop,
+		succ,
+		data,
+	)
+	if err != nil {
+		return err
+	}
+	if errs != "" {
+		err = gen.tabularTest(
+			prefix+"_error_tabular",
+			nil,
+			cbTstErrTT,
+			cbTstSrcToDstErrLoop,
+			errs,
+			data,
+		)
+		if err != nil {
+			return err
+		}
+	}
 
-	if err := gen.platformTestFunc(32, only32); err != nil {
+	if err = gen.platformTestFunc(32, only32); err != nil {
 		return err
 	}
 	return gen.platformTestFunc(64, only64)
@@ -332,35 +358,19 @@ func (gen *GenSrcToDst) floatTestFunc() error {
 		"ninf": special("math.Inf(-1)"),
 	}
 	gen.addImport(cbTstFloatToFloat.Imports()...)
-	if err := cbTstFloatToFloat.Render(gen.code, 0, data); err != nil {
-		return err
-	}
-	gen.writeCode("\n")
-	return nil
+	return cbTstFloatToFloat.Render(gen.code, 0, data)
 }
 
-// testFuncBody generates code for the conversion function tests.
-func (gen *GenSrcToDst) testFuncBody(actions []Action) error {
-	data := map[string]any{"src": gen.src, "dst": gen.dst}
-	gen.addImport(cbTstSrcToDstTT.Imports()...)
-	if err := cbTstSrcToDstTT.Render(gen.code, 1, data); err != nil {
-		return err
-	}
-	if err := gen.testCases(actions); err != nil {
-		return err
-	}
-	gen.writeCode("\t}\n\n")
-
-	gen.addImport(cbTstSrcToDstLoop.Imports()...)
-	return cbTstSrcToDstLoop.Render(gen.code, 1, data)
-}
-
-// platformTestFunc generates code for the conversion function tests run only
-// on platforms with the given word size in bits. Generates nothing when there
-// are no actions to test.
+// platformTestFunc generates code for the conversion function error tests run
+// only on platforms with the given word size in bits. Generates nothing when
+// there are no actions to test.
 func (gen *GenSrcToDst) platformTestFunc(size int, actions []Action) error {
 	if len(actions) == 0 {
 		return nil
+	}
+	_, errs, err := gen.testCases(actions)
+	if err != nil {
+		return err
 	}
 
 	// Test case values are stored in a 64-bit type, so values out of range
@@ -377,30 +387,27 @@ func (gen *GenSrcToDst) platformTestFunc(size int, actions []Action) error {
 		"src":     gen.src,
 		"dst":     gen.dst,
 		"size":    size,
-		"carrier": carrier,
+		"carrier": carrier.Code(),
 	}
-	gen.writeCode("\n")
-	gen.addImport(cbTstSrcToDstPlatformTT.Imports()...)
-	if err := cbTstSrcToDstPlatformTT.Render(gen.code, 0, data); err != nil {
-		return err
-	}
-	if err := gen.testCases(actions); err != nil {
-		return err
-	}
-	gen.writeCode("\t}\n\n")
-
-	gen.addImport(cbTstSrcToDstPlatformLoop.Imports()...)
-	if err := cbTstSrcToDstPlatformLoop.Render(gen.code, 1, data); err != nil {
-		return err
-	}
-	gen.writeCode("}\n")
-	return nil
+	format := "Test_%sTo%s_%dbit_tabular"
+	name := fmt.Sprintf(format, gen.src.Title(), gen.dst.Title(), size)
+	return gen.tabularTest(
+		name,
+		cbTstPlatformSkip,
+		cbTstErrTT,
+		cbTstSrcToDstErrLoop,
+		errs,
+		data,
+	)
 }
 
-// testCases generates code for the conversion function test cases.
+// testCases generates code for the conversion function test cases and returns
+// the success and the error test case rows.
 //
 // nolint: cyclop, gocognit
-func (gen *GenSrcToDst) testCases(actions []Action) error {
+func (gen *GenSrcToDst) testCases(actions []Action) (string, string, error) {
+	succ := &strings.Builder{}
+	errs := &strings.Builder{}
 	for _, act := range actions {
 		gen.addImport(act.Imports()...)
 
@@ -414,8 +421,8 @@ func (gen *GenSrcToDst) testCases(actions []Action) error {
 				"dst_value": val.Code(),
 			}
 			gen.addImport(cbTstSrcToDstSuccess.Imports()...)
-			if err := cbTstSrcToDstSuccess.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := cbTstSrcToDstSuccess.Render(succ, 2, data); err != nil {
+				return "", "", err
 			}
 
 			val = MaxValue(gen.src)
@@ -427,8 +434,8 @@ func (gen *GenSrcToDst) testCases(actions []Action) error {
 			}
 			gen.addImport(cbTstSrcToDstSuccess.Imports()...)
 
-			if err := cbTstSrcToDstSuccess.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := cbTstSrcToDstSuccess.Render(succ, 2, data); err != nil {
+				return "", "", err
 			}
 
 		case CastDirectly:
@@ -438,8 +445,8 @@ func (gen *GenSrcToDst) testCases(actions []Action) error {
 				"dst_value": 42,
 			}
 			gen.addImport(cbTstSrcToDstSuccess.Imports()...)
-			if err := cbTstSrcToDstSuccess.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := cbTstSrcToDstSuccess.Render(succ, 2, data); err != nil {
+				return "", "", err
 			}
 
 		case CastToFloat64:
@@ -454,35 +461,35 @@ func (gen *GenSrcToDst) testCases(actions []Action) error {
 			}
 			block := cbTstErrInvalidRange
 			gen.addImport(block.Imports()...)
-			if err := block.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := block.Render(errs, 2, data); err != nil {
+				return "", "", err
 			}
 
 		case CheckUnderflows:
 			data := map[string]any{"min": act, "src": gen.src, "dst": gen.dst}
 			gen.addImport(cbTstErrUnderflow.Imports()...)
-			if err := cbTstErrUnderflow.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := cbTstErrUnderflow.Render(errs, 2, data); err != nil {
+				return "", "", err
 			}
 
 		case CheckOverflows:
 			data := map[string]any{"max": act, "src": gen.src, "dst": gen.dst}
 			gen.addImport(cbTstErrOverflow.Imports()...)
-			if err := cbTstErrOverflow.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := cbTstErrOverflow.Render(errs, 2, data); err != nil {
+				return "", "", err
 			}
 
 		case CheckIsFinite:
 			data := map[string]any{"src": gen.src, "dst": gen.dst, "sign": -1}
 			gen.addImport(cbTstErrInfinite.Imports()...)
-			if err := cbTstErrInfinite.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := cbTstErrInfinite.Render(errs, 2, data); err != nil {
+				return "", "", err
 			}
 
 			data["sign"] = 1
 			gen.addImport(cbTstErrInfinite.Imports()...)
-			if err := cbTstErrInfinite.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := cbTstErrInfinite.Render(errs, 2, data); err != nil {
+				return "", "", err
 			}
 
 		case CheckIsNumber:
@@ -498,15 +505,15 @@ func (gen *GenSrcToDst) testCases(actions []Action) error {
 			}
 			tpl := cbTstErrInvalidValue
 			gen.addImport(tpl.Imports()...)
-			if err := tpl.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := tpl.Render(errs, 2, data); err != nil {
+				return "", "", err
 			}
 
 		case CheckIsWhole:
 			data := map[string]any{"src": gen.src, "dst": gen.dst}
 			gen.addImport(cbTstErrIsWhole.Imports()...)
-			if err := cbTstErrIsWhole.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := cbTstErrIsWhole.Render(errs, 2, data); err != nil {
+				return "", "", err
 			}
 
 		case CheckFloatRange:
@@ -523,16 +530,16 @@ func (gen *GenSrcToDst) testCases(actions []Action) error {
 				}
 				block := cbTstErrInvalidRange
 				gen.addImport(block.Imports()...)
-				if err := block.Render(gen.code, 2, data); err != nil {
-					return err
+				if err := block.Render(errs, 2, data); err != nil {
+					return "", "", err
 				}
 			}
 
 		case CheckFloatExact:
 			data := map[string]any{"src": gen.src, "dst": gen.dst}
 			gen.addImport(cbTstErrPrecision.Imports()...)
-			if err := cbTstErrPrecision.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := cbTstErrPrecision.Render(errs, 2, data); err != nil {
+				return "", "", err
 			}
 			for _, row := range [][2]string{
 				{"fraction", "0.5"},
@@ -546,8 +553,8 @@ func (gen *GenSrcToDst) testCases(actions []Action) error {
 				}
 				block := cbTstSrcToDstSuccess
 				gen.addImport(block.Imports()...)
-				if err := block.Render(gen.code, 2, data); err != nil {
-					return err
+				if err := block.Render(succ, 2, data); err != nil {
+					return "", "", err
 				}
 			}
 
@@ -555,19 +562,19 @@ func (gen *GenSrcToDst) testCases(actions []Action) error {
 			data := map[string]any{"min": act, "src": gen.src, "dst": gen.dst}
 			block := cbTstErrUnderSafeRange
 			gen.addImport(block.Imports()...)
-			if err := block.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := block.Render(errs, 2, data); err != nil {
+				return "", "", err
 			}
 
 		case CheckIntSafeToFloatMax, CheckFloatSafeToIntMax:
 			data := map[string]any{"max": act, "src": gen.src, "dst": gen.dst}
 			block := cbTstErrOverSafeRange
 			gen.addImport(block.Imports()...)
-			if err := block.Render(gen.code, 2, data); err != nil {
-				return err
+			if err := block.Render(errs, 2, data); err != nil {
+				return "", "", err
 			}
 		}
 	}
 
-	return nil
+	return succ.String(), errs.String(), nil
 }

@@ -18,11 +18,9 @@ func Test_DurationToDuration_tabular(t *testing.T) {
 
 		value time.Duration
 		want  time.Duration
-		err   error
-		msg   string
 	}{
-		{"min", math.MinInt64, math.MinInt64, nil, ""},
-		{"max", math.MaxInt64, math.MaxInt64, nil, ""},
+		{"min", math.MinInt64, math.MinInt64},
+		{"max", math.MaxInt64, math.MaxInt64},
 	}
 
 	for _, tc := range tt {
@@ -31,16 +29,9 @@ func Test_DurationToDuration_tabular(t *testing.T) {
 			have, err := DurationToDuration(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, time.Duration(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, time.Duration(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, time.Duration(have))
 		})
 	}
 }

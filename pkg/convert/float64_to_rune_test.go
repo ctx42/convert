@@ -17,52 +17,8 @@ func Test_Float64ToRune_tabular(t *testing.T) {
 
 		value float64
 		want  rune
-		err   error
-		msg   string
 	}{
-		{
-			"error - must be a number",
-			math.NaN(),
-			0,
-			ErrInvValue,
-			"invalid value: from float64 to rune",
-		},
-		{
-			"error - negative infinity",
-			math.Inf(-1),
-			0,
-			ErrInvValue,
-			"invalid value: from float64 to rune",
-		},
-		{
-			"error - positive infinity",
-			math.Inf(1),
-			0,
-			ErrInvValue,
-			"invalid value: from float64 to rune",
-		},
-		{
-			"error - fraction",
-			4.2,
-			0,
-			ErrFraction,
-			"must be a whole number: from float64 to rune",
-		},
-		{
-			"error - underflow",
-			math.MinInt32 - 1,
-			0,
-			ErrInvRange,
-			"value out of range: from float64 to rune",
-		},
-		{
-			"error - overflow",
-			math.MaxInt32 + 1,
-			0,
-			ErrInvRange,
-			"value out of range: from float64 to rune",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -71,13 +27,65 @@ func Test_Float64ToRune_tabular(t *testing.T) {
 			have, err := Float64ToRune(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, float64(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, float64(have))
+		})
+	}
+}
 
+func Test_Float64ToRune_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value float64
+		err   error
+		msg   string
+	}{
+		{
+			"error - must be a number",
+			math.NaN(),
+			ErrInvValue,
+			"invalid value: from float64 to rune",
+		},
+		{
+			"error - negative infinity",
+			math.Inf(-1),
+			ErrInvValue,
+			"invalid value: from float64 to rune",
+		},
+		{
+			"error - positive infinity",
+			math.Inf(1),
+			ErrInvValue,
+			"invalid value: from float64 to rune",
+		},
+		{
+			"error - fraction",
+			4.2,
+			ErrFraction,
+			"must be a whole number: from float64 to rune",
+		},
+		{
+			"error - underflow",
+			math.MinInt32 - 1,
+			ErrInvRange,
+			"value out of range: from float64 to rune",
+		},
+		{
+			"error - overflow",
+			math.MaxInt32 + 1,
+			ErrInvRange,
+			"value out of range: from float64 to rune",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Float64ToRune(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, rune(0), have)

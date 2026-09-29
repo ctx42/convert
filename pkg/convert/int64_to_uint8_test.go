@@ -17,24 +17,8 @@ func Test_Int64ToUint8_tabular(t *testing.T) {
 
 		value int64
 		want  uint8
-		err   error
-		msg   string
 	}{
-		{
-			"error - negative",
-			-1,
-			0,
-			ErrInvRange,
-			"value out of range: from int64 to uint8",
-		},
-		{
-			"error - overflow",
-			math.MaxUint8 + 1,
-			0,
-			ErrInvRange,
-			"value out of range: from int64 to uint8",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -43,13 +27,41 @@ func Test_Int64ToUint8_tabular(t *testing.T) {
 			have, err := Int64ToUint8(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, int64(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, int64(have))
+		})
+	}
+}
 
+func Test_Int64ToUint8_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value int64
+		err   error
+		msg   string
+	}{
+		{
+			"error - negative",
+			-1,
+			ErrInvRange,
+			"value out of range: from int64 to uint8",
+		},
+		{
+			"error - overflow",
+			math.MaxUint8 + 1,
+			ErrInvRange,
+			"value out of range: from int64 to uint8",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Int64ToUint8(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, uint8(0), have)

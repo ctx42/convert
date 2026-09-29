@@ -18,38 +18,8 @@ func Test_Float64ToInt_tabular(t *testing.T) {
 
 		value float64
 		want  int
-		err   error
-		msg   string
 	}{
-		{
-			"error - must be a number",
-			math.NaN(),
-			0,
-			ErrInvValue,
-			"invalid value: from float64 to int",
-		},
-		{
-			"error - negative infinity",
-			math.Inf(-1),
-			0,
-			ErrInvValue,
-			"invalid value: from float64 to int",
-		},
-		{
-			"error - positive infinity",
-			math.Inf(1),
-			0,
-			ErrInvValue,
-			"invalid value: from float64 to int",
-		},
-		{
-			"error - fraction",
-			4.2,
-			0,
-			ErrFraction,
-			"must be a whole number: from float64 to int",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -58,13 +28,53 @@ func Test_Float64ToInt_tabular(t *testing.T) {
 			have, err := Float64ToInt(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, float64(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, float64(have))
+		})
+	}
+}
 
+func Test_Float64ToInt_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value float64
+		err   error
+		msg   string
+	}{
+		{
+			"error - must be a number",
+			math.NaN(),
+			ErrInvValue,
+			"invalid value: from float64 to int",
+		},
+		{
+			"error - negative infinity",
+			math.Inf(-1),
+			ErrInvValue,
+			"invalid value: from float64 to int",
+		},
+		{
+			"error - positive infinity",
+			math.Inf(1),
+			ErrInvValue,
+			"invalid value: from float64 to int",
+		},
+		{
+			"error - fraction",
+			4.2,
+			ErrFraction,
+			"must be a whole number: from float64 to int",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Float64ToInt(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, int(0), have)
@@ -81,21 +91,18 @@ func Test_Float64ToInt_32bit_tabular(t *testing.T) {
 		testN string
 
 		value float64
-		want  int
 		err   error
 		msg   string
 	}{
 		{
 			"error - underflow",
 			math.MinInt32 - 1,
-			0,
 			ErrInvRange,
 			"value out of range: from float64 to int",
 		},
 		{
 			"error - overflow",
 			math.MaxInt32 + 1,
-			0,
 			ErrInvRange,
 			"value out of range: from float64 to int",
 		},
@@ -109,7 +116,7 @@ func Test_Float64ToInt_32bit_tabular(t *testing.T) {
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, tc.want, have)
+			assert.Equal(t, int(0), have)
 		})
 	}
 }
@@ -123,21 +130,18 @@ func Test_Float64ToInt_64bit_tabular(t *testing.T) {
 		testN string
 
 		value float64
-		want  int
 		err   error
 		msg   string
 	}{
 		{
 			"error - safe underflow",
 			Float64SafeIntMin - 1,
-			0,
 			ErrInvSafeRange,
 			"value out of safe range: from float64 to int",
 		},
 		{
 			"error - safe overflow",
 			Float64SafeIntMax + 1,
-			0,
 			ErrInvSafeRange,
 			"value out of safe range: from float64 to int",
 		},
@@ -151,7 +155,7 @@ func Test_Float64ToInt_64bit_tabular(t *testing.T) {
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, tc.want, have)
+			assert.Equal(t, int(0), have)
 		})
 	}
 }

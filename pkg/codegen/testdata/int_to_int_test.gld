@@ -15,11 +15,9 @@ func Test_IntToInt_tabular(t *testing.T) {
 
 		value int
 		want  int
-		err   error
-		msg   string
 	}{
-		{"min", math.MinInt, math.MinInt, nil, ""},
-		{"max", math.MaxInt, math.MaxInt, nil, ""},
+		{"min", math.MinInt, math.MinInt},
+		{"max", math.MaxInt, math.MaxInt},
 	}
 
 	for _, tc := range tt {
@@ -28,16 +26,9 @@ func Test_IntToInt_tabular(t *testing.T) {
 			have, err := IntToInt(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, int(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, int(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, int(have))
 		})
 	}
 }

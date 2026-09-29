@@ -207,7 +207,6 @@ var cbTstErrPrecision = MustCodeBlock("cbTstErrPrecision", `
 {
 	"error - precision loss",
 	0.1,
-	0,
 	ErrInvSafeRange,
 	"value out of safe range: from {{.src.Code}} to {{.dst.Code}}",
 },
@@ -215,16 +214,14 @@ var cbTstErrPrecision = MustCodeBlock("cbTstErrPrecision", `
 
 // -----------------------------------------------------------------------------
 
-// cbTstSrcToDstTT defines tabular test cases for conversion functions between
-// two types.
+// cbTstSrcToDstTT defines tabular success test cases for conversion functions
+// between two types.
 var cbTstSrcToDstTT = MustCodeBlock("cbTstSrcToDstTT", `
 tt := []struct {
 	testN string
 
 	value {{.src.Code}}
 	want  {{.dst.Code}}
-	err   error
-	msg   string
 }{
 `)
 
@@ -251,14 +248,25 @@ func Test_AnyTo{{.dst.Title}}(t *testing.T) {
 
 // -----------------------------------------------------------------------------
 
-// cbTstAnyToDstTT defines tabular test cases for conversion functions between
-// any type and a given type.
+// cbTstAnyToDstTT defines tabular success test cases for conversion functions
+// between any type and a given type.
 var cbTstAnyToDstTT = MustCodeBlock("cbTstAnyToDstTT", `
 tt := []struct {
 	testN string
 
 	value any
 	want  {{.dst.Code}}
+}{
+`)
+
+// -----------------------------------------------------------------------------
+
+// cbTstErrTT defines tabular error test cases for conversion functions.
+var cbTstErrTT = MustCodeBlock("cbTstErrTT", `
+tt := []struct {
+	testN string
+
+	value {{.carrier}}
 	err   error
 	msg   string
 }{
@@ -266,34 +274,43 @@ tt := []struct {
 
 // -----------------------------------------------------------------------------
 
-// cbTstSrcToDstPlatformTT defines the declaration and tabular test cases of a
-// conversion function test run only on platforms with the given word size.
-var cbTstSrcToDstPlatformTT = MustCodeBlock("cbTstSrcToDstPlatformTT", `
+// cbTstPlatformSkip skips a test on platforms other than the ones with the
+// given word size.
+var cbTstPlatformSkip = MustCodeBlock("cbTstPlatformSkip", `
 import strconv
 
-func Test_{{.src.Title}}To{{.dst.Title}}_{{.size}}bit_tabular(t *testing.T) {
-	if strconv.IntSize != {{.size}} {
-		t.Skip("{{.size}}-bit platforms only")
-	}
-
-	tt := []struct {
-		testN string
-
-		value {{.carrier.Code}}
-		want  {{.dst.Code}}
-		err   error
-		msg   string
-	}{
+if strconv.IntSize != {{.size}} {
+	t.Skip("{{.size}}-bit platforms only")
+}
 `)
 
 // -----------------------------------------------------------------------------
 
-// cbTstSrcToDstPlatformLoop defines a tabular test loop for conversion
-// function error cases run only on platforms with the given word size.
-var cbTstSrcToDstPlatformLoop = MustCodeBlock("cbTstSrcToDstPlatformLoop", `
+// cbTstSrcToDstLoop defines a tabular success test loop for conversion
+// functions between two types.
+var cbTstSrcToDstLoop = MustCodeBlock("cbTstSrcToDstLoop", `
 for _, tc := range tt {
 	t.Run(tc.testN, func(t *testing.T) {
-{{- if ne .carrier.Code .src.Code}}
+		// --- When ---
+		have, err := {{.src.Title}}To{{.dst.Title}}(tc.value)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, tc.want, have)
+		assert.Equal(t, tc.value, {{.src.Code}}(have))
+	})
+}
+`)
+
+// -----------------------------------------------------------------------------
+
+// cbTstSrcToDstErrLoop defines a tabular error test loop for conversion
+// functions between two types. Test case values stored in a carrier type
+// other than the source type are converted before the call.
+var cbTstSrcToDstErrLoop = MustCodeBlock("cbTstSrcToDstErrLoop", `
+for _, tc := range tt {
+	t.Run(tc.testN, func(t *testing.T) {
+{{- if ne .carrier .src.Code}}
 		// --- Given ---
 		src := {{.src.Code}}(tc.value)
 
@@ -307,31 +324,6 @@ for _, tc := range tt {
 		// --- Then ---
 		assert.ErrorIs(t, tc.err, err)
 		assert.ErrorEqual(t, tc.msg, err)
-		assert.Equal(t, tc.want, have)
-	})
-}
-`)
-
-// -----------------------------------------------------------------------------
-
-// cbTstSrcToDstLoop defines a tabular test loop for conversion functions
-// between two types.
-var cbTstSrcToDstLoop = MustCodeBlock("cbTstSrcToDstLoop", `
-for _, tc := range tt {
-	t.Run(tc.testN, func(t *testing.T) {
-		// --- When ---
-		have, err := {{.src.Title}}To{{.dst.Title}}(tc.value)
-
-		// --- Then ---
-		if tc.err == nil {
-			assert.NoError(t, err)
-			assert.Equal(t, tc.want, have)
-			assert.Equal(t, tc.value, {{.src.Code}}(have))
-			return
-		}
-
-		assert.ErrorIs(t, tc.err, err)
-		assert.ErrorEqual(t, tc.msg, err)
 		assert.Equal(t, {{.dst.Code}}(0), have)
 	})
 }
@@ -339,8 +331,8 @@ for _, tc := range tt {
 
 // -----------------------------------------------------------------------------
 
-// cbTstAnyToDstLoop defines a tabular test loop for conversion functions
-// between any type two a given type.
+// cbTstAnyToDstLoop defines a tabular success test loop for conversion
+// functions between any type and a given type.
 var cbTstAnyToDstLoop = MustCodeBlock("cbTstAnyToDstLoop", `
 for _, tc := range tt {
 	t.Run(tc.testN, func(t *testing.T) {
@@ -348,12 +340,23 @@ for _, tc := range tt {
 		have, err := AnyTo{{.dst.Title}}(tc.value)
 
 		// --- Then ---
-		if tc.err == nil {
-			assert.NoError(t, err)
-			assert.Equal(t, tc.want, have)
-			return
-		}
+		assert.NoError(t, err)
+		assert.Equal(t, tc.want, have)
+	})
+}
+`)
 
+// -----------------------------------------------------------------------------
+
+// cbTstAnyToDstErrLoop defines a tabular error test loop for conversion
+// functions between any type and a given type.
+var cbTstAnyToDstErrLoop = MustCodeBlock("cbTstAnyToDstErrLoop", `
+for _, tc := range tt {
+	t.Run(tc.testN, func(t *testing.T) {
+		// --- When ---
+		have, err := AnyTo{{.dst.Title}}(tc.value)
+
+		// --- Then ---
 		assert.ErrorIs(t, tc.err, err)
 		assert.ErrorEqual(t, tc.msg, err)
 		assert.Equal(t, {{.dst.Code}}(0), have)
@@ -365,7 +368,7 @@ for _, tc := range tt {
 
 // cbTstSrcToDstSuccess is a success conversion test case between two types.
 var cbTstSrcToDstSuccess = MustCodeBlock("cbTstSrcToDstSuccess", `
-{"{{.name}}", {{.src_value}}, {{.dst_value}}, nil, ""},
+{"{{.name}}", {{.src_value}}, {{.dst_value}}},
 `)
 
 // -----------------------------------------------------------------------------
@@ -375,7 +378,6 @@ var cbTstErrUnderSafeRange = MustCodeBlock("cbTstErrUnderSafeRange", `
 {
 	"error - safe underflow",
 	{{.min.Code}} - 1,
-	0,
 	ErrInvSafeRange,
 	"value out of safe range: from {{.src.Code}} to {{.dst.Code}}",
 },
@@ -388,7 +390,6 @@ var cbTstErrOverSafeRange = MustCodeBlock("cbTstErrOverSafeRange", `
 {
 	"error - safe overflow",
 	{{.max.Code}} + 1,
-	0,
 	ErrInvSafeRange,
 	"value out of safe range: from {{.src.Code}} to {{.dst.Code}}",
 },
@@ -401,7 +402,6 @@ var cbTstErrUnderflow = MustCodeBlock("cbTstErrUnderflow", `
 {
 	"error - underflow",
 	{{.min.Code}} - 1,
-	0,
 	ErrInvRange,
 	"value out of range: from {{.src.Code}} to {{.dst.Code}}",
 },
@@ -414,7 +414,6 @@ var cbTstErrOverflow = MustCodeBlock("cbTstErrOverflow", `
 {
 	"error - overflow",
 	{{.max.Code}} + 1,
-	0,
 	ErrInvRange,
 	"value out of range: from {{.src.Code}} to {{.dst.Code}}",
 },
@@ -428,7 +427,6 @@ var cbTstErrIsWhole = MustCodeBlock("cbTstErrIsWhole", `
 {
 	"error - fraction",
 	4.2,
-	0,
 	ErrFraction,
 	"must be a whole number: from {{.src.Code}} to {{.dst.Code}}",
 },
@@ -441,7 +439,6 @@ var cbTstErrInvalidValue = MustCodeBlock("cbTstErrInvalidValue", `
 {
 	"error - {{.name}}",
 	{{.value}},
-	0,
 	ErrInvValue,
 	"invalid value: from {{.src.Code}} to {{.dst.Code}}",
 },
@@ -455,7 +452,6 @@ var cbTstErrInvalidRange = MustCodeBlock("cbTstErrInvalidRange", `
 {
 	"error - {{.name}}",
 	{{.value}},
-	0,
 	ErrInvRange,
 	"value out of range: from {{.src.Code}} to {{.dst.Code}}",
 },
@@ -475,7 +471,6 @@ import math
 	{{- else -}}
 	float{{.src.Size}}(math.Inf({{.sign}})),
 	{{- end}}
-	0,
 	ErrInvValue,
 	"invalid value: from {{.src.Code}} to {{.dst.Code}}",
 },
@@ -486,14 +481,14 @@ import math
 // cbTstAnyToDstFloatToInt is a test case for converting a float64 to an
 // integer.
 var cbTstAnyToDstFloatToInt = MustCodeBlock("cbTstAnyToDstFloatToInt", `
-{"success from float64", 42.0, 42, nil, ""},
+{"success from float64", 42.0, 42},
 `)
 
 // -----------------------------------------------------------------------------
 
 // cbTstAnyToDstIntToFloat is a test case for converting an integer to a float64.
 var cbTstAnyToDstIntToFloat = MustCodeBlock("cbTstAnyToDstIntToFloat", `
-{"success from integer", 42, 42.0, nil, ""},
+{"success from integer", 42, 42.0},
 `)
 
 // -----------------------------------------------------------------------------
@@ -506,7 +501,6 @@ import github.com/ctx42/convert/internal/test
 {
 	"error - undefined conversion",
 	test.Type{},
-	0,
 	ErrUnkConv,
 	"conversion undefined: from test.Type to {{.dst.Code}}",
 },

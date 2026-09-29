@@ -16,17 +16,8 @@ func Test_IntToUint_tabular(t *testing.T) {
 
 		value int
 		want  uint
-		err   error
-		msg   string
 	}{
-		{
-			"error - negative",
-			-1,
-			0,
-			ErrInvRange,
-			"value out of range: from int to uint",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -35,13 +26,35 @@ func Test_IntToUint_tabular(t *testing.T) {
 			have, err := IntToUint(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, int(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, int(have))
+		})
+	}
+}
 
+func Test_IntToUint_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value int
+		err   error
+		msg   string
+	}{
+		{
+			"error - negative",
+			-1,
+			ErrInvRange,
+			"value out of range: from int to uint",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := IntToUint(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, uint(0), have)

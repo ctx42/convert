@@ -32,21 +32,39 @@ func Test_AnyToFloat64_tabular(t *testing.T) {
 
 		value any
 		want  float64
+	}{
+		{"success from integer", 42, 42.0},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := AnyToFloat64(tc.value)
+
+			// --- Then ---
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+		})
+	}
+}
+
+func Test_AnyToFloat64_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value any
 		err   error
 		msg   string
 	}{
-		{"success from integer", 42, 42.0, nil, ""},
 		{
 			"error - undefined conversion",
 			test.Type{},
-			0,
 			ErrUnkConv,
 			"conversion undefined: from test.Type to float64",
 		},
 		{
 			"error - safe overflow",
 			int64(Float64SafeIntMax) + 1,
-			0,
 			ErrInvSafeRange,
 			"value out of safe range: from int64 to float64",
 		},
@@ -58,12 +76,6 @@ func Test_AnyToFloat64_tabular(t *testing.T) {
 			have, err := AnyToFloat64(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				return
-			}
-
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, float64(0), have)

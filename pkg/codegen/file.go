@@ -63,6 +63,42 @@ func (fil *file) renderImports() string {
 	return buf.String()
 }
 
+// tabularTest writes a tabular test function with the given name: an optional
+// header code block, the table declaration, the table rows and the loop over
+// them, all rendered with the same data. A test function written after other
+// code is separated from it with an empty line.
+func (fil *file) tabularTest(
+	name string,
+	header, table, loop *CodeBlock,
+	rows string,
+	data map[string]any,
+) error {
+
+	if fil.code.Len() > 0 {
+		fil.writeCode("\n")
+	}
+	fil.writeCode("func %s(t *testing.T) {\n", name)
+	if header != nil {
+		fil.addImport(header.Imports()...)
+		if err := header.Render(fil.code, 1, data); err != nil {
+			return err
+		}
+		fil.writeCode("\n")
+	}
+	fil.addImport(table.Imports()...)
+	if err := table.Render(fil.code, 1, data); err != nil {
+		return err
+	}
+	fil.code.WriteString(rows)
+	fil.writeCode("\t}\n\n")
+	fil.addImport(loop.Imports()...)
+	if err := loop.Render(fil.code, 1, data); err != nil {
+		return err
+	}
+	fil.writeCode("}\n")
+	return nil
+}
+
 // reset resets code buffer and imports slice.
 func (fil *file) reset() {
 	fil.code.Reset()

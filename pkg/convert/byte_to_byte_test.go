@@ -17,11 +17,9 @@ func Test_ByteToByte_tabular(t *testing.T) {
 
 		value byte
 		want  byte
-		err   error
-		msg   string
 	}{
-		{"min", 0, 0, nil, ""},
-		{"max", math.MaxUint8, math.MaxUint8, nil, ""},
+		{"min", 0, 0},
+		{"max", math.MaxUint8, math.MaxUint8},
 	}
 
 	for _, tc := range tt {
@@ -30,16 +28,9 @@ func Test_ByteToByte_tabular(t *testing.T) {
 			have, err := ByteToByte(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, byte(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, byte(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, byte(have))
 		})
 	}
 }

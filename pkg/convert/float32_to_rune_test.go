@@ -17,52 +17,8 @@ func Test_Float32ToRune_tabular(t *testing.T) {
 
 		value float32
 		want  rune
-		err   error
-		msg   string
 	}{
-		{
-			"error - must be a number",
-			float32(math.NaN()),
-			0,
-			ErrInvValue,
-			"invalid value: from float32 to rune",
-		},
-		{
-			"error - negative infinity",
-			float32(math.Inf(-1)),
-			0,
-			ErrInvValue,
-			"invalid value: from float32 to rune",
-		},
-		{
-			"error - positive infinity",
-			float32(math.Inf(1)),
-			0,
-			ErrInvValue,
-			"invalid value: from float32 to rune",
-		},
-		{
-			"error - fraction",
-			4.2,
-			0,
-			ErrFraction,
-			"must be a whole number: from float32 to rune",
-		},
-		{
-			"error - safe underflow",
-			Float32SafeIntMin - 1,
-			0,
-			ErrInvSafeRange,
-			"value out of safe range: from float32 to rune",
-		},
-		{
-			"error - safe overflow",
-			Float32SafeIntMax + 1,
-			0,
-			ErrInvSafeRange,
-			"value out of safe range: from float32 to rune",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -71,13 +27,65 @@ func Test_Float32ToRune_tabular(t *testing.T) {
 			have, err := Float32ToRune(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, float32(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, float32(have))
+		})
+	}
+}
 
+func Test_Float32ToRune_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value float32
+		err   error
+		msg   string
+	}{
+		{
+			"error - must be a number",
+			float32(math.NaN()),
+			ErrInvValue,
+			"invalid value: from float32 to rune",
+		},
+		{
+			"error - negative infinity",
+			float32(math.Inf(-1)),
+			ErrInvValue,
+			"invalid value: from float32 to rune",
+		},
+		{
+			"error - positive infinity",
+			float32(math.Inf(1)),
+			ErrInvValue,
+			"invalid value: from float32 to rune",
+		},
+		{
+			"error - fraction",
+			4.2,
+			ErrFraction,
+			"must be a whole number: from float32 to rune",
+		},
+		{
+			"error - safe underflow",
+			Float32SafeIntMin - 1,
+			ErrInvSafeRange,
+			"value out of safe range: from float32 to rune",
+		},
+		{
+			"error - safe overflow",
+			Float32SafeIntMax + 1,
+			ErrInvSafeRange,
+			"value out of safe range: from float32 to rune",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Float32ToRune(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, rune(0), have)

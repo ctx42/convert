@@ -16,17 +16,8 @@ func Test_Int8ToUint8_tabular(t *testing.T) {
 
 		value int8
 		want  uint8
-		err   error
-		msg   string
 	}{
-		{
-			"error - negative",
-			-1,
-			0,
-			ErrInvRange,
-			"value out of range: from int8 to uint8",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -35,13 +26,35 @@ func Test_Int8ToUint8_tabular(t *testing.T) {
 			have, err := Int8ToUint8(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, int8(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, int8(have))
+		})
+	}
+}
 
+func Test_Int8ToUint8_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value int8
+		err   error
+		msg   string
+	}{
+		{
+			"error - negative",
+			-1,
+			ErrInvRange,
+			"value out of range: from int8 to uint8",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Int8ToUint8(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, uint8(0), have)

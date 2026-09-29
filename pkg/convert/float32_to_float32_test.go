@@ -16,11 +16,9 @@ func Test_Float32ToFloat32_tabular(t *testing.T) {
 
 		value float32
 		want  float32
-		err   error
-		msg   string
 	}{
-		{"min", Float32SafeIntMin, Float32SafeIntMin, nil, ""},
-		{"max", Float32SafeIntMax, Float32SafeIntMax, nil, ""},
+		{"min", Float32SafeIntMin, Float32SafeIntMin},
+		{"max", Float32SafeIntMax, Float32SafeIntMax},
 	}
 
 	for _, tc := range tt {
@@ -29,16 +27,9 @@ func Test_Float32ToFloat32_tabular(t *testing.T) {
 			have, err := Float32ToFloat32(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, float32(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, float32(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, float32(have))
 		})
 	}
 }

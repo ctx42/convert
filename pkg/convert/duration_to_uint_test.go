@@ -19,17 +19,8 @@ func Test_DurationToUint_tabular(t *testing.T) {
 
 		value time.Duration
 		want  uint
-		err   error
-		msg   string
 	}{
-		{
-			"error - negative",
-			-1,
-			0,
-			ErrInvRange,
-			"value out of range: from time.Duration to uint",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -38,13 +29,35 @@ func Test_DurationToUint_tabular(t *testing.T) {
 			have, err := DurationToUint(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, time.Duration(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, time.Duration(have))
+		})
+	}
+}
 
+func Test_DurationToUint_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value time.Duration
+		err   error
+		msg   string
+	}{
+		{
+			"error - negative",
+			-1,
+			ErrInvRange,
+			"value out of range: from time.Duration to uint",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := DurationToUint(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, uint(0), have)
@@ -61,14 +74,12 @@ func Test_DurationToUint_32bit_tabular(t *testing.T) {
 		testN string
 
 		value time.Duration
-		want  uint
 		err   error
 		msg   string
 	}{
 		{
 			"error - overflow",
 			math.MaxUint32 + 1,
-			0,
 			ErrInvRange,
 			"value out of range: from time.Duration to uint",
 		},
@@ -82,7 +93,7 @@ func Test_DurationToUint_32bit_tabular(t *testing.T) {
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, tc.want, have)
+			assert.Equal(t, uint(0), have)
 		})
 	}
 }

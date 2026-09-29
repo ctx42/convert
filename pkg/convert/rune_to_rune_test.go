@@ -17,11 +17,9 @@ func Test_RuneToRune_tabular(t *testing.T) {
 
 		value rune
 		want  rune
-		err   error
-		msg   string
 	}{
-		{"min", math.MinInt32, math.MinInt32, nil, ""},
-		{"max", math.MaxInt32, math.MaxInt32, nil, ""},
+		{"min", math.MinInt32, math.MinInt32},
+		{"max", math.MaxInt32, math.MaxInt32},
 	}
 
 	for _, tc := range tt {
@@ -30,16 +28,9 @@ func Test_RuneToRune_tabular(t *testing.T) {
 			have, err := RuneToRune(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, rune(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, rune(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, rune(have))
 		})
 	}
 }

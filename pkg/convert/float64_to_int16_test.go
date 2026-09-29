@@ -17,52 +17,8 @@ func Test_Float64ToInt16_tabular(t *testing.T) {
 
 		value float64
 		want  int16
-		err   error
-		msg   string
 	}{
-		{
-			"error - must be a number",
-			math.NaN(),
-			0,
-			ErrInvValue,
-			"invalid value: from float64 to int16",
-		},
-		{
-			"error - negative infinity",
-			math.Inf(-1),
-			0,
-			ErrInvValue,
-			"invalid value: from float64 to int16",
-		},
-		{
-			"error - positive infinity",
-			math.Inf(1),
-			0,
-			ErrInvValue,
-			"invalid value: from float64 to int16",
-		},
-		{
-			"error - fraction",
-			4.2,
-			0,
-			ErrFraction,
-			"must be a whole number: from float64 to int16",
-		},
-		{
-			"error - underflow",
-			math.MinInt16 - 1,
-			0,
-			ErrInvRange,
-			"value out of range: from float64 to int16",
-		},
-		{
-			"error - overflow",
-			math.MaxInt16 + 1,
-			0,
-			ErrInvRange,
-			"value out of range: from float64 to int16",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -71,13 +27,65 @@ func Test_Float64ToInt16_tabular(t *testing.T) {
 			have, err := Float64ToInt16(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, float64(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, float64(have))
+		})
+	}
+}
 
+func Test_Float64ToInt16_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value float64
+		err   error
+		msg   string
+	}{
+		{
+			"error - must be a number",
+			math.NaN(),
+			ErrInvValue,
+			"invalid value: from float64 to int16",
+		},
+		{
+			"error - negative infinity",
+			math.Inf(-1),
+			ErrInvValue,
+			"invalid value: from float64 to int16",
+		},
+		{
+			"error - positive infinity",
+			math.Inf(1),
+			ErrInvValue,
+			"invalid value: from float64 to int16",
+		},
+		{
+			"error - fraction",
+			4.2,
+			ErrFraction,
+			"must be a whole number: from float64 to int16",
+		},
+		{
+			"error - underflow",
+			math.MinInt16 - 1,
+			ErrInvRange,
+			"value out of range: from float64 to int16",
+		},
+		{
+			"error - overflow",
+			math.MaxInt16 + 1,
+			ErrInvRange,
+			"value out of range: from float64 to int16",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Float64ToInt16(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, int16(0), have)

@@ -17,11 +17,9 @@ func Test_Uint32ToUint32_tabular(t *testing.T) {
 
 		value uint32
 		want  uint32
-		err   error
-		msg   string
 	}{
-		{"min", 0, 0, nil, ""},
-		{"max", math.MaxUint32, math.MaxUint32, nil, ""},
+		{"min", 0, 0},
+		{"max", math.MaxUint32, math.MaxUint32},
 	}
 
 	for _, tc := range tt {
@@ -30,16 +28,9 @@ func Test_Uint32ToUint32_tabular(t *testing.T) {
 			have, err := Uint32ToUint32(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uint32(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, uint32(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uint32(have))
 		})
 	}
 }

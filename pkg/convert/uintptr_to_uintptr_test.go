@@ -16,11 +16,9 @@ func Test_UintptrToUintptr_tabular(t *testing.T) {
 
 		value uintptr
 		want  uintptr
-		err   error
-		msg   string
 	}{
-		{"min", 0, 0, nil, ""},
-		{"max", MaxUintptr, MaxUintptr, nil, ""},
+		{"min", 0, 0},
+		{"max", MaxUintptr, MaxUintptr},
 	}
 
 	for _, tc := range tt {
@@ -29,16 +27,9 @@ func Test_UintptrToUintptr_tabular(t *testing.T) {
 			have, err := UintptrToUintptr(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uintptr(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, uintptr(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uintptr(have))
 		})
 	}
 }

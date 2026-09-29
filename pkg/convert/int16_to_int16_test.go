@@ -17,11 +17,9 @@ func Test_Int16ToInt16_tabular(t *testing.T) {
 
 		value int16
 		want  int16
-		err   error
-		msg   string
 	}{
-		{"min", math.MinInt16, math.MinInt16, nil, ""},
-		{"max", math.MaxInt16, math.MaxInt16, nil, ""},
+		{"min", math.MinInt16, math.MinInt16},
+		{"max", math.MaxInt16, math.MaxInt16},
 	}
 
 	for _, tc := range tt {
@@ -30,16 +28,9 @@ func Test_Int16ToInt16_tabular(t *testing.T) {
 			have, err := Int16ToInt16(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, int16(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, int16(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, int16(have))
 		})
 	}
 }

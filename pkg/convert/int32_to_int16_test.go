@@ -17,24 +17,8 @@ func Test_Int32ToInt16_tabular(t *testing.T) {
 
 		value int32
 		want  int16
-		err   error
-		msg   string
 	}{
-		{
-			"error - underflow",
-			math.MinInt16 - 1,
-			0,
-			ErrInvRange,
-			"value out of range: from int32 to int16",
-		},
-		{
-			"error - overflow",
-			math.MaxInt16 + 1,
-			0,
-			ErrInvRange,
-			"value out of range: from int32 to int16",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -43,13 +27,41 @@ func Test_Int32ToInt16_tabular(t *testing.T) {
 			have, err := Int32ToInt16(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, int32(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, int32(have))
+		})
+	}
+}
 
+func Test_Int32ToInt16_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value int32
+		err   error
+		msg   string
+	}{
+		{
+			"error - underflow",
+			math.MinInt16 - 1,
+			ErrInvRange,
+			"value out of range: from int32 to int16",
+		},
+		{
+			"error - overflow",
+			math.MaxInt16 + 1,
+			ErrInvRange,
+			"value out of range: from int32 to int16",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Int32ToInt16(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, int16(0), have)

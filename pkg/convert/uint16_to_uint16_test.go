@@ -17,11 +17,9 @@ func Test_Uint16ToUint16_tabular(t *testing.T) {
 
 		value uint16
 		want  uint16
-		err   error
-		msg   string
 	}{
-		{"min", 0, 0, nil, ""},
-		{"max", math.MaxUint16, math.MaxUint16, nil, ""},
+		{"min", 0, 0},
+		{"max", math.MaxUint16, math.MaxUint16},
 	}
 
 	for _, tc := range tt {
@@ -30,16 +28,9 @@ func Test_Uint16ToUint16_tabular(t *testing.T) {
 			have, err := Uint16ToUint16(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uint16(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, uint16(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uint16(have))
 		})
 	}
 }

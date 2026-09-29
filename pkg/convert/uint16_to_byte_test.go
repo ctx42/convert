@@ -17,17 +17,8 @@ func Test_Uint16ToByte_tabular(t *testing.T) {
 
 		value uint16
 		want  byte
-		err   error
-		msg   string
 	}{
-		{
-			"error - overflow",
-			math.MaxUint8 + 1,
-			0,
-			ErrInvRange,
-			"value out of range: from uint16 to byte",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -36,13 +27,35 @@ func Test_Uint16ToByte_tabular(t *testing.T) {
 			have, err := Uint16ToByte(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uint16(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uint16(have))
+		})
+	}
+}
 
+func Test_Uint16ToByte_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value uint16
+		err   error
+		msg   string
+	}{
+		{
+			"error - overflow",
+			math.MaxUint8 + 1,
+			ErrInvRange,
+			"value out of range: from uint16 to byte",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Uint16ToByte(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, byte(0), have)

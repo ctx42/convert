@@ -17,10 +17,8 @@ func Test_UintptrToFloat64_tabular(t *testing.T) {
 
 		value uintptr
 		want  float64
-		err   error
-		msg   string
 	}{
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -29,16 +27,9 @@ func Test_UintptrToFloat64_tabular(t *testing.T) {
 			have, err := UintptrToFloat64(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uintptr(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, float64(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uintptr(have))
 		})
 	}
 }
@@ -52,14 +43,12 @@ func Test_UintptrToFloat64_64bit_tabular(t *testing.T) {
 		testN string
 
 		value uint64
-		want  float64
 		err   error
 		msg   string
 	}{
 		{
 			"error - safe overflow",
 			Float64SafeIntMax + 1,
-			0,
 			ErrInvSafeRange,
 			"value out of safe range: from uintptr to float64",
 		},
@@ -76,7 +65,7 @@ func Test_UintptrToFloat64_64bit_tabular(t *testing.T) {
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, tc.want, have)
+			assert.Equal(t, float64(0), have)
 		})
 	}
 }

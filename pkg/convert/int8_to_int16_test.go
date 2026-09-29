@@ -16,10 +16,8 @@ func Test_Int8ToInt16_tabular(t *testing.T) {
 
 		value int8
 		want  int16
-		err   error
-		msg   string
 	}{
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -28,16 +26,9 @@ func Test_Int8ToInt16_tabular(t *testing.T) {
 			have, err := Int8ToInt16(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, int8(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, int16(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, int8(have))
 		})
 	}
 }

@@ -6,6 +6,7 @@ package codegen
 import (
 	"fmt"
 	"io"
+	"strings"
 )
 
 // GenAnyToDst represents the code generator for converters between values of
@@ -88,56 +89,60 @@ func (gen *GenAnyToDst) convFuncBody() error {
 func (gen *GenAnyToDst) testFunc() error {
 	gen.addImport("testing", "github.com/ctx42/testing/pkg/assert")
 
-	data := map[string]any{"dst": gen.dst}
+	data := map[string]any{"dst": gen.dst, "carrier": "any"}
 	gen.addImport(cbTstAnyToDst.Imports()...)
 	if err := cbTstAnyToDst.Render(gen.code, 0, data); err != nil {
 		return err
 	}
-	gen.writeCode("\n")
 
-	gen.writeCode("func ")
-	gen.writeCode("Test_AnyTo%s_tabular", gen.dst.Title())
-	gen.writeCode("(t *testing.T) {\n")
-	if err := gen.testFuncBody(); err != nil {
+	succ, errs, err := gen.testCases()
+	if err != nil {
 		return err
 	}
-	gen.writeCode("}\n")
-	return nil
+	prefix := "Test_AnyTo" + gen.dst.Title()
+	err = gen.tabularTest(
+		prefix+"_tabular",
+		nil,
+		cbTstAnyToDstTT,
+		cbTstAnyToDstLoop,
+		succ,
+		data,
+	)
+	if err != nil {
+		return err
+	}
+	return gen.tabularTest(
+		prefix+"_error_tabular",
+		nil,
+		cbTstErrTT,
+		cbTstAnyToDstErrLoop,
+		errs,
+		data,
+	)
 }
 
-// testFuncBody generates code for the conversion function tests.
-func (gen *GenAnyToDst) testFuncBody() error {
-	data := map[string]any{"dst": gen.dst}
-	gen.addImport(cbTstAnyToDstTT.Imports()...)
-	if err := cbTstAnyToDstTT.Render(gen.code, 1, data); err != nil {
-		return err
-	}
-	if err := gen.testCases(); err != nil {
-		return err
-	}
-	gen.writeCode("\t}\n\n")
-	gen.addImport(cbTstAnyToDstLoop.Imports()...)
-	return cbTstAnyToDstLoop.Render(gen.code, 1, data)
-}
+// testCases generates code for the conversion function test cases and returns
+// the success and the error test case rows.
+func (gen *GenAnyToDst) testCases() (string, string, error) {
+	succ := &strings.Builder{}
+	errs := &strings.Builder{}
 
-// testCases generates code for the conversion function test cases.
-func (gen *GenAnyToDst) testCases() error {
 	// Conversion success.
 	tpl := cbTstAnyToDstFloatToInt
 	if gen.dst.IsFloat() {
 		tpl = cbTstAnyToDstIntToFloat
 	}
 	gen.addImport(tpl.Imports()...)
-	if err := tpl.Render(gen.code, 2, nil); err != nil {
-		return err
+	if err := tpl.Render(succ, 2, nil); err != nil {
+		return "", "", err
 	}
 
 	// Undefined conversion error.
 	tpl = cbTstErrUndefinedConv
 	data := map[string]any{"dst": gen.dst}
 	gen.addImport(tpl.Imports()...)
-	if err := tpl.Render(gen.code, 2, data); err != nil {
-		return err
+	if err := tpl.Render(errs, 2, data); err != nil {
+		return "", "", err
 	}
 
 	// Conversion error for unsigned types.
@@ -150,8 +155,8 @@ func (gen *GenAnyToDst) testCases() error {
 			"value": "-1",
 		}
 		gen.addImport(tpl.Imports()...)
-		if err := tpl.Render(gen.code, 2, data); err != nil {
-			return err
+		if err := tpl.Render(errs, 2, data); err != nil {
+			return "", "", err
 		}
 	}
 
@@ -167,8 +172,8 @@ func (gen *GenAnyToDst) testCases() error {
 		}
 		gen.addImport(mv.Imports()...)
 		gen.addImport(tpl.Imports()...)
-		if err := tpl.Render(gen.code, 2, data); err != nil {
-			return err
+		if err := tpl.Render(errs, 2, data); err != nil {
+			return "", "", err
 		}
 	}
 
@@ -177,10 +182,10 @@ func (gen *GenAnyToDst) testCases() error {
 		tpl = cbTstErrIsWhole
 		data = map[string]any{"src": NumericType[float64](), "dst": gen.dst}
 		gen.addImport(tpl.Imports()...)
-		if err := tpl.Render(gen.code, 2, data); err != nil {
-			return err
+		if err := tpl.Render(errs, 2, data); err != nil {
+			return "", "", err
 		}
 	}
 
-	return nil
+	return succ.String(), errs.String(), nil
 }

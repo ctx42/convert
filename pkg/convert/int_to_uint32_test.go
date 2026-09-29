@@ -18,17 +18,8 @@ func Test_IntToUint32_tabular(t *testing.T) {
 
 		value int
 		want  uint32
-		err   error
-		msg   string
 	}{
-		{
-			"error - negative",
-			-1,
-			0,
-			ErrInvRange,
-			"value out of range: from int to uint32",
-		},
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -37,13 +28,35 @@ func Test_IntToUint32_tabular(t *testing.T) {
 			have, err := IntToUint32(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, int(have))
-				return
-			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, int(have))
+		})
+	}
+}
 
+func Test_IntToUint32_error_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value int
+		err   error
+		msg   string
+	}{
+		{
+			"error - negative",
+			-1,
+			ErrInvRange,
+			"value out of range: from int to uint32",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := IntToUint32(tc.value)
+
+			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, uint32(0), have)
@@ -60,14 +73,12 @@ func Test_IntToUint32_64bit_tabular(t *testing.T) {
 		testN string
 
 		value int64
-		want  uint32
 		err   error
 		msg   string
 	}{
 		{
 			"error - overflow",
 			math.MaxUint32 + 1,
-			0,
 			ErrInvRange,
 			"value out of range: from int to uint32",
 		},
@@ -84,7 +95,7 @@ func Test_IntToUint32_64bit_tabular(t *testing.T) {
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, tc.want, have)
+			assert.Equal(t, uint32(0), have)
 		})
 	}
 }

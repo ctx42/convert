@@ -18,10 +18,8 @@ func Test_Uint64ToUintptr_tabular(t *testing.T) {
 
 		value uint64
 		want  uintptr
-		err   error
-		msg   string
 	}{
-		{"success", 42, 42, nil, ""},
+		{"success", 42, 42},
 	}
 
 	for _, tc := range tt {
@@ -30,16 +28,9 @@ func Test_Uint64ToUintptr_tabular(t *testing.T) {
 			have, err := Uint64ToUintptr(tc.value)
 
 			// --- Then ---
-			if tc.err == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.want, have)
-				assert.Equal(t, tc.value, uint64(have))
-				return
-			}
-
-			assert.ErrorIs(t, tc.err, err)
-			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, uintptr(0), have)
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, have)
+			assert.Equal(t, tc.value, uint64(have))
 		})
 	}
 }
@@ -53,14 +44,12 @@ func Test_Uint64ToUintptr_32bit_tabular(t *testing.T) {
 		testN string
 
 		value uint64
-		want  uintptr
 		err   error
 		msg   string
 	}{
 		{
 			"error - overflow",
 			math.MaxUint32 + 1,
-			0,
 			ErrInvRange,
 			"value out of range: from uint64 to uintptr",
 		},
@@ -74,7 +63,7 @@ func Test_Uint64ToUintptr_32bit_tabular(t *testing.T) {
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
-			assert.Equal(t, tc.want, have)
+			assert.Equal(t, uintptr(0), have)
 		})
 	}
 }
