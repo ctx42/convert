@@ -8,6 +8,7 @@ package convert
 import (
 	"github.com/ctx42/testing/pkg/assert"
 	"math"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -21,13 +22,6 @@ func Test_UintToDuration_tabular(t *testing.T) {
 		err   error
 		msg   string
 	}{
-		{
-			"error - overflow",
-			math.MaxInt64 + 1,
-			0,
-			ErrInvRange,
-			"value out of range: from uint to time.Duration",
-		},
 		{"success", 42, 42, nil, ""},
 	}
 
@@ -47,6 +41,44 @@ func Test_UintToDuration_tabular(t *testing.T) {
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, time.Duration(0), have)
+		})
+	}
+}
+
+func Test_UintToDuration_64bit_tabular(t *testing.T) {
+	if strconv.IntSize != 64 {
+		t.Skip("64-bit platforms only")
+	}
+
+	tt := []struct {
+		testN string
+
+		value uint64
+		want  time.Duration
+		err   error
+		msg   string
+	}{
+		{
+			"error - overflow",
+			math.MaxInt64 + 1,
+			0,
+			ErrInvRange,
+			"value out of range: from uint to time.Duration",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- Given ---
+			src := uint(tc.value)
+
+			// --- When ---
+			have, err := UintToDuration(src)
+
+			// --- Then ---
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, tc.want, have)
 		})
 	}
 }

@@ -13,69 +13,87 @@ func Test_NumericType_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		typ     func() Type
-		value   *Value
-		size    int
-		bits    int
-		signed  bool
-		numeric bool
-		float   bool
-		alias   *Value
+		typ      func() Type
+		value    *Value
+		size     int
+		bits     int
+		signed   bool
+		numeric  bool
+		float    bool
+		alias    *Value
+		platform bool
 	}{
 		{
-			testN:   "signed integer",
-			typ:     func() Type { return NumericType[int]() },
-			value:   NewValue("int"),
-			size:    IntSize,
-			bits:    IntSize - 1,
-			signed:  true,
-			numeric: true,
-			float:   false,
-			alias:   nil,
+			testN:    "signed integer",
+			typ:      func() Type { return NumericType[int]() },
+			value:    NewValue("int"),
+			size:     IntSize,
+			bits:     IntSize - 1,
+			signed:   true,
+			numeric:  true,
+			float:    false,
+			alias:    nil,
+			platform: true,
 		},
 		{
-			testN:   "unsigned integer",
-			typ:     func() Type { return NumericType[uint]() },
-			value:   NewValue("uint"),
-			size:    IntSize,
-			bits:    IntSize,
-			signed:  false,
-			numeric: true,
-			float:   false,
-			alias:   nil,
+			testN:    "unsigned integer",
+			typ:      func() Type { return NumericType[uint]() },
+			value:    NewValue("uint"),
+			size:     IntSize,
+			bits:     IntSize,
+			signed:   false,
+			numeric:  true,
+			float:    false,
+			alias:    nil,
+			platform: true,
 		},
 		{
-			testN:   "floating-point number",
-			typ:     func() Type { return NumericType[float32]() },
-			value:   NewValue("float32"),
-			size:    32,
-			bits:    24,
-			signed:  true,
-			numeric: true,
-			float:   true,
-			alias:   nil,
+			testN:    "uintptr",
+			typ:      func() Type { return NumericType[uintptr]() },
+			value:    NewValue("uintptr"),
+			size:     IntSize,
+			bits:     IntSize,
+			signed:   false,
+			numeric:  true,
+			float:    false,
+			alias:    nil,
+			platform: true,
 		},
 		{
-			testN:   "Uint64 type",
-			typ:     func() Type { return NumericType[Uint64]() },
-			value:   NewValue("github.com/ctx42/convert/pkg/codegen", "Uint64"),
-			size:    64,
-			bits:    64,
-			signed:  false,
-			numeric: true,
-			float:   false,
-			alias:   nil,
+			testN:    "floating-point number",
+			typ:      func() Type { return NumericType[float32]() },
+			value:    NewValue("float32"),
+			size:     32,
+			bits:     24,
+			signed:   true,
+			numeric:  true,
+			float:    true,
+			alias:    nil,
+			platform: false,
 		},
 		{
-			testN:   "Int64 type",
-			typ:     func() Type { return NumericType[Int64]() },
-			value:   NewValue("github.com/ctx42/convert/pkg/codegen", "Int64"),
-			size:    64,
-			bits:    63,
-			signed:  true,
-			numeric: true,
-			float:   false,
-			alias:   nil,
+			testN:    "Uint64 type",
+			typ:      func() Type { return NumericType[Uint64]() },
+			value:    NewValue("github.com/ctx42/convert/pkg/codegen", "Uint64"),
+			size:     64,
+			bits:     64,
+			signed:   false,
+			numeric:  true,
+			float:    false,
+			alias:    nil,
+			platform: false,
+		},
+		{
+			testN:    "Int64 type",
+			typ:      func() Type { return NumericType[Int64]() },
+			value:    NewValue("github.com/ctx42/convert/pkg/codegen", "Int64"),
+			size:     64,
+			bits:     63,
+			signed:   true,
+			numeric:  true,
+			float:    false,
+			alias:    nil,
+			platform: false,
 		},
 	}
 
@@ -92,7 +110,8 @@ func Test_NumericType_tabular(t *testing.T) {
 			assert.Equal(t, tc.numeric, have.numeric)
 			assert.Equal(t, tc.float, have.float)
 			assert.Equal(t, tc.alias, have.alias)
-			assert.Fields(t, 7, have)
+			assert.Equal(t, tc.platform, have.platform)
+			assert.Fields(t, 8, have)
 		})
 	}
 }
@@ -113,7 +132,8 @@ func Test_Type_Alias(t *testing.T) {
 		assert.False(t, have.signed)
 		assert.False(t, have.float)
 		assert.Equal(t, NewValue("uint8"), have.alias)
-		assert.Fields(t, 7, have)
+		assert.False(t, have.platform)
+		assert.Fields(t, 8, have)
 	})
 
 	t.Run("set package and name", func(t *testing.T) {
@@ -131,7 +151,8 @@ func Test_Type_Alias(t *testing.T) {
 		assert.True(t, have.signed)
 		assert.False(t, have.float)
 		assert.Equal(t, NewValue("int64"), have.alias)
-		assert.Fields(t, 7, have)
+		assert.False(t, have.platform)
+		assert.Fields(t, 8, have)
 	})
 
 	t.Run("panics when no arguments", func(t *testing.T) {
@@ -417,6 +438,30 @@ func Test_Type_IsInteger(t *testing.T) {
 	})
 }
 
+func Test_Type_IsPlatform(t *testing.T) {
+	t.Run("platform", func(t *testing.T) {
+		// --- Given ---
+		typ := NumericType[uint]()
+
+		// --- When ---
+		have := typ.IsPlatform()
+
+		// --- Then ---
+		assert.True(t, have)
+	})
+
+	t.Run("not platform", func(t *testing.T) {
+		// --- Given ---
+		typ := NumericType[uint64]()
+
+		// --- When ---
+		have := typ.IsPlatform()
+
+		// --- Then ---
+		assert.False(t, have)
+	})
+}
+
 func Test_Type_Size(t *testing.T) {
 	// --- Given ---
 	typ := Type{size: 42}
@@ -426,6 +471,37 @@ func Test_Type_Size(t *testing.T) {
 
 	// --- Then ---
 	assert.Equal(t, 42, have)
+}
+
+func Test_Type_onPlatform_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		typ  Type
+		size int
+		bits int
+		want int
+	}{
+		{"int on 32-bit", NumericType[int](), 32, 31, 32},
+		{"int on 64-bit", NumericType[int](), 64, 63, 64},
+		{"uint on 32-bit", NumericType[uint](), 32, 32, 32},
+		{"uintptr on 32-bit", NumericType[uintptr](), 32, 32, 32},
+		{"int16 unchanged", NumericType[int16](), 32, 15, 16},
+		{"float64 unchanged", NumericType[float64](), 32, 53, 64},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have := tc.typ.onPlatform(tc.size)
+
+			// --- Then ---
+			assert.Equal(t, tc.want, have.Size())
+			assert.Equal(t, tc.bits, have.Bits())
+			assert.Equal(t, tc.typ.Code(), have.Code())
+			assert.Equal(t, tc.typ.IsPlatform(), have.IsPlatform())
+		})
+	}
 }
 
 func Test_Type_ConvActions_tabular(t *testing.T) {
@@ -578,12 +654,173 @@ func Test_Type_ConvActions_tabular(t *testing.T) {
 				NewAction(CastDirectly, nil),
 			},
 		},
+
+		{
+			"int to int",
+			NumericType[int](),
+			NumericType[int](),
+			[]Action{
+				NewAction(CastNotNeeded, nil),
+			},
+		},
+		{
+			"int to int64",
+			NumericType[int](),
+			NumericType[int64](),
+			[]Action{
+				NewAction(CastDirectly, nil),
+			},
+		},
+		{
+			"int64 to int",
+			NumericType[int64](),
+			NumericType[int](),
+			[]Action{
+				NewAction(CheckUnderflows, NewValue("math", "MinInt")),
+				NewAction(CheckOverflows, NewValue("math", "MaxInt")),
+				NewAction(CastDirectly, nil),
+			},
+		},
+		{
+			"uint to int64",
+			NumericType[uint](),
+			NumericType[int64](),
+			[]Action{
+				NewAction(CheckOverflows, NewValue("math", "MaxInt64")),
+				NewAction(CastDirectly, nil),
+			},
+		},
+		{
+			"uint to int",
+			NumericType[uint](),
+			NumericType[int](),
+			[]Action{
+				NewAction(CheckOverflows, NewValue("math", "MaxInt")),
+				NewAction(CastDirectly, nil),
+			},
+		},
+		{
+			"int64 to uint",
+			NumericType[int64](),
+			NumericType[uint](),
+			[]Action{
+				NewAction(CheckIsNonNegative, nil),
+				NewAction(CheckOverflows, NewValue("math", "MaxUint")),
+				NewAction(CastDirectly, nil),
+			},
+		},
+		{
+			"uint64 to uintptr",
+			NumericType[uint64](),
+			NumericType[uintptr](),
+			[]Action{
+				NewAction(CheckOverflows, NewValue("MaxUintptr")),
+				NewAction(CastDirectly, nil),
+			},
+		},
+		{
+			"int to float32",
+			NumericType[int](),
+			NumericType[float32](),
+			[]Action{
+				NewAction(CheckIntSafeToFloatMin, NewValue("Float32SafeIntMin")),
+				NewAction(CheckIntSafeToFloatMax, NewValue("Float32SafeIntMax")),
+				NewAction(CastDirectly, nil),
+			},
+		},
+		{
+			"int to float64",
+			NumericType[int](),
+			NumericType[float64](),
+			[]Action{
+				NewAction(CheckIntSafeToFloatMin, NewValue("Float64SafeIntMin")),
+				NewAction(CheckIntSafeToFloatMax, NewValue("Float64SafeIntMax")),
+				NewAction(CastDirectly, nil),
+			},
+		},
+		{
+			"float64 to int",
+			NumericType[float64](),
+			NumericType[int](),
+			[]Action{
+				NewAction(CastToFloat64, nil),
+				NewAction(CheckIsNumber, nil),
+				NewAction(CheckIsFinite, nil),
+				NewAction(CheckIsWhole, nil),
+				NewAction(CheckUnderflows, NewValue("math", "MinInt")),
+				NewAction(CheckOverflows, NewValue("math", "MaxInt")),
+				NewAction(CheckFloatSafeToIntMin, NewValue("Float64SafeIntMin")),
+				NewAction(CheckFloatSafeToIntMax, NewValue("Float64SafeIntMax")),
+				NewAction(CastDirectly, nil),
+			},
+		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
 			have := tc.from.ConvActions(tc.to)
+
+			// --- Then ---
+			assert.Equal(t, tc.actions, have)
+		})
+	}
+}
+
+func Test_Type_platformConvActions_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		from    Type
+		to      Type
+		size    int
+		actions []Action
+	}{
+		{
+			"int64 to int on 32-bit",
+			NumericType[int64](),
+			NumericType[int](),
+			32,
+			[]Action{
+				NewAction(CheckUnderflows, NewValue("math", "MinInt32")),
+				NewAction(CheckOverflows, NewValue("math", "MaxInt32")),
+				NewAction(CastDirectly, nil),
+			},
+		},
+		{
+			"int64 to int on 64-bit",
+			NumericType[int64](),
+			NumericType[int](),
+			64,
+			[]Action{
+				NewAction(CastDirectly, nil),
+			},
+		},
+		{
+			"uint to int64 on 32-bit",
+			NumericType[uint](),
+			NumericType[int64](),
+			32,
+			[]Action{
+				NewAction(CastDirectly, nil),
+			},
+		},
+		{
+			"uint to int64 on 64-bit",
+			NumericType[uint](),
+			NumericType[int64](),
+			64,
+			[]Action{
+				NewAction(CheckOverflows, NewValue("math", "MaxInt64")),
+				NewAction(CastDirectly, nil),
+			},
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have := tc.from.platformConvActions(tc.to, tc.size)
 
 			// --- Then ---
 			assert.Equal(t, tc.actions, have)

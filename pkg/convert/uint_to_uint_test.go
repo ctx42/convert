@@ -21,7 +21,7 @@ func Test_UintToUint_tabular(t *testing.T) {
 		msg   string
 	}{
 		{"min", 0, 0, nil, ""},
-		{"max", math.MaxUint64, math.MaxUint64, nil, ""},
+		{"max", math.MaxUint, math.MaxUint, nil, ""},
 	}
 
 	for _, tc := range tt {

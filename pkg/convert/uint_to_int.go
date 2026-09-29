@@ -11,7 +11,7 @@ import (
 
 // UintToInt safely converts uint value to int.
 func UintToInt(src uint) (dst int, err error) {
-	if src > math.MaxInt64 {
+	if uint64(src) > math.MaxInt {
 		return 0, NewError(ErrInvRange, "uint", "int")
 	}
 	return int(src), nil

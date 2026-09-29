@@ -7,6 +7,8 @@ package convert
 
 import (
 	"github.com/ctx42/testing/pkg/assert"
+	"math"
+	"strconv"
 	"testing"
 )
 
@@ -38,6 +40,41 @@ func Test_Uint32ToInt_tabular(t *testing.T) {
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, int(0), have)
+		})
+	}
+}
+
+func Test_Uint32ToInt_32bit_tabular(t *testing.T) {
+	if strconv.IntSize != 32 {
+		t.Skip("32-bit platforms only")
+	}
+
+	tt := []struct {
+		testN string
+
+		value uint32
+		want  int
+		err   error
+		msg   string
+	}{
+		{
+			"error - overflow",
+			math.MaxInt32 + 1,
+			0,
+			ErrInvRange,
+			"value out of range: from uint32 to int",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Uint32ToInt(tc.value)
+
+			// --- Then ---
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, tc.want, have)
 		})
 	}
 }

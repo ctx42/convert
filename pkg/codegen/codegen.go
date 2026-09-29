@@ -4,6 +4,10 @@
 // Package codegen provides generators for conversion functions and their tests.
 package codegen
 
+import (
+	"slices"
+)
+
 // Number represents numeric types.
 type Number interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 |
@@ -61,6 +65,26 @@ const (
 	CheckFloatSafeToIntMax ActionName = "check_safe_float_int_max"
 )
 
+// actionOrder lists action names in the order the generated code performs
+// them. Range checks precede safe range checks, so when actions derived for
+// 32-bit and 64-bit platforms are merged, a value outside the destination
+// range on the current platform fails the range check first.
+var actionOrder = []ActionName{
+	CastToFloat64,
+	CheckIsNumber,
+	CheckIsFinite,
+	CheckIsWhole,
+	CheckIsNonNegative,
+	CheckUnderflows,
+	CheckOverflows,
+	CheckIntSafeToFloatMin,
+	CheckIntSafeToFloatMax,
+	CheckFloatSafeToIntMin,
+	CheckFloatSafeToIntMax,
+	CastNotNeeded,
+	CastDirectly,
+}
+
 // Action defines an action to take during conversion between types.
 type Action struct {
 	name  ActionName // The action.
@@ -82,3 +106,36 @@ func (act Action) Imports() []string { return act.value.Imports() }
 // Code returns the Go code representation of the value. Returns an empty
 // string if the value is not set.
 func (act Action) Code() string { return act.value.Code() }
+
+// equal returns true if both actions have the same name and value code.
+func (act Action) equal(other Action) bool {
+	return act.name == other.name && act.Code() == other.Code()
+}
+
+// mergeActions merges action lists derived for 32-bit and 64-bit platforms
+// into one list valid on both, ordered by actionOrder. Range checks against a
+// platform-sized target use its platform-dependent limits.
+func mergeActions(target Type, lists ...[]Action) []Action {
+	var merged []Action
+	for _, actions := range lists {
+		for _, act := range actions {
+			if target.IsPlatform() {
+				switch act.name {
+				case CheckUnderflows:
+					act.value = MinPlatformInteger(target)
+				case CheckOverflows:
+					act.value = MaxPlatformInteger(target)
+				}
+			}
+			sameName := func(m Action) bool { return m.name == act.name }
+			if !slices.ContainsFunc(merged, sameName) {
+				merged = append(merged, act)
+			}
+		}
+	}
+	slices.SortStableFunc(merged, func(a, b Action) int {
+		return slices.Index(actionOrder, a.name) -
+			slices.Index(actionOrder, b.name)
+	})
+	return merged
+}

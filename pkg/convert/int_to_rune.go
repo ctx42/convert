@@ -11,10 +11,10 @@ import (
 
 // IntToRune safely converts int value to rune.
 func IntToRune(src int) (dst rune, err error) {
-	if src < math.MinInt32 {
+	if int64(src) < math.MinInt32 {
 		return 0, NewError(ErrInvRange, "int", "rune")
 	}
-	if src > math.MaxInt32 {
+	if int64(src) > math.MaxInt32 {
 		return 0, NewError(ErrInvRange, "int", "rune")
 	}
 	return rune(src), nil

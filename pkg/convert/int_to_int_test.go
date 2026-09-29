@@ -20,8 +20,8 @@ func Test_IntToInt_tabular(t *testing.T) {
 		err   error
 		msg   string
 	}{
-		{"min", math.MinInt64, math.MinInt64, nil, ""},
-		{"max", math.MaxInt64, math.MaxInt64, nil, ""},
+		{"min", math.MinInt, math.MinInt, nil, ""},
+		{"max", math.MaxInt, math.MaxInt, nil, ""},
 	}
 
 	for _, tc := range tt {

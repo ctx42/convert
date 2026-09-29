@@ -11,7 +11,7 @@ import (
 
 // UintptrToUint32 safely converts uintptr value to uint32.
 func UintptrToUint32(src uintptr) (dst uint32, err error) {
-	if src > math.MaxUint32 {
+	if uint64(src) > math.MaxUint32 {
 		return 0, NewError(ErrInvRange, "uintptr", "uint32")
 	}
 	return uint32(src), nil

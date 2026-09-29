@@ -6,6 +6,7 @@ package codegen
 import (
 	"fmt"
 	"io"
+	"slices"
 )
 
 // GenSrcToDst represents the code generator for converters between values of
@@ -111,7 +112,7 @@ func (gen *GenSrcToDst) convFuncBody(actions []Action) error {
 			data := map[string]any{
 				"src":   gen.src,
 				"dst":   gen.dst,
-				"var":   "src",
+				"var":   gen.cmpVar(act.Name()),
 				"cond":  "<",
 				"value": act,
 				"error": "ErrInvRange",
@@ -125,7 +126,7 @@ func (gen *GenSrcToDst) convFuncBody(actions []Action) error {
 			data := map[string]any{
 				"src":   gen.src,
 				"dst":   gen.dst,
-				"var":   "src",
+				"var":   gen.cmpVar(act.Name()),
 				"cond":  ">",
 				"value": act,
 				"error": "ErrInvRange",
@@ -160,7 +161,7 @@ func (gen *GenSrcToDst) convFuncBody(actions []Action) error {
 			data := map[string]any{
 				"src":   gen.src,
 				"dst":   gen.dst,
-				"var":   "src",
+				"var":   gen.cmpVar(act.Name()),
 				"cond":  "<",
 				"value": act,
 				"error": "ErrInvSafeRange",
@@ -174,7 +175,7 @@ func (gen *GenSrcToDst) convFuncBody(actions []Action) error {
 			data := map[string]any{
 				"src":   gen.src,
 				"dst":   gen.dst,
-				"var":   "src",
+				"var":   gen.cmpVar(act.Name()),
 				"cond":  ">",
 				"value": act,
 				"error": "ErrInvSafeRange",
@@ -219,8 +220,53 @@ func (gen *GenSrcToDst) convFuncBody(actions []Action) error {
 	return nil
 }
 
+// cmpVar returns the expression representing the source value in the range
+// check performed by the named action. When the source or the destination is
+// a platform-sized type, an integer source is converted to a 64-bit type, so
+// the limit it is compared with fits it on both 32-bit and 64-bit platforms.
+func (gen *GenSrcToDst) cmpVar(name ActionName) string {
+	src, dst := gen.src, gen.dst
+	if src.IsFloat() || (!src.IsPlatform() && !dst.IsPlatform()) {
+		return "src"
+	}
+	wide := NumericType[int64]()
+	if src.IsUnsigned() || (name == CheckOverflows && dst.IsUnsigned()) {
+		wide = NumericType[uint64]()
+	}
+	isWide := !src.IsPlatform() && src.Size() == 64
+	if isWide && src.IsSigned() == wide.IsSigned() {
+		return "src"
+	}
+	return wide.Code() + "(src)"
+}
+
+// testActions returns the conversion actions to test on every platform, and
+// the ones to test only on 32-bit and only on 64-bit platforms.
+func (gen *GenSrcToDst) testActions() (common, only32, only64 []Action) {
+	if !gen.src.IsPlatform() && !gen.dst.IsPlatform() {
+		return gen.src.ConvActions(gen.dst), nil, nil
+	}
+	a32 := gen.src.platformConvActions(gen.dst, 32)
+	a64 := gen.src.platformConvActions(gen.dst, 64)
+	for _, act := range a64 {
+		if slices.ContainsFunc(a32, act.equal) {
+			common = append(common, act)
+			continue
+		}
+		only64 = append(only64, act)
+	}
+	for _, act := range a32 {
+		if !slices.ContainsFunc(common, act.equal) {
+			only32 = append(only32, act)
+		}
+	}
+	return common, only32, only64
+}
+
 // testFunc generates code for the conversion function tests.
 func (gen *GenSrcToDst) testFunc() error {
+	common, only32, only64 := gen.testActions()
+
 	gen.addImport("testing", "github.com/ctx42/testing/pkg/assert")
 	gen.writeCode("func ")
 
@@ -228,35 +274,80 @@ func (gen *GenSrcToDst) testFunc() error {
 	gen.writeCode(format, gen.src.Title(), gen.dst.Title())
 
 	gen.writeCode("(t *testing.T) {\n")
-	if err := gen.testFuncBody(); err != nil {
+	if err := gen.testFuncBody(common); err != nil {
+		return err
+	}
+	gen.writeCode("}\n")
+
+	if err := gen.platformTestFunc(32, only32); err != nil {
+		return err
+	}
+	return gen.platformTestFunc(64, only64)
+}
+
+// testFuncBody generates code for the conversion function tests.
+func (gen *GenSrcToDst) testFuncBody(actions []Action) error {
+	data := map[string]any{"src": gen.src, "dst": gen.dst}
+	gen.addImport(cbTstSrcToDstTT.Imports()...)
+	if err := cbTstSrcToDstTT.Render(gen.code, 1, data); err != nil {
+		return err
+	}
+	if err := gen.testCases(actions); err != nil {
+		return err
+	}
+	gen.writeCode("\t}\n\n")
+
+	gen.addImport(cbTstSrcToDstLoop.Imports()...)
+	return cbTstSrcToDstLoop.Render(gen.code, 1, data)
+}
+
+// platformTestFunc generates code for the conversion function tests run only
+// on platforms with the given word size in bits. Generates nothing when there
+// are no actions to test.
+func (gen *GenSrcToDst) platformTestFunc(size int, actions []Action) error {
+	if len(actions) == 0 {
+		return nil
+	}
+
+	// Test case values are stored in a 64-bit type, so values out of range
+	// on the other platform compile.
+	carrier := gen.src
+	if gen.src.IsPlatform() {
+		carrier = NumericType[int64]()
+		if gen.src.IsUnsigned() {
+			carrier = NumericType[uint64]()
+		}
+	}
+
+	data := map[string]any{
+		"src":     gen.src,
+		"dst":     gen.dst,
+		"size":    size,
+		"carrier": carrier,
+	}
+	gen.writeCode("\n")
+	gen.addImport(cbTstSrcToDstPlatformTT.Imports()...)
+	if err := cbTstSrcToDstPlatformTT.Render(gen.code, 0, data); err != nil {
+		return err
+	}
+	if err := gen.testCases(actions); err != nil {
+		return err
+	}
+	gen.writeCode("\t}\n\n")
+
+	gen.addImport(cbTstSrcToDstPlatformLoop.Imports()...)
+	if err := cbTstSrcToDstPlatformLoop.Render(gen.code, 1, data); err != nil {
 		return err
 	}
 	gen.writeCode("}\n")
 	return nil
 }
 
-// testFuncBody generates code for the conversion function tests.
-func (gen *GenSrcToDst) testFuncBody() error {
-	data := map[string]any{"src": gen.src, "dst": gen.dst}
-	gen.addImport(cbTstSrcToDstTT.Imports()...)
-	if err := cbTstSrcToDstTT.Render(gen.code, 1, data); err != nil {
-		return err
-	}
-	if err := gen.testCases(); err != nil {
-		return err
-	}
-	gen.writeCode("\t}\n\n")
-
-	data = map[string]any{"src": gen.src, "dst": gen.dst}
-	gen.addImport(cbTstSrcToDstLoop.Imports()...)
-	return cbTstSrcToDstLoop.Render(gen.code, 1, data)
-}
-
 // testCases generates code for the conversion function test cases.
 //
 // nolint: cyclop, gocognit
-func (gen *GenSrcToDst) testCases() error {
-	for _, act := range gen.src.ConvActions(gen.dst) {
+func (gen *GenSrcToDst) testCases(actions []Action) error {
+	for _, act := range actions {
 		gen.addImport(act.Imports()...)
 
 		switch act.Name() {

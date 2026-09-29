@@ -167,6 +167,11 @@ const (
 	Float64SafeIntMax = 1<<Float64SafeBits - 1
 )
 
+// MaxUintptr is the maximum value of the uintptr type on the current platform.
+// It is an untyped constant, like [math.MaxUint], so it can be compared with
+// any numeric type able to represent it.
+const MaxUintptr = 1<<(32<<(^uintptr(0)>>63)) - 1
+
 func init() {
 	// Converters implemented by hand.
 	Register(BoolToBool)

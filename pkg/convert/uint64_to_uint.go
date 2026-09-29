@@ -5,7 +5,14 @@
 
 package convert
 
+import (
+	"math"
+)
+
 // Uint64ToUint safely converts uint64 value to uint.
 func Uint64ToUint(src uint64) (dst uint, err error) {
+	if src > math.MaxUint {
+		return 0, NewError(ErrInvRange, "uint64", "uint")
+	}
 	return uint(src), nil
 }

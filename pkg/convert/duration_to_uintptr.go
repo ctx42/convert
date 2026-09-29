@@ -14,5 +14,8 @@ func DurationToUintptr(src time.Duration) (dst uintptr, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "time.Duration", "uintptr")
 	}
+	if uint64(src) > MaxUintptr {
+		return 0, NewError(ErrInvRange, "time.Duration", "uintptr")
+	}
 	return uintptr(src), nil
 }

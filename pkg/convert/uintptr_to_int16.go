@@ -11,7 +11,7 @@ import (
 
 // UintptrToInt16 safely converts uintptr value to int16.
 func UintptrToInt16(src uintptr) (dst int16, err error) {
-	if src > math.MaxInt16 {
+	if uint64(src) > math.MaxInt16 {
 		return 0, NewError(ErrInvRange, "uintptr", "int16")
 	}
 	return int16(src), nil

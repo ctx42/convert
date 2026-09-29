@@ -1,0 +1,43 @@
+Represents a file content generated for testing conversion function
+from int to int.
+---
+package pkg
+
+import (
+	"github.com/ctx42/testing/pkg/assert"
+	"math"
+	"testing"
+)
+
+func Test_IntToInt_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		value int
+		want  int
+		err   error
+		msg   string
+	}{
+		{"min", math.MinInt, math.MinInt, nil, ""},
+		{"max", math.MaxInt, math.MaxInt, nil, ""},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := IntToInt(tc.value)
+
+			// --- Then ---
+			if tc.err == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.want, have)
+				assert.Equal(t, tc.value, int(have))
+				return
+			}
+
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, int(0), have)
+		})
+	}
+}

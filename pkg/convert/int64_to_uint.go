@@ -5,9 +5,16 @@
 
 package convert
 
+import (
+	"math"
+)
+
 // Int64ToUint safely converts int64 value to uint.
 func Int64ToUint(src int64) (dst uint, err error) {
 	if src < 0 {
+		return 0, NewError(ErrInvRange, "int64", "uint")
+	}
+	if uint64(src) > math.MaxUint {
 		return 0, NewError(ErrInvRange, "int64", "uint")
 	}
 	return uint(src), nil

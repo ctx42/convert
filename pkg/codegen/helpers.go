@@ -48,6 +48,9 @@ func IsFloat[T Number]() bool {
 
 // MinValue returns a [Value] representing the minimum value for the given type.
 func MinValue(typ Type) *Value {
+	if typ.IsPlatform() {
+		return MinPlatformInteger(typ)
+	}
 	if typ.IsInteger() {
 		return MinInteger(typ.size, typ.IsSigned())
 	}
@@ -56,6 +59,9 @@ func MinValue(typ Type) *Value {
 
 // MaxValue returns a [Value] representing the maximum value for the given type.
 func MaxValue(typ Type) *Value {
+	if typ.IsPlatform() {
+		return MaxPlatformInteger(typ)
+	}
 	if typ.IsInteger() {
 		return MaxInteger(typ.size, typ.IsSigned())
 	}
@@ -78,6 +84,31 @@ func MaxInteger(size int, signed bool) *Value {
 		return NewValue("math", fmt.Sprintf("MaxInt%d", size))
 	}
 	return NewValue("math", fmt.Sprintf("MaxUint%d", size))
+}
+
+// MinPlatformInteger returns a [Value] representing the minimum value of the
+// given platform-sized integer type, valid on both 32-bit and 64-bit
+// platforms.
+func MinPlatformInteger(typ Type) *Value {
+	if typ.IsSigned() {
+		return NewValue("math", "MinInt")
+	}
+	return NewValue("0")
+}
+
+// MaxPlatformInteger returns a [Value] representing the maximum value of the
+// given platform-sized integer type, valid on both 32-bit and 64-bit
+// platforms. For uintptr it is the MaxUintptr constant of the convert
+// package.
+func MaxPlatformInteger(typ Type) *Value {
+	switch {
+	case typ.Name() == "uintptr":
+		return NewValue("MaxUintptr")
+	case typ.IsSigned():
+		return NewValue("math", "MaxInt")
+	default:
+		return NewValue("math", "MaxUint")
+	}
 }
 
 // MinSafeFloat returns a [Value] representing a minimum safe integer value for

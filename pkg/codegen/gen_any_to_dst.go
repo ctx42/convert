@@ -147,14 +147,15 @@ func (gen *GenAnyToDst) testCases() error {
 		}
 	}
 
-	// Conversion error for safe range overflow.
+	// Conversion error for safe range overflow. The source value is typed
+	// int64, because it overflows the int on 32-bit platforms.
 	if gen.dst.IsFloat() {
 		mv := MaxSafeFloat(gen.dst.Size())
 		tpl = cbTstErrOverSafeRange
 		data = map[string]any{
-			"src": NumericType[int](),
+			"src": NumericType[int64](),
 			"dst": gen.dst,
-			"max": mv,
+			"max": NewValue(fmt.Sprintf("int64(%s)", mv.Code())),
 		}
 		gen.addImport(mv.Imports()...)
 		gen.addImport(tpl.Imports()...)

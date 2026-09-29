@@ -24,6 +24,9 @@ func Float64ToUintptr(src float64) (dst uintptr, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "float64", "uintptr")
 	}
+	if src > MaxUintptr {
+		return 0, NewError(ErrInvRange, "float64", "uintptr")
+	}
 	if f64 > Float64SafeIntMax {
 		return 0, NewError(ErrInvSafeRange, "float64", "uintptr")
 	}

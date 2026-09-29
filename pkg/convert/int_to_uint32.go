@@ -14,7 +14,7 @@ func IntToUint32(src int) (dst uint32, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int", "uint32")
 	}
-	if src > math.MaxUint32 {
+	if uint64(src) > math.MaxUint32 {
 		return 0, NewError(ErrInvRange, "int", "uint32")
 	}
 	return uint32(src), nil

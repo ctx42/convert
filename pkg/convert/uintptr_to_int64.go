@@ -11,7 +11,7 @@ import (
 
 // UintptrToInt64 safely converts uintptr value to int64.
 func UintptrToInt64(src uintptr) (dst int64, err error) {
-	if src > math.MaxInt64 {
+	if uint64(src) > math.MaxInt64 {
 		return 0, NewError(ErrInvRange, "uintptr", "int64")
 	}
 	return int64(src), nil

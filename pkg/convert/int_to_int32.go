@@ -11,10 +11,10 @@ import (
 
 // IntToInt32 safely converts int value to int32.
 func IntToInt32(src int) (dst int32, err error) {
-	if src < math.MinInt32 {
+	if int64(src) < math.MinInt32 {
 		return 0, NewError(ErrInvRange, "int", "int32")
 	}
-	if src > math.MaxInt32 {
+	if int64(src) > math.MaxInt32 {
 		return 0, NewError(ErrInvRange, "int", "int32")
 	}
 	return int32(src), nil

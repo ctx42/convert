@@ -10,5 +10,8 @@ func Int64ToUintptr(src int64) (dst uintptr, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int64", "uintptr")
 	}
+	if uint64(src) > MaxUintptr {
+		return 0, NewError(ErrInvRange, "int64", "uintptr")
+	}
 	return uintptr(src), nil
 }

@@ -73,6 +73,8 @@ func Test_MinValue_tabular(t *testing.T) {
 	}{
 		{"int64", NumericType[int64](), "math.MinInt64"},
 		{"uint64", NumericType[uint64](), "0"},
+		{"int", NumericType[int](), "math.MinInt"},
+		{"uint", NumericType[uint](), "0"},
 		{"float32", NumericType[float32](), "Float32SafeIntMin"},
 		{"float64", NumericType[float64](), "Float64SafeIntMin"},
 	}
@@ -97,6 +99,9 @@ func Test_MaxValue_tabular(t *testing.T) {
 	}{
 		{"int64", NumericType[int64](), "math.MaxInt64"},
 		{"uint64", NumericType[uint64](), "math.MaxUint64"},
+		{"int", NumericType[int](), "math.MaxInt"},
+		{"uint", NumericType[uint](), "math.MaxUint"},
+		{"uintptr", NumericType[uintptr](), "MaxUintptr"},
 		{"float32", NumericType[float32](), "Float32SafeIntMax"},
 		{"float64", NumericType[float64](), "Float64SafeIntMax"},
 	}
@@ -165,6 +170,52 @@ func Test_MaxInteger_tabular(t *testing.T) {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
 			have := MaxInteger(tc.size, tc.signed)
+
+			// --- Then ---
+			assert.Equal(t, tc.want, have.Code())
+		})
+	}
+}
+
+func Test_MinPlatformInteger_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		typ  Type
+		want string
+	}{
+		{"int", NumericType[int](), "math.MinInt"},
+		{"uint", NumericType[uint](), "0"},
+		{"uintptr", NumericType[uintptr](), "0"},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have := MinPlatformInteger(tc.typ)
+
+			// --- Then ---
+			assert.Equal(t, tc.want, have.Code())
+		})
+	}
+}
+
+func Test_MaxPlatformInteger_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		typ  Type
+		want string
+	}{
+		{"int", NumericType[int](), "math.MaxInt"},
+		{"uint", NumericType[uint](), "math.MaxUint"},
+		{"uintptr", NumericType[uintptr](), "MaxUintptr"},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have := MaxPlatformInteger(tc.typ)
 
 			// --- Then ---
 			assert.Equal(t, tc.want, have.Code())

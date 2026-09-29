@@ -143,6 +143,54 @@ tt := []struct {
 
 // -----------------------------------------------------------------------------
 
+// cbTstSrcToDstPlatformTT defines the declaration and tabular test cases of a
+// conversion function test run only on platforms with the given word size.
+var cbTstSrcToDstPlatformTT = MustCodeBlock("cbTstSrcToDstPlatformTT", `
+import strconv
+
+func Test_{{.src.Title}}To{{.dst.Title}}_{{.size}}bit_tabular(t *testing.T) {
+	if strconv.IntSize != {{.size}} {
+		t.Skip("{{.size}}-bit platforms only")
+	}
+
+	tt := []struct {
+		testN string
+
+		value {{.carrier.Code}}
+		want  {{.dst.Code}}
+		err   error
+		msg   string
+	}{
+`)
+
+// -----------------------------------------------------------------------------
+
+// cbTstSrcToDstPlatformLoop defines a tabular test loop for conversion
+// function error cases run only on platforms with the given word size.
+var cbTstSrcToDstPlatformLoop = MustCodeBlock("cbTstSrcToDstPlatformLoop", `
+for _, tc := range tt {
+	t.Run(tc.testN, func(t *testing.T) {
+{{- if ne .carrier.Code .src.Code}}
+		// --- Given ---
+		src := {{.src.Code}}(tc.value)
+
+		// --- When ---
+		have, err := {{.src.Title}}To{{.dst.Title}}(src)
+{{- else}}
+		// --- When ---
+		have, err := {{.src.Title}}To{{.dst.Title}}(tc.value)
+{{- end}}
+
+		// --- Then ---
+		assert.ErrorIs(t, tc.err, err)
+		assert.ErrorEqual(t, tc.msg, err)
+		assert.Equal(t, tc.want, have)
+	})
+}
+`)
+
+// -----------------------------------------------------------------------------
+
 // cbTstSrcToDstLoop defines a tabular test loop for conversion functions
 // between two types.
 var cbTstSrcToDstLoop = MustCodeBlock("cbTstSrcToDstLoop", `

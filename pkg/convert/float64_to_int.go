@@ -21,6 +21,12 @@ func Float64ToInt(src float64) (dst int, err error) {
 	if f64 != math.Trunc(f64) {
 		return 0, NewError(ErrFraction, "float64", "int")
 	}
+	if src < math.MinInt {
+		return 0, NewError(ErrInvRange, "float64", "int")
+	}
+	if src > math.MaxInt {
+		return 0, NewError(ErrInvRange, "float64", "int")
+	}
 	if f64 < Float64SafeIntMin {
 		return 0, NewError(ErrInvSafeRange, "float64", "int")
 	}

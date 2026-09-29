@@ -7,7 +7,7 @@ package convert
 
 // UintptrToFloat32 safely converts uintptr value to float32.
 func UintptrToFloat32(src uintptr) (dst float32, err error) {
-	if src > Float32SafeIntMax {
+	if uint64(src) > Float32SafeIntMax {
 		return 0, NewError(ErrInvSafeRange, "uintptr", "float32")
 	}
 	return float32(src), nil

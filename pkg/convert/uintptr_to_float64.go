@@ -7,7 +7,7 @@ package convert
 
 // UintptrToFloat64 safely converts uintptr value to float64.
 func UintptrToFloat64(src uintptr) (dst float64, err error) {
-	if src > Float64SafeIntMax {
+	if uint64(src) > Float64SafeIntMax {
 		return 0, NewError(ErrInvSafeRange, "uintptr", "float64")
 	}
 	return float64(src), nil

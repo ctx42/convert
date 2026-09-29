@@ -123,6 +123,14 @@ func Test_WithRegistry(t *testing.T) {
 	assert.Same(t, reg, ops.reg)
 }
 
+func Test_MaxUintptr(t *testing.T) {
+	// --- When ---
+	have := uintptr(MaxUintptr)
+
+	// --- Then ---
+	assert.Equal(t, ^uintptr(0), have)
+}
+
 func Test_init(t *testing.T) {
 	t.Run("basic", func(t *testing.T) {
 		// --- Given ---

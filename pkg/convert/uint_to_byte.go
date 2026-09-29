@@ -11,7 +11,7 @@ import (
 
 // UintToByte safely converts uint value to byte.
 func UintToByte(src uint) (dst byte, err error) {
-	if src > math.MaxUint8 {
+	if uint64(src) > math.MaxUint8 {
 		return 0, NewError(ErrInvRange, "uint", "byte")
 	}
 	return byte(src), nil

@@ -24,6 +24,9 @@ func Float64ToUint(src float64) (dst uint, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "float64", "uint")
 	}
+	if src > math.MaxUint {
+		return 0, NewError(ErrInvRange, "float64", "uint")
+	}
 	if f64 > Float64SafeIntMax {
 		return 0, NewError(ErrInvSafeRange, "float64", "uint")
 	}

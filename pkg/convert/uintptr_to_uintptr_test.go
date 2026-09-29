@@ -7,7 +7,6 @@ package convert
 
 import (
 	"github.com/ctx42/testing/pkg/assert"
-	"math"
 	"testing"
 )
 
@@ -21,7 +20,7 @@ func Test_UintptrToUintptr_tabular(t *testing.T) {
 		msg   string
 	}{
 		{"min", 0, 0, nil, ""},
-		{"max", math.MaxUint64, math.MaxUint64, nil, ""},
+		{"max", MaxUintptr, MaxUintptr, nil, ""},
 	}
 
 	for _, tc := range tt {

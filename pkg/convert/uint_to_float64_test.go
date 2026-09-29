@@ -7,6 +7,7 @@ package convert
 
 import (
 	"github.com/ctx42/testing/pkg/assert"
+	"strconv"
 	"testing"
 )
 
@@ -19,13 +20,6 @@ func Test_UintToFloat64_tabular(t *testing.T) {
 		err   error
 		msg   string
 	}{
-		{
-			"error - safe overflow",
-			Float64SafeIntMax + 1,
-			0,
-			ErrInvSafeRange,
-			"value out of safe range: from uint to float64",
-		},
 		{"success", 42, 42, nil, ""},
 	}
 
@@ -45,6 +39,44 @@ func Test_UintToFloat64_tabular(t *testing.T) {
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, float64(0), have)
+		})
+	}
+}
+
+func Test_UintToFloat64_64bit_tabular(t *testing.T) {
+	if strconv.IntSize != 64 {
+		t.Skip("64-bit platforms only")
+	}
+
+	tt := []struct {
+		testN string
+
+		value uint64
+		want  float64
+		err   error
+		msg   string
+	}{
+		{
+			"error - safe overflow",
+			Float64SafeIntMax + 1,
+			0,
+			ErrInvSafeRange,
+			"value out of safe range: from uint to float64",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- Given ---
+			src := uint(tc.value)
+
+			// --- When ---
+			have, err := UintToFloat64(src)
+
+			// --- Then ---
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, tc.want, have)
 		})
 	}
 }

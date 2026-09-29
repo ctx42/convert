@@ -11,7 +11,7 @@ import (
 
 // UintToInt32 safely converts uint value to int32.
 func UintToInt32(src uint) (dst int32, err error) {
-	if src > math.MaxInt32 {
+	if uint64(src) > math.MaxInt32 {
 		return 0, NewError(ErrInvRange, "uint", "int32")
 	}
 	return int32(src), nil

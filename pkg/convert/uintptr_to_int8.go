@@ -11,7 +11,7 @@ import (
 
 // UintptrToInt8 safely converts uintptr value to int8.
 func UintptrToInt8(src uintptr) (dst int8, err error) {
-	if src > math.MaxInt8 {
+	if uint64(src) > math.MaxInt8 {
 		return 0, NewError(ErrInvRange, "uintptr", "int8")
 	}
 	return int8(src), nil

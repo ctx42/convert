@@ -8,6 +8,7 @@ package convert
 import (
 	"github.com/ctx42/testing/pkg/assert"
 	"math"
+	"strconv"
 	"testing"
 )
 
@@ -20,13 +21,6 @@ func Test_UintToInt64_tabular(t *testing.T) {
 		err   error
 		msg   string
 	}{
-		{
-			"error - overflow",
-			math.MaxInt64 + 1,
-			0,
-			ErrInvRange,
-			"value out of range: from uint to int64",
-		},
 		{"success", 42, 42, nil, ""},
 	}
 
@@ -46,6 +40,44 @@ func Test_UintToInt64_tabular(t *testing.T) {
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, int64(0), have)
+		})
+	}
+}
+
+func Test_UintToInt64_64bit_tabular(t *testing.T) {
+	if strconv.IntSize != 64 {
+		t.Skip("64-bit platforms only")
+	}
+
+	tt := []struct {
+		testN string
+
+		value uint64
+		want  int64
+		err   error
+		msg   string
+	}{
+		{
+			"error - overflow",
+			math.MaxInt64 + 1,
+			0,
+			ErrInvRange,
+			"value out of range: from uint to int64",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- Given ---
+			src := uint(tc.value)
+
+			// --- When ---
+			have, err := UintToInt64(src)
+
+			// --- Then ---
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, tc.want, have)
 		})
 	}
 }

@@ -11,7 +11,7 @@ import (
 
 // UintptrToRune safely converts uintptr value to rune.
 func UintptrToRune(src uintptr) (dst rune, err error) {
-	if src > math.MaxInt32 {
+	if uint64(src) > math.MaxInt32 {
 		return 0, NewError(ErrInvRange, "uintptr", "rune")
 	}
 	return rune(src), nil

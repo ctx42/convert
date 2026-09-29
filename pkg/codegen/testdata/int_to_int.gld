@@ -1,0 +1,8 @@
+Represents a file content generated for conversion from int to int.
+---
+package pkg
+
+// IntToInt safely converts int value to int.
+func IntToInt(src int) (dst int, err error) {
+	return src, nil
+}

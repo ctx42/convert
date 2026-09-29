@@ -5,7 +5,14 @@
 
 package convert
 
+import (
+	"math"
+)
+
 // Uint32ToInt safely converts uint32 value to int.
 func Uint32ToInt(src uint32) (dst int, err error) {
+	if uint64(src) > math.MaxInt {
+		return 0, NewError(ErrInvRange, "uint32", "int")
+	}
 	return int(src), nil
 }

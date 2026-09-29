@@ -6,12 +6,16 @@
 package convert
 
 import (
+	"math"
 	"time"
 )
 
 // DurationToUint safely converts [time.Duration] value to uint.
 func DurationToUint(src time.Duration) (dst uint, err error) {
 	if src < 0 {
+		return 0, NewError(ErrInvRange, "time.Duration", "uint")
+	}
+	if uint64(src) > math.MaxUint {
 		return 0, NewError(ErrInvRange, "time.Duration", "uint")
 	}
 	return uint(src), nil

@@ -1,0 +1,34 @@
+Represents a file content generated for conversion from float64 to int.
+---
+package pkg
+
+import (
+	"math"
+)
+
+// Float64ToInt safely converts float64 value to int.
+func Float64ToInt(src float64) (dst int, err error) {
+	f64 := src
+	if math.IsNaN(f64) {
+		return 0, NewError(ErrInvValue, "float64", "int")
+	}
+	if math.IsInf(f64, 0) {
+		return 0, NewError(ErrInvValue, "float64", "int")
+	}
+	if f64 != math.Trunc(f64) {
+		return 0, NewError(ErrFraction, "float64", "int")
+	}
+	if src < math.MinInt {
+		return 0, NewError(ErrInvRange, "float64", "int")
+	}
+	if src > math.MaxInt {
+		return 0, NewError(ErrInvRange, "float64", "int")
+	}
+	if f64 < Float64SafeIntMin {
+		return 0, NewError(ErrInvSafeRange, "float64", "int")
+	}
+	if f64 > Float64SafeIntMax {
+		return 0, NewError(ErrInvSafeRange, "float64", "int")
+	}
+	return int(src), nil
+}

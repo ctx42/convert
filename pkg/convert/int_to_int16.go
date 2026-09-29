@@ -11,10 +11,10 @@ import (
 
 // IntToInt16 safely converts int value to int16.
 func IntToInt16(src int) (dst int16, err error) {
-	if src < math.MinInt16 {
+	if int64(src) < math.MinInt16 {
 		return 0, NewError(ErrInvRange, "int", "int16")
 	}
-	if src > math.MaxInt16 {
+	if int64(src) > math.MaxInt16 {
 		return 0, NewError(ErrInvRange, "int", "int16")
 	}
 	return int16(src), nil

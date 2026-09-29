@@ -30,10 +30,10 @@ func Test_AnyToFloat64_tabular(t *testing.T) {
 		},
 		{
 			"error - safe overflow",
-			Float64SafeIntMax + 1,
+			int64(Float64SafeIntMax) + 1,
 			0,
 			ErrInvSafeRange,
-			"value out of safe range: from int to float64",
+			"value out of safe range: from int64 to float64",
 		},
 	}
 

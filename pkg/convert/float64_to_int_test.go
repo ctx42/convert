@@ -8,6 +8,7 @@ package convert
 import (
 	"github.com/ctx42/testing/pkg/assert"
 	"math"
+	"strconv"
 	"testing"
 )
 
@@ -48,20 +49,6 @@ func Test_Float64ToInt_tabular(t *testing.T) {
 			ErrFraction,
 			"must be a whole number: from float64 to int",
 		},
-		{
-			"error - safe underflow",
-			Float64SafeIntMin - 1,
-			0,
-			ErrInvSafeRange,
-			"value out of safe range: from float64 to int",
-		},
-		{
-			"error - safe overflow",
-			Float64SafeIntMax + 1,
-			0,
-			ErrInvSafeRange,
-			"value out of safe range: from float64 to int",
-		},
 		{"success", 42, 42, nil, ""},
 	}
 
@@ -81,6 +68,90 @@ func Test_Float64ToInt_tabular(t *testing.T) {
 			assert.ErrorIs(t, tc.err, err)
 			assert.ErrorEqual(t, tc.msg, err)
 			assert.Equal(t, int(0), have)
+		})
+	}
+}
+
+func Test_Float64ToInt_32bit_tabular(t *testing.T) {
+	if strconv.IntSize != 32 {
+		t.Skip("32-bit platforms only")
+	}
+
+	tt := []struct {
+		testN string
+
+		value float64
+		want  int
+		err   error
+		msg   string
+	}{
+		{
+			"error - underflow",
+			math.MinInt32 - 1,
+			0,
+			ErrInvRange,
+			"value out of range: from float64 to int",
+		},
+		{
+			"error - overflow",
+			math.MaxInt32 + 1,
+			0,
+			ErrInvRange,
+			"value out of range: from float64 to int",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Float64ToInt(tc.value)
+
+			// --- Then ---
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, tc.want, have)
+		})
+	}
+}
+
+func Test_Float64ToInt_64bit_tabular(t *testing.T) {
+	if strconv.IntSize != 64 {
+		t.Skip("64-bit platforms only")
+	}
+
+	tt := []struct {
+		testN string
+
+		value float64
+		want  int
+		err   error
+		msg   string
+	}{
+		{
+			"error - safe underflow",
+			Float64SafeIntMin - 1,
+			0,
+			ErrInvSafeRange,
+			"value out of safe range: from float64 to int",
+		},
+		{
+			"error - safe overflow",
+			Float64SafeIntMax + 1,
+			0,
+			ErrInvSafeRange,
+			"value out of safe range: from float64 to int",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := Float64ToInt(tc.value)
+
+			// --- Then ---
+			assert.ErrorIs(t, tc.err, err)
+			assert.ErrorEqual(t, tc.msg, err)
+			assert.Equal(t, tc.want, have)
 		})
 	}
 }

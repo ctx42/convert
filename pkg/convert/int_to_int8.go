@@ -11,10 +11,10 @@ import (
 
 // IntToInt8 safely converts int value to int8.
 func IntToInt8(src int) (dst int8, err error) {
-	if src < math.MinInt8 {
+	if int64(src) < math.MinInt8 {
 		return 0, NewError(ErrInvRange, "int", "int8")
 	}
-	if src > math.MaxInt8 {
+	if int64(src) > math.MaxInt8 {
 		return 0, NewError(ErrInvRange, "int", "int8")
 	}
 	return int8(src), nil

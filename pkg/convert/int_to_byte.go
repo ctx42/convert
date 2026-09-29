@@ -14,7 +14,7 @@ func IntToByte(src int) (dst byte, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int", "byte")
 	}
-	if src > math.MaxUint8 {
+	if uint64(src) > math.MaxUint8 {
 		return 0, NewError(ErrInvRange, "int", "byte")
 	}
 	return byte(src), nil

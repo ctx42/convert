@@ -17,6 +17,9 @@ type Type struct {
 	signed  bool   // Is the type signed number? False for non-numeric types.
 	float   bool   // Does the type represent a floating-point number?
 	alias   *Value // When set, the type is an alias or has a base type of.
+
+	// Is the type size platform-dependent (int, uint, uintptr)?
+	platform bool
 }
 
 // NumericType constructs a [Type] instance from the provided [Number] type.
@@ -25,6 +28,10 @@ func NumericType[T Number]() Type {
 	size := int(typ.Size()) * 8
 	signed := IsSigned[T]()
 	float := IsFloat[T]()
+	kind := typ.Kind()
+	platform := kind == reflect.Int ||
+		kind == reflect.Uint ||
+		kind == reflect.Uintptr
 
 	bits := size
 	if float {
@@ -41,12 +48,13 @@ func NumericType[T Number]() Type {
 	}
 
 	return Type{
-		value:   NewValue(typ.PkgPath(), typ.Name()),
-		size:    size,
-		bits:    bits,
-		numeric: true,
-		signed:  signed,
-		float:   float,
+		value:    NewValue(typ.PkgPath(), typ.Name()),
+		size:     size,
+		bits:     bits,
+		numeric:  true,
+		signed:   signed,
+		float:    float,
+		platform: platform,
 	}
 }
 
@@ -112,6 +120,10 @@ func (typ Type) IsFloat() bool { return typ.numeric && typ.float }
 // IsInteger returns true if the type is a numeric integer type.
 func (typ Type) IsInteger() bool { return typ.numeric && !typ.float }
 
+// IsPlatform returns true if the type size depends on the platform: 32 or 64
+// bits, like int, uint, and uintptr.
+func (typ Type) IsPlatform() bool { return typ.platform }
+
 // Size returns the size of the type in bits.
 func (typ Type) Size() int { return typ.size }
 
@@ -121,10 +133,46 @@ func (typ Type) Size() int { return typ.size }
 // floating-point number.
 func (typ Type) Bits() int { return typ.bits }
 
+// onPlatform returns the type as it is on a platform with the given word size
+// in bits (32 or 64). Returns the type unchanged when its size is not
+// platform-dependent.
+func (typ Type) onPlatform(size int) Type {
+	if !typ.platform {
+		return typ
+	}
+	typ.size = size
+	typ.bits = size
+	if typ.signed {
+		typ.bits--
+	}
+	return typ
+}
+
 // ConvActions returns the list of actions / checks needed for safe conversion
-// from the current type to the target type. Method returns nil when conversion
-// is not supported.
+// from the current type to the target type on both 32-bit and 64-bit
+// platforms. Method returns nil when conversion is not supported.
 func (typ Type) ConvActions(target Type) []Action {
+	if !typ.IsPlatform() && !target.IsPlatform() {
+		return typ.convActions(target)
+	}
+	return mergeActions(
+		target,
+		typ.platformConvActions(target, 32),
+		typ.platformConvActions(target, 64),
+	)
+}
+
+// platformConvActions returns the list of actions / checks needed for safe
+// conversion from the current type to the target type on a platform with the
+// given word size in bits (32 or 64).
+func (typ Type) platformConvActions(target Type, size int) []Action {
+	return typ.onPlatform(size).convActions(target.onPlatform(size))
+}
+
+// convActions returns the list of actions / checks needed for safe conversion
+// from the current type to the target type, assuming the type sizes are
+// fixed. Method returns nil when conversion is not supported.
+func (typ Type) convActions(target Type) []Action {
 	// Conversions between non-numeric types are not supported.
 	if !typ.IsNumeric() || !target.IsNumeric() {
 		return nil

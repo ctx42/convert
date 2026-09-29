@@ -11,7 +11,7 @@ import (
 
 // UintToUint16 safely converts uint value to uint16.
 func UintToUint16(src uint) (dst uint16, err error) {
-	if src > math.MaxUint16 {
+	if uint64(src) > math.MaxUint16 {
 		return 0, NewError(ErrInvRange, "uint", "uint16")
 	}
 	return uint16(src), nil

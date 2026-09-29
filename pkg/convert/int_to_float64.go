@@ -7,10 +7,10 @@ package convert
 
 // IntToFloat64 safely converts int value to float64.
 func IntToFloat64(src int) (dst float64, err error) {
-	if src < Float64SafeIntMin {
+	if int64(src) < Float64SafeIntMin {
 		return 0, NewError(ErrInvSafeRange, "int", "float64")
 	}
-	if src > Float64SafeIntMax {
+	if int64(src) > Float64SafeIntMax {
 		return 0, NewError(ErrInvSafeRange, "int", "float64")
 	}
 	return float64(src), nil

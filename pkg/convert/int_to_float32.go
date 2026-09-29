@@ -7,10 +7,10 @@ package convert
 
 // IntToFloat32 safely converts int value to float32.
 func IntToFloat32(src int) (dst float32, err error) {
-	if src < Float32SafeIntMin {
+	if int64(src) < Float32SafeIntMin {
 		return 0, NewError(ErrInvSafeRange, "int", "float32")
 	}
-	if src > Float32SafeIntMax {
+	if int64(src) > Float32SafeIntMax {
 		return 0, NewError(ErrInvSafeRange, "int", "float32")
 	}
 	return float32(src), nil

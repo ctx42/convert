@@ -14,7 +14,7 @@ func IntToUint16(src int) (dst uint16, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int", "uint16")
 	}
-	if src > math.MaxUint16 {
+	if uint64(src) > math.MaxUint16 {
 		return 0, NewError(ErrInvRange, "int", "uint16")
 	}
 	return uint16(src), nil

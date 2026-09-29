@@ -6,10 +6,17 @@
 package convert
 
 import (
+	"math"
 	"time"
 )
 
 // DurationToInt safely converts [time.Duration] value to int.
 func DurationToInt(src time.Duration) (dst int, err error) {
+	if src < math.MinInt {
+		return 0, NewError(ErrInvRange, "time.Duration", "int")
+	}
+	if src > math.MaxInt {
+		return 0, NewError(ErrInvRange, "time.Duration", "int")
+	}
 	return int(src), nil
 }
