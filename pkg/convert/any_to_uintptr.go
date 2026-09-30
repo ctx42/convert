@@ -16,14 +16,15 @@ var typUintptr = reflect.TypeFor[uintptr]()
 // using the package-level registry.
 func AnyToUintptr(value any, opts ...Option) (uintptr, error) {
 	ops := NewOptions(opts...)
+	dst := "uintptr"
 	format := "%v: from %T to %v"
 	if ops.reg == nil {
-		return 0, NewError(ErrNilRegistry, value, "uintptr").Format(format)
+		return 0, NewError(ErrNilRegistry, value, dst).Format(format)
 	}
 	src := reflect.TypeOf(value)
 	wrp := ops.reg.lookup(src, typUintptr)
 	if wrp == nil {
-		return 0, NewError(ErrUnkConv, value, "uintptr").Format(format)
+		return 0, NewError(ErrUnkConv, value, dst).Format(format)
 	}
 	ret, err := wrp.cst(value)
 	if err != nil {

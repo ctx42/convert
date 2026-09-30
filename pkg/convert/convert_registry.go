@@ -65,7 +65,11 @@ func (reg *Registry) lookup(from, to reflect.Type) *wrapper {
 // converter for the same source-destination type pair already exists, it is
 // replaced, and the previous converter is returned; otherwise nil is returned.
 // Registers nothing and returns nil when the registry is nil.
-func RegisterConverter[Src, Dst any](reg *Registry, conv SrcToDst[Src, Dst]) SrcToDst[Src, Dst] {
+func RegisterConverter[Src, Dst any](
+	reg *Registry,
+	conv SrcToDst[Src, Dst],
+) SrcToDst[Src, Dst] {
+
 	if conv == nil {
 		return nil
 	}

@@ -16,14 +16,15 @@ var typInt64 = reflect.TypeFor[int64]()
 // using the package-level registry.
 func AnyToInt64(value any, opts ...Option) (int64, error) {
 	ops := NewOptions(opts...)
+	dst := "int64"
 	format := "%v: from %T to %v"
 	if ops.reg == nil {
-		return 0, NewError(ErrNilRegistry, value, "int64").Format(format)
+		return 0, NewError(ErrNilRegistry, value, dst).Format(format)
 	}
 	src := reflect.TypeOf(value)
 	wrp := ops.reg.lookup(src, typInt64)
 	if wrp == nil {
-		return 0, NewError(ErrUnkConv, value, "int64").Format(format)
+		return 0, NewError(ErrUnkConv, value, dst).Format(format)
 	}
 	ret, err := wrp.cst(value)
 	if err != nil {

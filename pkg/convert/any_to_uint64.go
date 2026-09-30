@@ -16,14 +16,15 @@ var typUint64 = reflect.TypeFor[uint64]()
 // using the package-level registry.
 func AnyToUint64(value any, opts ...Option) (uint64, error) {
 	ops := NewOptions(opts...)
+	dst := "uint64"
 	format := "%v: from %T to %v"
 	if ops.reg == nil {
-		return 0, NewError(ErrNilRegistry, value, "uint64").Format(format)
+		return 0, NewError(ErrNilRegistry, value, dst).Format(format)
 	}
 	src := reflect.TypeOf(value)
 	wrp := ops.reg.lookup(src, typUint64)
 	if wrp == nil {
-		return 0, NewError(ErrUnkConv, value, "uint64").Format(format)
+		return 0, NewError(ErrUnkConv, value, dst).Format(format)
 	}
 	ret, err := wrp.cst(value)
 	if err != nil {

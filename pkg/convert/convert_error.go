@@ -65,8 +65,8 @@ func (e Error) As(target any) bool {
 }
 
 // ChangeErrDstName changes the destination type name if the error is an
-// instance of [Error]. Returns nil for nil error. Returns the original error if it's
-// not an instance of [Error].
+// instance of [Error]. Returns nil for nil error. Returns the original error
+// if it's not an instance of [Error].
 func ChangeErrDstName(err error, dst string) error {
 	if err == nil {
 		return nil

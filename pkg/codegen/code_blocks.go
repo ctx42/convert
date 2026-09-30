@@ -31,19 +31,20 @@ var cbAnyToDstFuncBody = MustCodeBlock("cbAnyToDstFuncBody", `
 import reflect
 
 ops := NewOptions(opts...)
+dst := "{{.dst.Code}}"
 format := "%v: from %T to %v"
 if ops.reg == nil {
-	return 0, NewError(ErrNilRegistry, value, "{{.dst.Code}}").Format(format)
+	return 0, NewError(ErrNilRegistry, value, dst).Format(format)
 }
 src := reflect.TypeOf(value)
 wrp := ops.reg.lookup(src, typ{{.dst.Title}})
 if wrp == nil {
-	return 0, NewError(ErrUnkConv, value, "{{.dst.Code}}").Format(format)
+	return 0, NewError(ErrUnkConv, value, dst).Format(format)
 }
 ret, err := wrp.cst(value)
 if err != nil {
 {{- if .dst.IsAlias}}
-	return 0, ChangeErrDstName(err, "{{.dst.Code}}")
+	return 0, ChangeErrDstName(err, dst)
 {{- else}}
 	return 0, err
 {{- end}}

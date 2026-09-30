@@ -16,18 +16,19 @@ var typRune = reflect.TypeFor[rune]()
 // using the package-level registry.
 func AnyToRune(value any, opts ...Option) (rune, error) {
 	ops := NewOptions(opts...)
+	dst := "rune"
 	format := "%v: from %T to %v"
 	if ops.reg == nil {
-		return 0, NewError(ErrNilRegistry, value, "rune").Format(format)
+		return 0, NewError(ErrNilRegistry, value, dst).Format(format)
 	}
 	src := reflect.TypeOf(value)
 	wrp := ops.reg.lookup(src, typRune)
 	if wrp == nil {
-		return 0, NewError(ErrUnkConv, value, "rune").Format(format)
+		return 0, NewError(ErrUnkConv, value, dst).Format(format)
 	}
 	ret, err := wrp.cst(value)
 	if err != nil {
-		return 0, ChangeErrDstName(err, "rune")
+		return 0, ChangeErrDstName(err, dst)
 	}
 	return ret.(rune), nil //nolint:forcetypeassert
 }

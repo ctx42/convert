@@ -16,14 +16,15 @@ var typInt8 = reflect.TypeFor[int8]()
 // using the package-level registry.
 func AnyToInt8(value any, opts ...Option) (int8, error) {
 	ops := NewOptions(opts...)
+	dst := "int8"
 	format := "%v: from %T to %v"
 	if ops.reg == nil {
-		return 0, NewError(ErrNilRegistry, value, "int8").Format(format)
+		return 0, NewError(ErrNilRegistry, value, dst).Format(format)
 	}
 	src := reflect.TypeOf(value)
 	wrp := ops.reg.lookup(src, typInt8)
 	if wrp == nil {
-		return 0, NewError(ErrUnkConv, value, "int8").Format(format)
+		return 0, NewError(ErrUnkConv, value, dst).Format(format)
 	}
 	ret, err := wrp.cst(value)
 	if err != nil {

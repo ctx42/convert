@@ -16,18 +16,19 @@ var typByte = reflect.TypeFor[byte]()
 // using the package-level registry.
 func AnyToByte(value any, opts ...Option) (byte, error) {
 	ops := NewOptions(opts...)
+	dst := "byte"
 	format := "%v: from %T to %v"
 	if ops.reg == nil {
-		return 0, NewError(ErrNilRegistry, value, "byte").Format(format)
+		return 0, NewError(ErrNilRegistry, value, dst).Format(format)
 	}
 	src := reflect.TypeOf(value)
 	wrp := ops.reg.lookup(src, typByte)
 	if wrp == nil {
-		return 0, NewError(ErrUnkConv, value, "byte").Format(format)
+		return 0, NewError(ErrUnkConv, value, dst).Format(format)
 	}
 	ret, err := wrp.cst(value)
 	if err != nil {
-		return 0, ChangeErrDstName(err, "byte")
+		return 0, ChangeErrDstName(err, dst)
 	}
 	return ret.(byte), nil //nolint:forcetypeassert
 }
