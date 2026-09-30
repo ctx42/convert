@@ -1,3 +1,24 @@
+## v0.10.0 (Wed, 30 Sep 2026 08:24:54 UTC)
+- chore: bump github.com/ctx42/testing to v0.56.0.
+- chore: add AGENTS.md with agent instructions.
+- fix: make generated converters portable to 32-bit platforms.
+- fix: keep parse error cause in string conversion errors.
+- refactor(codegen): unexport and document generator main helpers.
+- fix: return ErrNilRegistry instead of panicking on a nil registry.
+- fix!: convert floats between float32 and float64 when exact.
+- docs: fix godoc links to nonexistent symbols.
+- fix: include time.Duration in SupportedTypes.
+- refactor: generate the numeric converter registration list.
+- fix(codegen): render imports without mutating the file state.
+- refactor(codegen): remove unused verbose option.
+- test: split conversion table tests into success and error tables.
+- style: write nolint directives as //nolint:name.
+- test: pass expected values before actual ones in assertions.
+- test: restore subtest names mangled by the renderImports rename.
+- docs: fix godoc grammar and wrong action descriptions.
+- style: shorten long lines in registry, error and AnyToX code.
+- docs: inject README examples from testable Example functions.
+
 ## v0.9.1 (Wed, 13 May 2026 07:49:40 UTC)
 - chore: remove email from SPDX headers and bump testing to v0.48.0.
 - docs: fix typos and wrong names in README and doc comments.
