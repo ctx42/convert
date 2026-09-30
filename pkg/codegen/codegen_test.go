@@ -18,8 +18,8 @@ func Test_NewAction(t *testing.T) {
 		have := NewAction(CheckIntSafeToFloatMin, val)
 
 		// --- Then ---
-		assert.Equal(t, have.name, CheckIntSafeToFloatMin)
-		assert.Same(t, have.value, val)
+		assert.Equal(t, CheckIntSafeToFloatMin, have.name)
+		assert.Same(t, val, have.value)
 	})
 
 	t.Run("without value", func(t *testing.T) {
@@ -27,7 +27,7 @@ func Test_NewAction(t *testing.T) {
 		have := NewAction(CheckIntSafeToFloatMin, nil)
 
 		// --- Then ---
-		assert.Equal(t, have.name, CheckIntSafeToFloatMin)
+		assert.Equal(t, CheckIntSafeToFloatMin, have.name)
 		assert.Nil(t, have.value)
 	})
 }
@@ -40,7 +40,7 @@ func Test_Action_Name(t *testing.T) {
 	have := act.Name()
 
 	// --- Then ---
-	assert.Equal(t, have, CheckIntSafeToFloatMin)
+	assert.Equal(t, CheckIntSafeToFloatMin, have)
 }
 
 func Test_Action_Imports(t *testing.T) {

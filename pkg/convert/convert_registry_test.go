@@ -51,7 +51,7 @@ func Test_Registry_register(t *testing.T) {
 		have := reg.register(wrp1)
 
 		// --- Then ---
-		assert.Same(t, have, wrp0)
+		assert.Same(t, wrp0, have)
 		assert.Same(t, wrp1, reg.m[src][dst])
 	})
 
