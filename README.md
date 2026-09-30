@@ -1,50 +1,65 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/ctx42/convert)](https://goreportcard.com/report/github.com/ctx42/convert)
-[![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg)](https://pkg.go.dev/github.com/ctx42/convert)
-![Tests](https://github.com/ctx42/convert/actions/workflows/go.yml/badge.svg?branch=master)
+[![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg)](https://pkg.go.dev/github.com/ctx42/convert/pkg/convert)
+[![Tests](https://github.com/ctx42/convert/actions/workflows/go.yml/badge.svg?branch=master)](https://github.com/ctx42/convert/actions/workflows/go.yml)
+
+# convert
+
+Lossless type conversions for Go: every conversion returns the exact value or
+an error.
 
 <!-- TOC -->
   * [Installation](#installation)
   * [Converters](#converters)
+  * [Errors](#errors)
   * [Converter Registry](#converter-registry)
   * [Converter Types](#converter-types)
   * [AnyToXXX Converters](#anytoxxx-converters)
   * [Register Custom Converters](#register-custom-converters)
   * [Customize Converters](#customize-converters)
+  * [Custom Registries](#custom-registries)
+  * [License](#license)
 <!-- TOC -->
 
-**convert** is a lightweight Go library that performs safe type conversions 
-while preventing truncation, overflow, or unintended semantic changes between 
+**convert** is a lightweight Go library that performs safe type conversions
+while preventing truncation, overflow, or unintended semantic changes between
 values of different types.
 
 ## Installation
 
-Install using `go get`:
+Requires Go 1.26 or later. Install using `go get`:
 
 ```bash
 go get github.com/ctx42/convert
+```
+
+Import the package:
+
+```go
+import "github.com/ctx42/convert/pkg/convert"
 ```
 
 ## Converters
 
 Use converter functions directly.
 
+<!-- gmmce:pkg/convert/Example -->
 ```go
 // Successful conversion.
 ui8, err := convert.IntToUint8(42)
-fmt.Printf("convert.IntToUint8 output: %[1]T(%[1]d) error: %v\n", ui8, err)
+fmt.Printf("%[1]T(%[1]d), %v\n", ui8, err)
 
 // Value too big for uint8.
 ui8, err = convert.IntToUint8(420)
-fmt.Printf("convert.IntToUint8 output: %[1]T(%[1]d) error: %v\n", ui8, err)
+fmt.Printf("%[1]T(%[1]d), %v\n", ui8, err)
 
 // Unsafe conversion.
 f32, err := convert.IntToFloat32(convert.Float32SafeIntMax + 1)
-fmt.Printf("convert.IntToFloat32 output: %[1]T(%[1]g) error: %v\n", f32, err)
+fmt.Printf("%[1]T(%[1]g), %v\n", f32, err)
 
 // Output:
-// convert.IntToUint8 output: uint8(42) error: <nil>
-// convert.IntToUint8 output: uint8(0) error: value out of range: from int to uint8
-// convert.IntToFloat32 output: float32(0) error: value out of safe range: from int to float32
+// uint8(42), <nil>
+// uint8(0), value out of range: from int to uint8
+// float32(0), value out of safe range: from int to float32
 ```
 
 Package `convert` provides more than 200 converter functions between numeric
@@ -72,14 +87,54 @@ As well as converters implemented only between specific type pairs:
 - `convert.BoolToBool`
 - `convert.StringToDuration`
 - `convert.StringToString`
-- `convert.StringToTime` - string must be in `time.RFC3339Nano` format.
+- `convert.StringToTime(layout)` - registered by default with the
+  `time.RFC3339Nano` layout.
 
-All of them pairs are automatically registered in the package-level registry.
+All of these converters are automatically registered in the package-level
+registry.
+
+## Errors
+
+A failed conversion returns a `convert.Error` wrapping one of the sentinel
+errors, so match it with `errors.Is`:
+
+| Error             | Returned when                                         |
+|-------------------|-------------------------------------------------------|
+| `ErrInvRange`     | Value outside the destination type range.             |
+| `ErrInvSafeRange` | Value in range but would lose precision.              |
+| `ErrFraction`     | Float with a fractional part converted to an integer. |
+| `ErrInvValue`     | Invalid value, e.g. NaN, infinity, or a bad string.   |
+| `ErrInvType`      | Value of the wrong type for the converter.            |
+| `ErrUnkConv`      | No converter registered for the type pair.            |
+| `ErrNilRegistry`  | Conversion with a nil registry.                       |
+
+When parsing a string fails, the parser's error is kept as `Error.Cause` and is
+matched by `errors.Is` and `errors.As` too.
+
+<!-- gmmce:pkg/convert/Example_errors -->
+```go
+// Match the reason a conversion failed with errors.Is.
+_, err := convert.IntToUint8(420)
+fmt.Println(errors.Is(err, convert.ErrInvRange))
+
+// A failed parse keeps the parser error as the cause.
+var cnvErr convert.Error
+_, err = convert.StringToDuration("abc")
+if errors.As(err, &cnvErr) {
+	fmt.Println(cnvErr.Cause)
+}
+
+// Output:
+// true
+// time: invalid duration "abc"
+```
 
 ## Converter Registry
 
 To get a converter function for a pair of types at runtime use `Lookup`
 function.
+
+<!-- gmmce:pkg/convert/ExampleLookup -->
 ```go
 cnv := convert.Lookup[int, uint8]()
 
@@ -94,7 +149,7 @@ fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
 // output: uint8(42); error: <nil>
 ```
 
-It returns a non-nil converter if the pair has been registered in the 
+It returns a non-nil converter if the pair has been registered in the
 package-level registry.
 
 ## Converter Types
@@ -103,10 +158,10 @@ All the converter functions provided by the package match the `SrcToDst` type.
 
 ```go
 // SrcToDst represents a converter function that attempts lossless conversion
-// of a value from the type "Src" to the "Dst" type. On success, it returns
-// the converted value and a nil error. On failure (e.g., truncation,
-// underflow, overflow, or semantic loss), it returns the zero value of "Dst"
-// along with a non-nil error describing the issue.
+// of a value from the Src type to the Dst type. On success, it returns the
+// converted value and a nil error. On failure (e.g., truncation, underflow,
+// overflow, or semantic loss), it returns the zero value of Dst along with a
+// non-nil error describing the issue.
 type SrcToDst[Src, Dst any] func(Src) (Dst, error)
 
 // AnyToAny is a non-generic version of [SrcToDst]. The behavior is exactly
@@ -114,25 +169,24 @@ type SrcToDst[Src, Dst any] func(Src) (Dst, error)
 type AnyToAny func(any) (any, error)
 ```
 
-Additionally, package defines non-generic `AnyToAny` type. Converter functions
-can be adapted to it with a helper.
+Additionally, the package defines the non-generic `AnyToAny` type. Converter
+functions can be adapted to it with a helper.
 
+<!-- gmmce:pkg/convert/ExampleToAnyAny -->
 ```go
-var cnv func(any) (any, error)
-
-cnv = convert.ToAnyAny(convert.Uint8ToUint8)
+cnv := convert.ToAnyAny(convert.Uint8ToUint8)
 
 have, err := cnv("wrong")
 
 fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
 // Output:
-// output: uint8(0); error: invalid type: expected uint8, got string
+// output: uint8(0); error: invalid type: expected uint8 got string
 ```
 
 ## AnyToXXX Converters
 
-Module also provides a set of functions which can convert `any` type to a given
-type:
+The package also provides a set of functions which convert a value of `any`
+type to a given type:
 
 - `AnyToByte`
 - `AnyToDuration`
@@ -153,13 +207,14 @@ type:
 
 ## Register Custom Converters
 
+<!-- gmmce:pkg/convert/ExampleRegister -->
 ```go
 type A struct{ val int8 }
 type B struct{ val int }
 
 // Custom converter function matching [convert.SrcToDst] signature.
 my := func(src A) (dst B, err error) {
-    return B{val: int(src.val)}, nil
+	return B{val: int(src.val)}, nil
 }
 
 // Register a converter function between types A and B.
@@ -169,7 +224,7 @@ old := convert.Register(my)
 // it will be returned, nil otherwise.
 _ = old
 
-// Lookup converter registered converter.
+// Look up the registered converter.
 cnv := convert.Lookup[A, B]()
 
 // Run conversion.
@@ -182,18 +237,19 @@ fmt.Printf("output: %[1]T(%[1]d); error: %v", have, err)
 
 ## Customize Converters
 
-Some converters, like `convert.StringToTime`, are added to package-level
+Some converters, like `convert.StringToTime`, are added to the package-level
 registry with sane defaults, but you can customize them by overwriting the
 default configuration.
 
+<!-- gmmce:pkg/convert/ExampleRegister_overwrite -->
 ```go
-// Register a converter function between types A and B.
+// Replace the default string to time.Time converter.
 def := convert.Register(convert.StringToTime(time.Kitchen))
 
 // The default converter is returned in case you want to restore it.
 defer convert.Register(def)
 
-// Lookup converter registered converter.
+// Look up the registered converter.
 cnv := convert.Lookup[string, time.Time]()
 
 // Run conversion.
@@ -204,3 +260,37 @@ fmt.Printf("output: %s; error: %v", have, err)
 // output: 0000-01-01 04:20:00 +0000 UTC; error: <nil>
 ```
 
+## Custom Registries
+
+Keep converters apart from the package-level registry by creating your own.
+`RegisterConverter` and `LookupConverter` work on it, and the `AnyToXXX`
+functions use it through the `WithRegistry` option.
+
+<!-- gmmce:pkg/convert/ExampleNewRegistry -->
+```go
+reg := convert.NewRegistry()
+convert.RegisterConverter(reg, convert.IntToUint8)
+
+cnv := convert.LookupConverter[int, uint8](reg)
+have, err := cnv(42)
+fmt.Printf("output: %[1]T(%[1]d); error: %v\n", have, err)
+
+v, err := convert.AnyToUint8(42, convert.WithRegistry(reg))
+fmt.Printf("output: %[1]T(%[1]d); error: %v\n", v, err)
+
+// Only converters registered in reg are available.
+_, err = convert.AnyToUint8(int8(42), convert.WithRegistry(reg))
+fmt.Println(err)
+
+// Output:
+// output: uint8(42); error: <nil>
+// output: uint8(42); error: <nil>
+// conversion undefined: from int8 to uint8
+```
+
+A nil registry makes `AnyToXXX` functions return `ErrNilRegistry`, and
+`RegisterConverter` and `LookupConverter` return nil.
+
+## License
+
+MIT, see [LICENSE.md](LICENSE.md).

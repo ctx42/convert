@@ -4,35 +4,53 @@
 package convert_test
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
-	convert2 "github.com/ctx42/convert/pkg/convert"
+	"github.com/ctx42/convert/pkg/convert"
 )
 
 func Example() {
 	// Successful conversion.
-	ui8, err := convert2.IntToUint8(42)
-	fmt.Printf("convert.IntToUint8 output: %[1]T(%[1]d) error: %v\n", ui8, err)
+	ui8, err := convert.IntToUint8(42)
+	fmt.Printf("%[1]T(%[1]d), %v\n", ui8, err)
 
 	// Value too big for uint8.
-	ui8, err = convert2.IntToUint8(420)
-	fmt.Printf("convert.IntToUint8 output: %[1]T(%[1]d) error: %v\n", ui8, err)
+	ui8, err = convert.IntToUint8(420)
+	fmt.Printf("%[1]T(%[1]d), %v\n", ui8, err)
 
 	// Unsafe conversion.
-	f32, err := convert2.IntToFloat32(convert2.Float32SafeIntMax + 1)
-	fmt.Printf("convert.IntToUint8 output: %[1]T(%[1]g) error: %v\n", f32, err)
+	f32, err := convert.IntToFloat32(convert.Float32SafeIntMax + 1)
+	fmt.Printf("%[1]T(%[1]g), %v\n", f32, err)
 
 	// Output:
-	// convert.IntToUint8 output: uint8(42) error: <nil>
-	// convert.IntToUint8 output: uint8(0) error: value out of range: from int to uint8
-	// convert.IntToUint8 output: float32(0) error: value out of safe range: from int to float32
+	// uint8(42), <nil>
+	// uint8(0), value out of range: from int to uint8
+	// float32(0), value out of safe range: from int to float32
+}
+
+func Example_errors() {
+	// Match the reason a conversion failed with errors.Is.
+	_, err := convert.IntToUint8(420)
+	fmt.Println(errors.Is(err, convert.ErrInvRange))
+
+	// A failed parse keeps the parser error as the cause.
+	var cnvErr convert.Error
+	_, err = convert.StringToDuration("abc")
+	if errors.As(err, &cnvErr) {
+		fmt.Println(cnvErr.Cause)
+	}
+
+	// Output:
+	// true
+	// time: invalid duration "abc"
 }
 
 func ExampleLookup() {
-	cnv := convert2.Lookup[int, uint8]()
+	cnv := convert.Lookup[int, uint8]()
 
-	// Chack cnv is not nil.
+	// Check cnv is not nil.
 
 	have, err := cnv(42)
 
@@ -44,9 +62,9 @@ func ExampleLookup() {
 }
 
 func ExampleLookup_time() {
-	cnv := convert2.Lookup[string, time.Time]()
+	cnv := convert.Lookup[string, time.Time]()
 
-	// Chack cnv is not nil.
+	// Check cnv is not nil.
 
 	have, err := cnv("2000-01-02T03:04:05Z")
 
@@ -58,9 +76,9 @@ func ExampleLookup_time() {
 }
 
 func ExampleLookup_error() {
-	cnv := convert2.Lookup[int, uint8]()
+	cnv := convert.Lookup[int, uint8]()
 
-	// Chack conv is not nil.
+	// Check cnv is not nil.
 
 	have, err := cnv(-42)
 
@@ -81,14 +99,14 @@ func ExampleRegister() {
 	}
 
 	// Register a converter function between types A and B.
-	old := convert2.Register(my)
+	old := convert.Register(my)
 
 	// If there was already a converter for that source-destination type pair,
 	// it will be returned, nil otherwise.
 	_ = old
 
-	// Lookup converter registered converter.
-	cnv := convert2.Lookup[A, B]()
+	// Look up the registered converter.
+	cnv := convert.Lookup[A, B]()
 
 	// Run conversion.
 	have, err := cnv(A{42})
@@ -99,14 +117,14 @@ func ExampleRegister() {
 }
 
 func ExampleRegister_overwrite() {
-	// Register a converter function between types A and B.
-	def := convert2.Register(convert2.StringToTime(time.Kitchen))
+	// Replace the default string to time.Time converter.
+	def := convert.Register(convert.StringToTime(time.Kitchen))
 
 	// The default converter is returned in case you want to restore it.
-	defer convert2.Register(def)
+	defer convert.Register(def)
 
-	// Lookup converter registered converter.
-	cnv := convert2.Lookup[string, time.Time]()
+	// Look up the registered converter.
+	cnv := convert.Lookup[string, time.Time]()
 
 	// Run conversion.
 	have, err := cnv("4:20AM")
@@ -116,8 +134,29 @@ func ExampleRegister_overwrite() {
 	// output: 0000-01-01 04:20:00 +0000 UTC; error: <nil>
 }
 
+func ExampleNewRegistry() {
+	reg := convert.NewRegistry()
+	convert.RegisterConverter(reg, convert.IntToUint8)
+
+	cnv := convert.LookupConverter[int, uint8](reg)
+	have, err := cnv(42)
+	fmt.Printf("output: %[1]T(%[1]d); error: %v\n", have, err)
+
+	v, err := convert.AnyToUint8(42, convert.WithRegistry(reg))
+	fmt.Printf("output: %[1]T(%[1]d); error: %v\n", v, err)
+
+	// Only converters registered in reg are available.
+	_, err = convert.AnyToUint8(int8(42), convert.WithRegistry(reg))
+	fmt.Println(err)
+
+	// Output:
+	// output: uint8(42); error: <nil>
+	// output: uint8(42); error: <nil>
+	// conversion undefined: from int8 to uint8
+}
+
 func ExampleToAnyAny() {
-	cnv := convert2.ToAnyAny(convert2.Uint8ToUint8)
+	cnv := convert.ToAnyAny(convert.Uint8ToUint8)
 
 	have, err := cnv("wrong")
 
