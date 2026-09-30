@@ -55,7 +55,7 @@ func Test_Action_Imports(t *testing.T) {
 		assert.Nil(t, have)
 	})
 
-	t.Run("with value not requiring renderImports", func(t *testing.T) {
+	t.Run("with value not requiring imports", func(t *testing.T) {
 		// --- Given ---
 		val := NewValue("value")
 		act := NewAction(CheckIntSafeToFloatMin, val)
@@ -67,7 +67,7 @@ func Test_Action_Imports(t *testing.T) {
 		assert.Nil(t, have)
 	})
 
-	t.Run("with value requiring renderImports", func(t *testing.T) {
+	t.Run("with value requiring imports", func(t *testing.T) {
 		// --- Given ---
 		val := NewValue("pkg", "value")
 		act := NewAction(CheckIntSafeToFloatMin, val)

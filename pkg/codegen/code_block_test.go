@@ -35,7 +35,7 @@ func Test_MustCodeBlock(t *testing.T) {
 }
 
 func Test_NewCodeBlock(t *testing.T) {
-	t.Run("template without renderImports", func(t *testing.T) {
+	t.Run("template without imports", func(t *testing.T) {
 		// --- Given ---
 		tpl := "a{{ .letter }}c"
 
@@ -48,7 +48,7 @@ func Test_NewCodeBlock(t *testing.T) {
 		assert.Equal(t, "test", have.tpl.Name())
 	})
 
-	t.Run("template with renderImports", func(t *testing.T) {
+	t.Run("template with imports", func(t *testing.T) {
 		// --- Given ---
 		tpl := "import math\nimport time\na{{ .letter }}c"
 
@@ -75,7 +75,7 @@ func Test_NewCodeBlock(t *testing.T) {
 }
 
 func Test_CodeBlock_Imports(t *testing.T) {
-	t.Run("without renderImports", func(t *testing.T) {
+	t.Run("without imports", func(t *testing.T) {
 		// --- Given ---
 		cb := &CodeBlock{}
 
@@ -86,7 +86,7 @@ func Test_CodeBlock_Imports(t *testing.T) {
 		assert.Nil(t, have)
 	})
 
-	t.Run("with renderImports", func(t *testing.T) {
+	t.Run("with imports", func(t *testing.T) {
 		// --- Given ---
 		cb := &CodeBlock{imps: []string{"math", "time"}}
 
@@ -99,7 +99,7 @@ func Test_CodeBlock_Imports(t *testing.T) {
 }
 
 func Test_CodeBlock_Write(t *testing.T) {
-	t.Run("without renderImports", func(t *testing.T) {
+	t.Run("without imports", func(t *testing.T) {
 		// --- Given ---
 		dst := &bytes.Buffer{}
 		tpl := "\r\n \ta{{ .letter }}c"
@@ -114,7 +114,7 @@ func Test_CodeBlock_Write(t *testing.T) {
 		assert.Equal(t, "\t\tabc\n", dst.String())
 	})
 
-	t.Run("with renderImports", func(t *testing.T) {
+	t.Run("with imports", func(t *testing.T) {
 		// --- Given ---
 		dst := &bytes.Buffer{}
 		tpl := "import math\nimport time\n\n\n\r\n \ta{{ .letter }}c"
