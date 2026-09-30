@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-// typFloat32 is reflected float32.
+// typFloat32 is the [reflect.Type] of float32.
 var typFloat32 = reflect.TypeFor[float32]()
 
 // AnyToFloat32 converts the given value to float32

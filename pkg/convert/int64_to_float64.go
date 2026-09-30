@@ -5,7 +5,7 @@
 
 package convert
 
-// Int64ToFloat64 safely converts int64 value to float64.
+// Int64ToFloat64 safely converts an int64 value to float64.
 func Int64ToFloat64(src int64) (dst float64, err error) {
 	if src < Float64SafeIntMin {
 		return 0, NewError(ErrInvSafeRange, "int64", "float64")

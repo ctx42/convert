@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Int16ToInt8 safely converts int16 value to int8.
+// Int16ToInt8 safely converts an int16 value to int8.
 func Int16ToInt8(src int16) (dst int8, err error) {
 	if src < math.MinInt8 {
 		return 0, NewError(ErrInvRange, "int16", "int8")

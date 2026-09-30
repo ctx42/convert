@@ -5,7 +5,7 @@
 
 package convert
 
-// RuneToFloat64 safely converts rune value to float64.
+// RuneToFloat64 safely converts a rune value to float64.
 func RuneToFloat64(src rune) (dst float64, err error) {
 	return float64(src), nil
 }

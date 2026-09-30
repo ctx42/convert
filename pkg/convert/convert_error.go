@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-// Error represents conversion error.
+// Error represents a conversion error.
 type Error struct {
 	Err   error  // Underlying error.
 	Cause error  // Optional error that caused the conversion to fail.
@@ -17,7 +17,7 @@ type Error struct {
 	Dst   any    // Destination type name.
 }
 
-// NewError constructs new [Error] instance.
+// NewError constructs a new [Error] instance.
 func NewError(err error, src, dst any) Error {
 	return Error{
 		Err: err,
@@ -27,7 +27,7 @@ func NewError(err error, src, dst any) Error {
 	}
 }
 
-// Format customize error format string.
+// Format returns a copy of the error with the given format string.
 //
 // The [Error.Error] method uses [fmt.Sprintf] to construct the error message
 // and always passes format arguments in order: [Error.Err], [Error.Src],
@@ -64,8 +64,8 @@ func (e Error) As(target any) bool {
 	return e.Cause != nil && errors.As(e.Cause, target)
 }
 
-// ChangeErrDstName changes the destination type name if the error an instance
-// of [Error]. Returns nil for nil error. Returns the original error if it's
+// ChangeErrDstName changes the destination type name if the error is an
+// instance of [Error]. Returns nil for nil error. Returns the original error if it's
 // not an instance of [Error].
 func ChangeErrDstName(err error, dst string) error {
 	if err == nil {

@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Int64ToRune safely converts int64 value to rune.
+// Int64ToRune safely converts an int64 value to rune.
 func Int64ToRune(src int64) (dst rune, err error) {
 	if src < math.MinInt32 {
 		return 0, NewError(ErrInvRange, "int64", "rune")

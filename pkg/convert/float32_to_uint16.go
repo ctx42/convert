@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Float32ToUint16 safely converts float32 value to uint16.
+// Float32ToUint16 safely converts a float32 value to uint16.
 func Float32ToUint16(src float32) (dst uint16, err error) {
 	f64 := float64(src)
 	if math.IsNaN(f64) {

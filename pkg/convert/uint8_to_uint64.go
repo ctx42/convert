@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint8ToUint64 safely converts uint8 value to uint64.
+// Uint8ToUint64 safely converts a uint8 value to uint64.
 func Uint8ToUint64(src uint8) (dst uint64, err error) {
 	return uint64(src), nil
 }

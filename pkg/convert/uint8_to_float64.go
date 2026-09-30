@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint8ToFloat64 safely converts uint8 value to float64.
+// Uint8ToFloat64 safely converts a uint8 value to float64.
 func Uint8ToFloat64(src uint8) (dst float64, err error) {
 	return float64(src), nil
 }

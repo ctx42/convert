@@ -5,7 +5,7 @@
 
 package convert
 
-// IntToUintptr safely converts int value to uintptr.
+// IntToUintptr safely converts an int value to uintptr.
 func IntToUintptr(src int) (dst uintptr, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int", "uintptr")

@@ -5,7 +5,7 @@
 
 package convert
 
-// Int32ToUint safely converts int32 value to uint.
+// Int32ToUint safely converts an int32 value to uint.
 func Int32ToUint(src int32) (dst uint, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int32", "uint")

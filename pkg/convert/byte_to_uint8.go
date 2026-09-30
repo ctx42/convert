@@ -5,7 +5,7 @@
 
 package convert
 
-// ByteToUint8 safely converts byte value to uint8.
+// ByteToUint8 safely converts a byte value to uint8.
 func ByteToUint8(src byte) (dst uint8, err error) {
 	return uint8(src), nil
 }

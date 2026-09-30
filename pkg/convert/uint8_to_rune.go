@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint8ToRune safely converts uint8 value to rune.
+// Uint8ToRune safely converts a uint8 value to rune.
 func Uint8ToRune(src uint8) (dst rune, err error) {
 	return rune(src), nil
 }

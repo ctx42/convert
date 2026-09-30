@@ -6,7 +6,7 @@ import (
 	"math"
 )
 
-// Float64ToInt32 safely converts float64 value to int32.
+// Float64ToInt32 safely converts a float64 value to int32.
 func Float64ToInt32(src float64) (dst int32, err error) {
 	f64 := src
 	if math.IsNaN(f64) {

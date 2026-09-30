@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// ByteToDuration safely converts byte value to [time.Duration].
+// ByteToDuration safely converts a byte value to [time.Duration].
 func ByteToDuration(src byte) (dst time.Duration, err error) {
 	return time.Duration(src), nil
 }

@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// DurationToInt16 safely converts [time.Duration] value to int16.
+// DurationToInt16 safely converts a [time.Duration] value to int16.
 func DurationToInt16(src time.Duration) (dst int16, err error) {
 	if src < math.MinInt16 {
 		return 0, NewError(ErrInvRange, "time.Duration", "int16")

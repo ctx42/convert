@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-// typUint64 is reflected uint64.
+// typUint64 is the [reflect.Type] of uint64.
 var typUint64 = reflect.TypeFor[uint64]()
 
 // AnyToUint64 converts the given value to uint64

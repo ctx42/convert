@@ -5,7 +5,7 @@
 
 package convert
 
-// ByteToInt32 safely converts byte value to int32.
+// ByteToInt32 safely converts a byte value to int32.
 func ByteToInt32(src byte) (dst int32, err error) {
 	return int32(src), nil
 }

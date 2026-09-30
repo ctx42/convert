@@ -5,7 +5,7 @@
 
 package convert
 
-// UintptrToUint64 safely converts uintptr value to uint64.
+// UintptrToUint64 safely converts a uintptr value to uint64.
 func UintptrToUint64(src uintptr) (dst uint64, err error) {
 	return uint64(src), nil
 }

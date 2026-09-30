@@ -101,20 +101,20 @@ func (typ Type) Doc() string {
 // Code returns the type name with a package name.
 func (typ Type) Code() string { return typ.value.Code() }
 
-// Imports return the package import paths required for the type. Returns nil
+// Imports returns the package import paths required for the type. Returns nil
 // when the type doesn't require any import paths.
 func (typ Type) Imports() []string { return typ.value.Imports() }
 
 // IsNumeric returns true if the type is a numeric type.
 func (typ Type) IsNumeric() bool { return typ.numeric }
 
-// IsSigned returns true if the type is a numeric signed type.
+// IsSigned returns true if the type is a signed numeric type.
 func (typ Type) IsSigned() bool { return typ.signed }
 
 // IsUnsigned returns true if the type is a numeric unsigned type.
 func (typ Type) IsUnsigned() bool { return !typ.signed }
 
-// IsFloat returns true if the type is a numeric float-point type.
+// IsFloat returns true if the type is a numeric floating-point type.
 func (typ Type) IsFloat() bool { return typ.numeric && typ.float }
 
 // IsInteger returns true if the type is a numeric integer type.

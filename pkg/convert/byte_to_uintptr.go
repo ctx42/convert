@@ -5,7 +5,7 @@
 
 package convert
 
-// ByteToUintptr safely converts byte value to uintptr.
+// ByteToUintptr safely converts a byte value to uintptr.
 func ByteToUintptr(src byte) (dst uintptr, err error) {
 	return uintptr(src), nil
 }

@@ -5,7 +5,7 @@
 
 package convert
 
-// Int16ToFloat32 safely converts int16 value to float32.
+// Int16ToFloat32 safely converts an int16 value to float32.
 func Int16ToFloat32(src int16) (dst float32, err error) {
 	return float32(src), nil
 }

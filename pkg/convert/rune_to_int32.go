@@ -5,7 +5,7 @@
 
 package convert
 
-// RuneToInt32 safely converts rune value to int32.
+// RuneToInt32 safely converts a rune value to int32.
 func RuneToInt32(src rune) (dst int32, err error) {
 	return int32(src), nil
 }

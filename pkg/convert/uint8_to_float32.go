@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint8ToFloat32 safely converts uint8 value to float32.
+// Uint8ToFloat32 safely converts a uint8 value to float32.
 func Uint8ToFloat32(src uint8) (dst float32, err error) {
 	return float32(src), nil
 }

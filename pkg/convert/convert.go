@@ -29,9 +29,9 @@ func Lookup[Src, Dst any]() SrcToDst[Src, Dst] {
 }
 
 // SrcToDst represents a converter function that attempts lossless conversion
-// of a value from the type "From" to the "To" type. On success, it returns the
+// of a value from the Src type to the Dst type. On success, it returns the
 // converted value and a nil error. On failure (e.g., truncation, underflow,
-// overflow, or semantic loss), it returns the zero value of "To" along with a
+// overflow, or semantic loss), it returns the zero value of Dst along with a
 // non-nil error describing the issue.
 type SrcToDst[Src, Dst any] func(Src) (Dst, error)
 
@@ -41,37 +41,39 @@ type AnyToAny func(any) (any, error)
 
 // Sentinel errors.
 var (
-	// ErrInvRange used when a value isn't within a valid range.
+	// ErrInvRange is returned when a value isn't within a valid range.
 	ErrInvRange = errors.New("value out of range")
 
-	// ErrInvSafeRange used when a value is within the valid range, but it may
-	// lead to precision loss.
+	// ErrInvSafeRange is returned when a value is within the valid range, but
+	// converting it may lead to precision loss.
 	ErrInvSafeRange = errors.New("value out of safe range")
 
-	// ErrUnsType used when conversion for a type is not defined.
+	// ErrUnsType is returned when conversion for a type is not defined.
 	ErrUnsType = errors.New("unsupported type")
 
-	// ErrInvType used when a type is not valid in a given conversion context.
+	// ErrInvType is returned when a type is not valid in a given conversion
+	// context.
 	ErrInvType = errors.New("invalid type")
 
-	// ErrInvValue used when a value is not valid in a given conversion context.
+	// ErrInvValue is returned when a value is not valid in a given conversion
+	// context.
 	ErrInvValue = errors.New("invalid value")
 
-	// ErrFraction used when a value must not be a floating-point number with a
-	// fraction in a given conversion context.
+	// ErrFraction is returned when a floating-point value has a fractional
+	// part, but the conversion requires a whole number.
 	ErrFraction = errors.New("must be a whole number")
 
-	// ErrInvFormat used when a value's format is not valid in a given
+	// ErrInvFormat is returned when a value's format is not valid in a given
 	// conversion context.
 	ErrInvFormat = errors.New("invalid format")
 
-	// ErrUnkConv used when conversion is undefined for given types.
+	// ErrUnkConv is returned when a conversion is undefined for given types.
 	ErrUnkConv = errors.New("conversion undefined")
 
-	// ErrUns represents explicitly not supported conversion.
+	// ErrUns represents an explicitly unsupported conversion.
 	ErrUns = errors.New("unsupported conversion")
 
-	// ErrNilRegistry used when a conversion is attempted with a nil
+	// ErrNilRegistry is returned when a conversion is attempted with a nil
 	// [Registry], for example one set with [WithRegistry].
 	ErrNilRegistry = errors.New("nil registry")
 )

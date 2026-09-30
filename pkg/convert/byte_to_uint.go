@@ -5,7 +5,7 @@
 
 package convert
 
-// ByteToUint safely converts byte value to uint.
+// ByteToUint safely converts a byte value to uint.
 func ByteToUint(src byte) (dst uint, err error) {
 	return uint(src), nil
 }

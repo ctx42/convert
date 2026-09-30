@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint8ToUint safely converts uint8 value to uint.
+// Uint8ToUint safely converts a uint8 value to uint.
 func Uint8ToUint(src uint8) (dst uint, err error) {
 	return uint(src), nil
 }

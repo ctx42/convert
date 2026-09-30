@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Float64ToUintptr safely converts float64 value to uintptr.
+// Float64ToUintptr safely converts a float64 value to uintptr.
 func Float64ToUintptr(src float64) (dst uintptr, err error) {
 	f64 := src
 	if math.IsNaN(f64) {

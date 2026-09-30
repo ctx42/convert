@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-// typInt32 is reflected int32.
+// typInt32 is the [reflect.Type] of int32.
 var typInt32 = reflect.TypeFor[int32]()
 
 // AnyToInt32 converts the given value to int32

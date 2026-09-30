@@ -5,7 +5,7 @@
 
 package convert
 
-// Int8ToInt32 safely converts int8 value to int32.
+// Int8ToInt32 safely converts an int8 value to int32.
 func Int8ToInt32(src int8) (dst int32, err error) {
 	return int32(src), nil
 }

@@ -5,7 +5,7 @@
 
 package convert
 
-// Int64ToUint64 safely converts int64 value to uint64.
+// Int64ToUint64 safely converts an int64 value to uint64.
 func Int64ToUint64(src int64) (dst uint64, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int64", "uint64")

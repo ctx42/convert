@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// IntToDuration safely converts int value to [time.Duration].
+// IntToDuration safely converts an int value to [time.Duration].
 func IntToDuration(src int) (dst time.Duration, err error) {
 	return time.Duration(src), nil
 }

@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// ByteToInt8 safely converts byte value to int8.
+// ByteToInt8 safely converts a byte value to int8.
 func ByteToInt8(src byte) (dst int8, err error) {
 	if src > math.MaxInt8 {
 		return 0, NewError(ErrInvRange, "byte", "int8")

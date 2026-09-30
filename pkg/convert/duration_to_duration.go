@@ -9,7 +9,8 @@ import (
 	"time"
 )
 
-// DurationToDuration safely converts [time.Duration] value to [time.Duration].
+// DurationToDuration safely converts a [time.Duration] value to
+// [time.Duration].
 func DurationToDuration(src time.Duration) (dst time.Duration, err error) {
 	return src, nil
 }

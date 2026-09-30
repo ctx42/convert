@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// DurationToInt32 safely converts [time.Duration] value to int32.
+// DurationToInt32 safely converts a [time.Duration] value to int32.
 func DurationToInt32(src time.Duration) (dst int32, err error) {
 	if src < math.MinInt32 {
 		return 0, NewError(ErrInvRange, "time.Duration", "int32")

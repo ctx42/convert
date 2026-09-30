@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// UintptrToInt32 safely converts uintptr value to int32.
+// UintptrToInt32 safely converts a uintptr value to int32.
 func UintptrToInt32(src uintptr) (dst int32, err error) {
 	if uint64(src) > math.MaxInt32 {
 		return 0, NewError(ErrInvRange, "uintptr", "int32")

@@ -6,6 +6,7 @@ package codegen
 import (
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 // IsSigned checks if the provided [Number] is a signed type.
@@ -44,6 +45,33 @@ func IsFloat[T Number]() bool {
 	default:
 		return false
 	}
+}
+
+// article returns the English indefinite article for the given word: "an"
+// before a word starting with a, e, i or o, and "a" otherwise. Go type names
+// starting with u, like uint, are pronounced with a consonant sound.
+func article(word string) string {
+	if word != "" && strings.ContainsRune("aeioAEIO", rune(word[0])) {
+		return "an"
+	}
+	return "a"
+}
+
+// comment returns the text as Go line comments, word-wrapped so no line,
+// including the "// " prefix, is longer than width. A word longer than the
+// width is put on its own line.
+func comment(text string, width int) string {
+	var lines []string
+	line := "//"
+	for _, word := range strings.Fields(text) {
+		if line != "//" && len(line)+1+len(word) > width {
+			lines = append(lines, line)
+			line = "//"
+		}
+		line += " " + word
+	}
+	lines = append(lines, line)
+	return strings.Join(lines, "\n")
 }
 
 // MinValue returns a [Value] representing the minimum value for the given type.

@@ -5,7 +5,7 @@
 
 package convert
 
-// ByteToInt64 safely converts byte value to int64.
+// ByteToInt64 safely converts a byte value to int64.
 func ByteToInt64(src byte) (dst int64, err error) {
 	return int64(src), nil
 }

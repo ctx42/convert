@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// RuneToUint16 safely converts rune value to uint16.
+// RuneToUint16 safely converts a rune value to uint16.
 func RuneToUint16(src rune) (dst uint16, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "rune", "uint16")

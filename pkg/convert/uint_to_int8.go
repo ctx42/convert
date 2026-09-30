@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// UintToInt8 safely converts uint value to int8.
+// UintToInt8 safely converts a uint value to int8.
 func UintToInt8(src uint) (dst int8, err error) {
 	if uint64(src) > math.MaxInt8 {
 		return 0, NewError(ErrInvRange, "uint", "int8")

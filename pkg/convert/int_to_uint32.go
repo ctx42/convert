@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// IntToUint32 safely converts int value to uint32.
+// IntToUint32 safely converts an int value to uint32.
 func IntToUint32(src int) (dst uint32, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int", "uint32")

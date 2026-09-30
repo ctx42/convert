@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// DurationToUint32 safely converts [time.Duration] value to uint32.
+// DurationToUint32 safely converts a [time.Duration] value to uint32.
 func DurationToUint32(src time.Duration) (dst uint32, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "time.Duration", "uint32")

@@ -5,7 +5,7 @@
 
 package convert
 
-// RuneToUint safely converts rune value to uint.
+// RuneToUint safely converts a rune value to uint.
 func RuneToUint(src rune) (dst uint, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "rune", "uint")

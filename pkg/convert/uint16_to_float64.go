@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint16ToFloat64 safely converts uint16 value to float64.
+// Uint16ToFloat64 safely converts a uint16 value to float64.
 func Uint16ToFloat64(src uint16) (dst float64, err error) {
 	return float64(src), nil
 }

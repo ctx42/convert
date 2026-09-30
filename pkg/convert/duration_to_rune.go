@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// DurationToRune safely converts [time.Duration] value to rune.
+// DurationToRune safely converts a [time.Duration] value to rune.
 func DurationToRune(src time.Duration) (dst rune, err error) {
 	if src < math.MinInt32 {
 		return 0, NewError(ErrInvRange, "time.Duration", "rune")

@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-// typByte is reflected byte.
+// typByte is the [reflect.Type] of byte.
 var typByte = reflect.TypeFor[byte]()
 
 // AnyToByte converts the given value to byte

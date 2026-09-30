@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// Int32ToDuration safely converts int32 value to [time.Duration].
+// Int32ToDuration safely converts an int32 value to [time.Duration].
 func Int32ToDuration(src int32) (dst time.Duration, err error) {
 	return time.Duration(src), nil
 }

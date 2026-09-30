@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-// typInt8 is reflected int8.
+// typInt8 is the [reflect.Type] of int8.
 var typInt8 = reflect.TypeFor[int8]()
 
 // AnyToInt8 converts the given value to int8

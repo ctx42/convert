@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-// typUintptr is reflected uintptr.
+// typUintptr is the [reflect.Type] of uintptr.
 var typUintptr = reflect.TypeFor[uintptr]()
 
 // AnyToUintptr converts the given value to uintptr

@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-// typInt is reflected int.
+// typInt is the [reflect.Type] of int.
 var typInt = reflect.TypeFor[int]()
 
 // AnyToInt converts the given value to int

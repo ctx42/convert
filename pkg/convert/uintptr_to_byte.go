@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// UintptrToByte safely converts uintptr value to byte.
+// UintptrToByte safely converts a uintptr value to byte.
 func UintptrToByte(src uintptr) (dst byte, err error) {
 	if uint64(src) > math.MaxUint8 {
 		return 0, NewError(ErrInvRange, "uintptr", "byte")

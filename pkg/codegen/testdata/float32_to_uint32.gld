@@ -6,7 +6,7 @@ import (
 	"math"
 )
 
-// Float32ToUint32 safely converts float32 value to uint32.
+// Float32ToUint32 safely converts a float32 value to uint32.
 func Float32ToUint32(src float32) (dst uint32, err error) {
 	f64 := float64(src)
 	if math.IsNaN(f64) {

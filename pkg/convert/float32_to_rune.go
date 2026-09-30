@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Float32ToRune safely converts float32 value to rune.
+// Float32ToRune safely converts a float32 value to rune.
 func Float32ToRune(src float32) (dst rune, err error) {
 	f64 := float64(src)
 	if math.IsNaN(f64) {

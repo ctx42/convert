@@ -57,7 +57,20 @@ func (gen *GenSrcToDst) GenerateTest(w io.Writer, src, dst Type) error {
 
 // convFunc generates code for the conversion function.
 func (gen *GenSrcToDst) convFunc() error {
-	data := map[string]any{"src": gen.src, "dst": gen.dst}
+	format := "%sTo%s safely converts %s %s value to %s."
+	doc := fmt.Sprintf(
+		format,
+		gen.src.Title(),
+		gen.dst.Title(),
+		article(gen.src.Doc()),
+		gen.src.Doc(),
+		gen.dst.Doc(),
+	)
+	data := map[string]any{
+		"src": gen.src,
+		"dst": gen.dst,
+		"doc": comment(doc, 80),
+	}
 	gen.addImport(cbSrcToDstFuncDef.Imports()...)
 	if err := cbSrcToDstFuncDef.Render(gen.code, 0, data); err != nil {
 		return err

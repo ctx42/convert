@@ -5,7 +5,7 @@
 
 package convert
 
-// Int8ToFloat64 safely converts int8 value to float64.
+// Int8ToFloat64 safely converts an int8 value to float64.
 func Int8ToFloat64(src int8) (dst float64, err error) {
 	return float64(src), nil
 }

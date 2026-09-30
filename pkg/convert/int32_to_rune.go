@@ -5,7 +5,7 @@
 
 package convert
 
-// Int32ToRune safely converts int32 value to rune.
+// Int32ToRune safely converts an int32 value to rune.
 func Int32ToRune(src int32) (dst rune, err error) {
 	return rune(src), nil
 }

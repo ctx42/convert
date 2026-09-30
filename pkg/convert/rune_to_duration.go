@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// RuneToDuration safely converts rune value to [time.Duration].
+// RuneToDuration safely converts a rune value to [time.Duration].
 func RuneToDuration(src rune) (dst time.Duration, err error) {
 	return time.Duration(src), nil
 }

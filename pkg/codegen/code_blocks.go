@@ -9,7 +9,7 @@ package codegen
 
 // cbSrcToDstFuncDef defines a conversion function between two types.
 var cbSrcToDstFuncDef = MustCodeBlock("cbSrcToDstFuncDef", `
-// {{.src.Title}}To{{.dst.Title}} safely converts {{.src.Doc}} value to {{.dst.Doc}}.
+{{.doc}}
 func {{.src.Title}}To{{.dst.Title}}(src {{.src.Code}}) (dst {{.dst.Code}}, err error) {
 `)
 
@@ -77,7 +77,7 @@ if {{.var}} {{.cond}} {{.value.Code}} {
 // -----------------------------------------------------------------------------
 
 // cbIsWhole verifies that a value is a whole number (no fractional part).
-var cbIsWhole = MustCodeBlock("cbCheckIsWhole", `
+var cbIsWhole = MustCodeBlock("cbIsWhole", `
 import math
 
 if {{ .var }} != math.Trunc({{ .var }}) {
@@ -88,7 +88,7 @@ if {{ .var }} != math.Trunc({{ .var }}) {
 // -----------------------------------------------------------------------------
 
 // cbIsFinite checks that a value is finite (not ±infinity).
-var cbIsFinite = MustCodeBlock("cbChekIsFinite", `
+var cbIsFinite = MustCodeBlock("cbIsFinite", `
 import math
 
 if math.IsInf({{.var}}, 0) {
@@ -99,7 +99,7 @@ if math.IsInf({{.var}}, 0) {
 // -----------------------------------------------------------------------------
 
 // cbIsNumber checks a variable is a number (is not NaN).
-var cbIsNumber = MustCodeBlock("cbChekIsNumber", `
+var cbIsNumber = MustCodeBlock("cbIsNumber", `
 import math
 
 if math.IsNaN({{.var}}) {
@@ -147,7 +147,7 @@ f64 := float64({{.var}})
 
 // cbReflectType defines a variable representing [reflect.Type] of a type.
 var cbReflectType = MustCodeBlock("cbReflectType", `
-// typ{{.type.Title}} is reflected {{.type.Doc}}.
+// typ{{.type.Title}} is the [reflect.Type] of {{.type.Doc}}.
 var typ{{.type.Title}} = reflect.TypeFor[{{.type.Code}}]()
 `)
 

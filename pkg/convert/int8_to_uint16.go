@@ -5,7 +5,7 @@
 
 package convert
 
-// Int8ToUint16 safely converts int8 value to uint16.
+// Int8ToUint16 safely converts an int8 value to uint16.
 func Int8ToUint16(src int8) (dst uint16, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int8", "uint16")

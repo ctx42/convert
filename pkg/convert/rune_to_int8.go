@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// RuneToInt8 safely converts rune value to int8.
+// RuneToInt8 safely converts a rune value to int8.
 func RuneToInt8(src rune) (dst int8, err error) {
 	if src < math.MinInt8 {
 		return 0, NewError(ErrInvRange, "rune", "int8")

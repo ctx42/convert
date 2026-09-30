@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// Int64ToDuration safely converts int64 value to [time.Duration].
+// Int64ToDuration safely converts an int64 value to [time.Duration].
 func Int64ToDuration(src int64) (dst time.Duration, err error) {
 	return time.Duration(src), nil
 }

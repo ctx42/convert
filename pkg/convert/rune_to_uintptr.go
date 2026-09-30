@@ -5,7 +5,7 @@
 
 package convert
 
-// RuneToUintptr safely converts rune value to uintptr.
+// RuneToUintptr safely converts a rune value to uintptr.
 func RuneToUintptr(src rune) (dst uintptr, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "rune", "uintptr")

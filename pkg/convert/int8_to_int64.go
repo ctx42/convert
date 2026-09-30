@@ -5,7 +5,7 @@
 
 package convert
 
-// Int8ToInt64 safely converts int8 value to int64.
+// Int8ToInt64 safely converts an int8 value to int64.
 func Int8ToInt64(src int8) (dst int64, err error) {
 	return int64(src), nil
 }

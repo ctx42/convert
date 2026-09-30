@@ -5,7 +5,7 @@
 
 package convert
 
-// ByteToRune safely converts byte value to rune.
+// ByteToRune safely converts a byte value to rune.
 func ByteToRune(src byte) (dst rune, err error) {
 	return rune(src), nil
 }

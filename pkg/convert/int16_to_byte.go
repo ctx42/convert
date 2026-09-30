@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Int16ToByte safely converts int16 value to byte.
+// Int16ToByte safely converts an int16 value to byte.
 func Int16ToByte(src int16) (dst byte, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int16", "byte")

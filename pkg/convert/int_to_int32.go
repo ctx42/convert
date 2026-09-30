@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// IntToInt32 safely converts int value to int32.
+// IntToInt32 safely converts an int value to int32.
 func IntToInt32(src int) (dst int32, err error) {
 	if int64(src) < math.MinInt32 {
 		return 0, NewError(ErrInvRange, "int", "int32")

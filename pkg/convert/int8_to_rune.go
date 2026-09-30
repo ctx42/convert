@@ -5,7 +5,7 @@
 
 package convert
 
-// Int8ToRune safely converts int8 value to rune.
+// Int8ToRune safely converts an int8 value to rune.
 func Int8ToRune(src int8) (dst rune, err error) {
 	return rune(src), nil
 }

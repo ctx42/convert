@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Int32ToByte safely converts int32 value to byte.
+// Int32ToByte safely converts an int32 value to byte.
 func Int32ToByte(src int32) (dst byte, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int32", "byte")

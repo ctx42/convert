@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// Int8ToDuration safely converts int8 value to [time.Duration].
+// Int8ToDuration safely converts an int8 value to [time.Duration].
 func Int8ToDuration(src int8) (dst time.Duration, err error) {
 	return time.Duration(src), nil
 }

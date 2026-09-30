@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// DurationToInt8 safely converts [time.Duration] value to int8.
+// DurationToInt8 safely converts a [time.Duration] value to int8.
 func DurationToInt8(src time.Duration) (dst int8, err error) {
 	if src < math.MinInt8 {
 		return 0, NewError(ErrInvRange, "time.Duration", "int8")

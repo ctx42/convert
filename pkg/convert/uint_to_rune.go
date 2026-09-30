@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// UintToRune safely converts uint value to rune.
+// UintToRune safely converts a uint value to rune.
 func UintToRune(src uint) (dst rune, err error) {
 	if uint64(src) > math.MaxInt32 {
 		return 0, NewError(ErrInvRange, "uint", "rune")

@@ -64,6 +64,59 @@ func Test_IsFloat_tabular(t *testing.T) {
 	}
 }
 
+func Test_article_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		word string
+		want string
+	}{
+		{"vowel", "int8", "an"},
+		{"upper case vowel", "Int8", "an"},
+		{"u", "uint8", "a"},
+		{"consonant", "float64", "a"},
+		{"bracket", "[time.Duration]", "a"},
+		{"empty", "", "a"},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have := article(tc.word)
+
+			// --- Then ---
+			assert.Equal(t, tc.want, have)
+		})
+	}
+}
+
+func Test_comment_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		text  string
+		width int
+		want  string
+	}{
+		{"fits", "abc def", 10, "// abc def"},
+		{"exact width", "abc defg", 11, "// abc defg"},
+		{"wraps", "abc def ghi", 10, "// abc def\n// ghi"},
+		{"long word", "abcdefghijkl x", 10, "// abcdefghijkl\n// x"},
+		{"extra spaces", " abc   def ", 10, "// abc def"},
+		{"empty", "", 10, "//"},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have := comment(tc.text, tc.width)
+
+			// --- Then ---
+			assert.Equal(t, tc.want, have)
+		})
+	}
+}
+
 func Test_MinValue_tabular(t *testing.T) {
 	tt := []struct {
 		testN string

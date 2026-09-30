@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// UintToDuration safely converts uint value to [time.Duration].
+// UintToDuration safely converts a uint value to [time.Duration].
 func UintToDuration(src uint) (dst time.Duration, err error) {
 	if uint64(src) > math.MaxInt64 {
 		return 0, NewError(ErrInvRange, "uint", "time.Duration")

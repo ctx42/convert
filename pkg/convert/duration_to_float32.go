@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// DurationToFloat32 safely converts [time.Duration] value to float32.
+// DurationToFloat32 safely converts a [time.Duration] value to float32.
 func DurationToFloat32(src time.Duration) (dst float32, err error) {
 	if src < Float32SafeIntMin {
 		return 0, NewError(ErrInvSafeRange, "time.Duration", "float32")

@@ -21,55 +21,57 @@ type ActionName string
 
 // List of action names.
 const (
-	// CastNotNeeded no cast or conversion is needed.
+	// CastNotNeeded means no cast or conversion is needed.
 	CastNotNeeded ActionName = "cast_not_needed"
 
-	// CastDirectly cast the source value directly to the destination.
+	// CastDirectly casts the source value directly to the destination type.
 	CastDirectly ActionName = "cast_directly"
 
-	// CastToFloat64 perform direct type cast from source to the destination.
+	// CastToFloat64 converts the source value to a float64 local variable.
 	CastToFloat64 ActionName = "cast_to_float64"
 
-	// CheckIsNonNegative verify the source value is >= 0.
+	// CheckIsNonNegative checks the source value is not negative.
 	CheckIsNonNegative ActionName = "check_is_non_negative"
 
-	// CheckUnderflows verify the source minimum fits in the destination type.
+	// CheckUnderflows checks the source value is not below the destination type
+	// minimum.
 	CheckUnderflows ActionName = "check_underflows"
 
-	// CheckOverflows verify the source maximum fits in the destination type.
+	// CheckOverflows checks the source value is not above the destination type
+	// maximum.
 	CheckOverflows ActionName = "check_overflows"
 
-	// CheckIsFinite verify the source float is finite (is not infinity).
+	// CheckIsFinite checks the source float is finite (is not infinity).
 	CheckIsFinite ActionName = "check_is_finite"
 
-	// CheckIsNumber verify the source float is a number (is not NaN).
+	// CheckIsNumber checks the source float is a number (is not NaN).
 	CheckIsNumber ActionName = "check_is_number"
 
-	// CheckIsWhole verify the source float has no fractional part.
+	// CheckIsWhole checks the source float has no fractional part.
 	CheckIsWhole ActionName = "check_is_whole"
 
-	// CheckIntSafeToFloatMin verify the source integer minimum is
-	// representable as float without loss of precision.
+	// CheckIntSafeToFloatMin checks the source integer is not below the
+	// smallest integer the destination float represents exactly.
 	CheckIntSafeToFloatMin ActionName = "check_int_safe_to_float_min"
 
-	// CheckIntSafeToFloatMax verify the source integer maximum is
-	// representable as float without loss of precision.
+	// CheckIntSafeToFloatMax checks the source integer is not above the
+	// largest integer the destination float represents exactly.
 	CheckIntSafeToFloatMax ActionName = "check_int_safe_to_float_max"
 
-	// CheckFloatSafeToIntMin verify the source float is representable as
-	// integer without loss of precision.
+	// CheckFloatSafeToIntMin checks the source float is not below the
+	// smallest integer its floating-point type represents exactly.
 	CheckFloatSafeToIntMin ActionName = "check_safe_float_int_min"
 
-	// CheckFloatSafeToIntMax verify the source float is representable as
-	// integer without loss of precision.
+	// CheckFloatSafeToIntMax checks the source float is not above the
+	// largest integer its floating-point type represents exactly.
 	CheckFloatSafeToIntMax ActionName = "check_safe_float_int_max"
 
-	// CheckFloatRange verify the finite source float is within the range of
+	// CheckFloatRange checks the finite source float is within the range of
 	// the destination floating-point type.
 	CheckFloatRange ActionName = "check_float_range"
 
-	// CheckFloatExact verify the source float is exactly representable by the
-	// destination floating-point type.
+	// CheckFloatExact checks the source float is exactly representable by
+	// the destination floating-point type.
 	CheckFloatExact ActionName = "check_float_exact"
 )
 

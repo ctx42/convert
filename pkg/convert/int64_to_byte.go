@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Int64ToByte safely converts int64 value to byte.
+// Int64ToByte safely converts an int64 value to byte.
 func Int64ToByte(src int64) (dst byte, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int64", "byte")

@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-// typFloat64 is reflected float64.
+// typFloat64 is the [reflect.Type] of float64.
 var typFloat64 = reflect.TypeFor[float64]()
 
 // AnyToFloat64 converts the given value to float64

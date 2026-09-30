@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint8ToUint32 safely converts uint8 value to uint32.
+// Uint8ToUint32 safely converts a uint8 value to uint32.
 func Uint8ToUint32(src uint8) (dst uint32, err error) {
 	return uint32(src), nil
 }

@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Int64ToUint8 safely converts int64 value to uint8.
+// Int64ToUint8 safely converts an int64 value to uint8.
 func Int64ToUint8(src int64) (dst uint8, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int64", "uint8")

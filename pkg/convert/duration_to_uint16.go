@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// DurationToUint16 safely converts [time.Duration] value to uint16.
+// DurationToUint16 safely converts a [time.Duration] value to uint16.
 func DurationToUint16(src time.Duration) (dst uint16, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "time.Duration", "uint16")

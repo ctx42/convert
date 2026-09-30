@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint16ToUintptr safely converts uint16 value to uintptr.
+// Uint16ToUintptr safely converts a uint16 value to uintptr.
 func Uint16ToUintptr(src uint16) (dst uintptr, err error) {
 	return uintptr(src), nil
 }

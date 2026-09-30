@@ -5,7 +5,7 @@
 
 package convert
 
-// Int8ToUint8 safely converts int8 value to uint8.
+// Int8ToUint8 safely converts an int8 value to uint8.
 func Int8ToUint8(src int8) (dst uint8, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int8", "uint8")

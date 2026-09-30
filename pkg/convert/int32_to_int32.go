@@ -5,7 +5,7 @@
 
 package convert
 
-// Int32ToInt32 safely converts int32 value to int32.
+// Int32ToInt32 safely converts an int32 value to int32.
 func Int32ToInt32(src int32) (dst int32, err error) {
 	return src, nil
 }

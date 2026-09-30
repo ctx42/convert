@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// IntToUint16 safely converts int value to uint16.
+// IntToUint16 safely converts an int value to uint16.
 func IntToUint16(src int) (dst uint16, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int", "uint16")

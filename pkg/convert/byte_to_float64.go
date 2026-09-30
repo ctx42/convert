@@ -5,7 +5,7 @@
 
 package convert
 
-// ByteToFloat64 safely converts byte value to float64.
+// ByteToFloat64 safely converts a byte value to float64.
 func ByteToFloat64(src byte) (dst float64, err error) {
 	return float64(src), nil
 }

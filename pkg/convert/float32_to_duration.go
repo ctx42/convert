@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// Float32ToDuration safely converts float32 value to [time.Duration].
+// Float32ToDuration safely converts a float32 value to [time.Duration].
 func Float32ToDuration(src float32) (dst time.Duration, err error) {
 	f64 := float64(src)
 	if math.IsNaN(f64) {

@@ -5,7 +5,7 @@
 
 package convert
 
-// Int32ToUintptr safely converts int32 value to uintptr.
+// Int32ToUintptr safely converts an int32 value to uintptr.
 func Int32ToUintptr(src int32) (dst uintptr, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int32", "uintptr")

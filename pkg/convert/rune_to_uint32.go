@@ -5,7 +5,7 @@
 
 package convert
 
-// RuneToUint32 safely converts rune value to uint32.
+// RuneToUint32 safely converts a rune value to uint32.
 func RuneToUint32(src rune) (dst uint32, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "rune", "uint32")

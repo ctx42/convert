@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Uint32ToUint16 safely converts uint32 value to uint16.
+// Uint32ToUint16 safely converts a uint32 value to uint16.
 func Uint32ToUint16(src uint32) (dst uint16, err error) {
 	if src > math.MaxUint16 {
 		return 0, NewError(ErrInvRange, "uint32", "uint16")

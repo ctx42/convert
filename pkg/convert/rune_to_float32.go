@@ -5,7 +5,7 @@
 
 package convert
 
-// RuneToFloat32 safely converts rune value to float32.
+// RuneToFloat32 safely converts a rune value to float32.
 func RuneToFloat32(src rune) (dst float32, err error) {
 	if src < Float32SafeIntMin {
 		return 0, NewError(ErrInvSafeRange, "rune", "float32")

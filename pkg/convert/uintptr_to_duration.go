@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// UintptrToDuration safely converts uintptr value to [time.Duration].
+// UintptrToDuration safely converts a uintptr value to [time.Duration].
 func UintptrToDuration(src uintptr) (dst time.Duration, err error) {
 	if uint64(src) > math.MaxInt64 {
 		return 0, NewError(ErrInvRange, "uintptr", "time.Duration")

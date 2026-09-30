@@ -5,7 +5,7 @@
 
 package convert
 
-// Int8ToInt16 safely converts int8 value to int16.
+// Int8ToInt16 safely converts an int8 value to int16.
 func Int8ToInt16(src int8) (dst int16, err error) {
 	return int16(src), nil
 }

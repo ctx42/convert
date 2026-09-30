@@ -5,7 +5,7 @@
 
 package convert
 
-// ByteToInt16 safely converts byte value to int16.
+// ByteToInt16 safely converts a byte value to int16.
 func ByteToInt16(src byte) (dst int16, err error) {
 	return int16(src), nil
 }

@@ -5,7 +5,7 @@
 
 package convert
 
-// Int8ToByte safely converts int8 value to byte.
+// Int8ToByte safely converts an int8 value to byte.
 func Int8ToByte(src int8) (dst byte, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int8", "byte")

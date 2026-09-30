@@ -5,7 +5,7 @@
 
 package convert
 
-// ByteToFloat32 safely converts byte value to float32.
+// ByteToFloat32 safely converts a byte value to float32.
 func ByteToFloat32(src byte) (dst float32, err error) {
 	return float32(src), nil
 }

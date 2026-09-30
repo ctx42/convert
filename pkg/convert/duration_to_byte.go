@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// DurationToByte safely converts [time.Duration] value to byte.
+// DurationToByte safely converts a [time.Duration] value to byte.
 func DurationToByte(src time.Duration) (dst byte, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "time.Duration", "byte")

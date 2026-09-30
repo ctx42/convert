@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-// typInt16 is reflected int16.
+// typInt16 is the [reflect.Type] of int16.
 var typInt16 = reflect.TypeFor[int16]()
 
 // AnyToInt16 converts the given value to int16

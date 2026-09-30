@@ -5,7 +5,7 @@
 
 package convert
 
-// IntToUint safely converts int value to uint.
+// IntToUint safely converts an int value to uint.
 func IntToUint(src int) (dst uint, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int", "uint")

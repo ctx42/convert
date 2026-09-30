@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Int32ToInt8 safely converts int32 value to int8.
+// Int32ToInt8 safely converts an int32 value to int8.
 func Int32ToInt8(src int32) (dst int8, err error) {
 	if src < math.MinInt8 {
 		return 0, NewError(ErrInvRange, "int32", "int8")

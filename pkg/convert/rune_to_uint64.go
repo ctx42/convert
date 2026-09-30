@@ -5,7 +5,7 @@
 
 package convert
 
-// RuneToUint64 safely converts rune value to uint64.
+// RuneToUint64 safely converts a rune value to uint64.
 func RuneToUint64(src rune) (dst uint64, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "rune", "uint64")

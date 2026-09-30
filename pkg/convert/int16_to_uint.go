@@ -5,7 +5,7 @@
 
 package convert
 
-// Int16ToUint safely converts int16 value to uint.
+// Int16ToUint safely converts an int16 value to uint.
 func Int16ToUint(src int16) (dst uint, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "int16", "uint")

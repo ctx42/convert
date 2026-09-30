@@ -5,7 +5,7 @@
 
 package convert
 
-// IntToInt64 safely converts int value to int64.
+// IntToInt64 safely converts an int value to int64.
 func IntToInt64(src int) (dst int64, err error) {
 	return int64(src), nil
 }

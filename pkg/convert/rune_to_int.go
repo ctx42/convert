@@ -5,7 +5,7 @@
 
 package convert
 
-// RuneToInt safely converts rune value to int.
+// RuneToInt safely converts a rune value to int.
 func RuneToInt(src rune) (dst int, err error) {
 	return int(src), nil
 }

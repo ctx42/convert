@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint16ToRune safely converts uint16 value to rune.
+// Uint16ToRune safely converts a uint16 value to rune.
 func Uint16ToRune(src uint16) (dst rune, err error) {
 	return rune(src), nil
 }

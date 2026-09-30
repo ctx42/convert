@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Uint16ToByte safely converts uint16 value to byte.
+// Uint16ToByte safely converts a uint16 value to byte.
 func Uint16ToByte(src uint16) (dst byte, err error) {
 	if src > math.MaxUint8 {
 		return 0, NewError(ErrInvRange, "uint16", "byte")

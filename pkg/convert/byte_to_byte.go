@@ -5,7 +5,7 @@
 
 package convert
 
-// ByteToByte safely converts byte value to byte.
+// ByteToByte safely converts a byte value to byte.
 func ByteToByte(src byte) (dst byte, err error) {
 	return src, nil
 }

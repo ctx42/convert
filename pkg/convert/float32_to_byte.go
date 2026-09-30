@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Float32ToByte safely converts float32 value to byte.
+// Float32ToByte safely converts a float32 value to byte.
 func Float32ToByte(src float32) (dst byte, err error) {
 	f64 := float64(src)
 	if math.IsNaN(f64) {

@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-// Int64ToInt safely converts int64 value to int.
+// Int64ToInt safely converts an int64 value to int.
 func Int64ToInt(src int64) (dst int, err error) {
 	if src < math.MinInt {
 		return 0, NewError(ErrInvRange, "int64", "int")

@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint32ToInt64 safely converts uint32 value to int64.
+// Uint32ToInt64 safely converts a uint32 value to int64.
 func Uint32ToInt64(src uint32) (dst int64, err error) {
 	return int64(src), nil
 }

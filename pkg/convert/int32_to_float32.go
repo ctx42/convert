@@ -5,7 +5,7 @@
 
 package convert
 
-// Int32ToFloat32 safely converts int32 value to float32.
+// Int32ToFloat32 safely converts an int32 value to float32.
 func Int32ToFloat32(src int32) (dst float32, err error) {
 	if src < Float32SafeIntMin {
 		return 0, NewError(ErrInvSafeRange, "int32", "float32")

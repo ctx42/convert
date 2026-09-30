@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint16ToUint32 safely converts uint16 value to uint32.
+// Uint16ToUint32 safely converts a uint16 value to uint32.
 func Uint16ToUint32(src uint16) (dst uint32, err error) {
 	return uint32(src), nil
 }

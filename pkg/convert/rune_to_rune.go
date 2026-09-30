@@ -5,7 +5,7 @@
 
 package convert
 
-// RuneToRune safely converts rune value to rune.
+// RuneToRune safely converts a rune value to rune.
 func RuneToRune(src rune) (dst rune, err error) {
 	return src, nil
 }

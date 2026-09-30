@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// DurationToUint64 safely converts [time.Duration] value to uint64.
+// DurationToUint64 safely converts a [time.Duration] value to uint64.
 func DurationToUint64(src time.Duration) (dst uint64, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "time.Duration", "uint64")

@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// DurationToUintptr safely converts [time.Duration] value to uintptr.
+// DurationToUintptr safely converts a [time.Duration] value to uintptr.
 func DurationToUintptr(src time.Duration) (dst uintptr, err error) {
 	if src < 0 {
 		return 0, NewError(ErrInvRange, "time.Duration", "uintptr")

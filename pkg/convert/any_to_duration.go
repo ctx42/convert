@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// typDuration is reflected [time.Duration].
+// typDuration is the [reflect.Type] of [time.Duration].
 var typDuration = reflect.TypeFor[time.Duration]()
 
 // AnyToDuration converts the given value to [time.Duration]

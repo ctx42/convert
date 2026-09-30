@@ -5,7 +5,7 @@
 
 package convert
 
-// Uint16ToInt64 safely converts uint16 value to int64.
+// Uint16ToInt64 safely converts a uint16 value to int64.
 func Uint16ToInt64(src uint16) (dst int64, err error) {
 	return int64(src), nil
 }

@@ -5,7 +5,7 @@
 
 package convert
 
-// IntToInt safely converts int value to int.
+// IntToInt safely converts an int value to int.
 func IntToInt(src int) (dst int, err error) {
 	return src, nil
 }

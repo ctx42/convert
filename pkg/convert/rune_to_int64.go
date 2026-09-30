@@ -5,7 +5,7 @@
 
 package convert
 
-// RuneToInt64 safely converts rune value to int64.
+// RuneToInt64 safely converts a rune value to int64.
 func RuneToInt64(src rune) (dst int64, err error) {
 	return int64(src), nil
 }

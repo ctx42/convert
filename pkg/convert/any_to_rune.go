@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-// typRune is reflected rune.
+// typRune is the [reflect.Type] of rune.
 var typRune = reflect.TypeFor[rune]()
 
 // AnyToRune converts the given value to rune

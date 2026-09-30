@@ -5,7 +5,7 @@
 
 package convert
 
-// Float64ToFloat64 safely converts float64 value to float64.
+// Float64ToFloat64 safely converts a float64 value to float64.
 func Float64ToFloat64(src float64) (dst float64, err error) {
 	return src, nil
 }
