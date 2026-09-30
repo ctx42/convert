@@ -29,5 +29,5 @@ func AnyToFloat64(value any, opts ...Option) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return ret.(float64), nil // nolint: forcetypeassert
+	return ret.(float64), nil //nolint:forcetypeassert
 }

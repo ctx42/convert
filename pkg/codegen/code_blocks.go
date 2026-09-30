@@ -48,7 +48,7 @@ if err != nil {
 	return 0, err
 {{- end}}
 }
-return ret.({{.dst.Code}}), nil // nolint: forcetypeassert
+return ret.({{.dst.Code}}), nil //nolint:forcetypeassert
 `)
 
 // -----------------------------------------------------------------------------

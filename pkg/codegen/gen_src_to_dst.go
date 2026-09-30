@@ -71,7 +71,7 @@ func (gen *GenSrcToDst) convFunc() error {
 
 // convFuncBody generates code for the numeric conversion function body.
 //
-// nolint: cyclop, gocognit
+//nolint:cyclop,gocognit
 func (gen *GenSrcToDst) convFuncBody(actions []Action) error {
 	if len(actions) == 0 {
 		format := "no conversion actions found for %s to %s"
@@ -404,7 +404,7 @@ func (gen *GenSrcToDst) platformTestFunc(size int, actions []Action) error {
 // testCases generates code for the conversion function test cases and returns
 // the success and the error test case rows.
 //
-// nolint: cyclop, gocognit
+//nolint:cyclop,gocognit
 func (gen *GenSrcToDst) testCases(actions []Action) (string, string, error) {
 	succ := &strings.Builder{}
 	errs := &strings.Builder{}

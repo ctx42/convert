@@ -71,7 +71,7 @@ func ChangeErrDstName(err error, dst string) error {
 	if err == nil {
 		return nil
 	}
-	if e, ok := err.(Error); ok { // nolint: errorlint
+	if e, ok := err.(Error); ok { //nolint:errorlint
 		e.Dst = dst
 		return e
 	}

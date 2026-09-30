@@ -29,5 +29,5 @@ func AnyToByte(value any, opts ...Option) (byte, error) {
 	if err != nil {
 		return 0, ChangeErrDstName(err, "byte")
 	}
-	return ret.(byte), nil // nolint: forcetypeassert
+	return ret.(byte), nil //nolint:forcetypeassert
 }

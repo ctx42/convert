@@ -29,5 +29,5 @@ func AnyToRune(value any, opts ...Option) (rune, error) {
 	if err != nil {
 		return 0, ChangeErrDstName(err, "rune")
 	}
-	return ret.(rune), nil // nolint: forcetypeassert
+	return ret.(rune), nil //nolint:forcetypeassert
 }

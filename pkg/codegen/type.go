@@ -209,7 +209,7 @@ func (typ Type) convActions(target Type) []Action {
 // is a floating-point number. Method returns nil when conversion is not
 // supported.
 //
-// nolint: cyclop
+//nolint:cyclop
 func (typ Type) floatConvActions(target Type) []Action {
 	// Conversions between non-numeric types are not supported.
 	if !typ.IsNumeric() || !target.IsNumeric() {

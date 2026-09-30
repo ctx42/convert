@@ -29,5 +29,5 @@ func AnyToInt8(value any, opts ...Option) (int8, error) {
 	if err != nil {
 		return 0, err
 	}
-	return ret.(int8), nil // nolint: forcetypeassert
+	return ret.(int8), nil //nolint:forcetypeassert
 }

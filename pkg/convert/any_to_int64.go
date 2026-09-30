@@ -29,5 +29,5 @@ func AnyToInt64(value any, opts ...Option) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return ret.(int64), nil // nolint: forcetypeassert
+	return ret.(int64), nil //nolint:forcetypeassert
 }

@@ -29,5 +29,5 @@ func AnyToUint32(value any, opts ...Option) (uint32, error) {
 	if err != nil {
 		return 0, err
 	}
-	return ret.(uint32), nil // nolint: forcetypeassert
+	return ret.(uint32), nil //nolint:forcetypeassert
 }

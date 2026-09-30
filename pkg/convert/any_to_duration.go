@@ -30,5 +30,5 @@ func AnyToDuration(value any, opts ...Option) (time.Duration, error) {
 	if err != nil {
 		return 0, ChangeErrDstName(err, "time.Duration")
 	}
-	return ret.(time.Duration), nil // nolint: forcetypeassert
+	return ret.(time.Duration), nil //nolint:forcetypeassert
 }
