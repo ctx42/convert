@@ -13,9 +13,9 @@ func Test_decimalToInteger_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		src    string
-		neg    bool
-		digits string
+		src     string
+		wNeg    bool
+		wDigits string
 	}{
 		{"integer", "42", false, "42"},
 		{"plus sign", "+42", false, "42"},
@@ -49,12 +49,12 @@ func Test_decimalToInteger_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			neg, have, err := decimalToInteger(tc.src)
+			hNeg, hDigits, err := decimalToInteger(tc.src)
 
 			// --- Then ---
 			assert.NoError(t, err)
-			assert.Equal(t, tc.neg, neg)
-			assert.Equal(t, tc.digits, have)
+			assert.Equal(t, tc.wNeg, hNeg)
+			assert.Equal(t, tc.wDigits, hDigits)
 		})
 	}
 }
@@ -94,12 +94,12 @@ func Test_decimalToInteger_error_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			neg, have, err := decimalToInteger(tc.src)
+			hNeg, hDigits, err := decimalToInteger(tc.src)
 
 			// --- Then ---
 			assert.ErrorIs(t, tc.err, err)
-			assert.False(t, neg)
-			assert.Equal(t, "", have)
+			assert.False(t, hNeg)
+			assert.Equal(t, "", hDigits)
 		})
 	}
 }

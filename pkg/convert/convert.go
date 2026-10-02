@@ -196,6 +196,7 @@ func init() {
 	Register(StringToUint16)
 	Register(StringToUint32)
 	Register(StringToUint64)
+	Register(StringToUintptr)
 	Register(StringToFloat32)
 	Register(StringToFloat64)
 

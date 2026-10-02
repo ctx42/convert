@@ -15,7 +15,7 @@ type signed interface {
 
 // unsigned is the set of unsigned integer types parsed from strings.
 type unsigned interface {
-	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64
+	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
 }
 
 // StringToInt converts a base-10 string to int without precision loss.
@@ -93,6 +93,12 @@ func StringToUint32(src string) (uint32, error) {
 // See [StringToInt64] for the accepted formats.
 func StringToUint64(src string) (uint64, error) {
 	return stringToUnsigned[uint64](src, 64, "uint64")
+}
+
+// StringToUintptr converts a base-10 string to uintptr without precision
+// loss. See [StringToInt64] for the accepted formats.
+func StringToUintptr(src string) (uintptr, error) {
+	return stringToUnsigned[uintptr](src, 32<<(^uintptr(0)>>63), "uintptr")
 }
 
 // stringToSigned parses src as a signed integer of the given bit size. When

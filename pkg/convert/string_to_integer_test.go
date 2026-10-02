@@ -165,6 +165,8 @@ func Test_StringToInt64_success_tabular(t *testing.T) {
 		{"upper case exponent", "42E0", 42},
 		{"exponent beyond float64 precision", "1e17", 100000000000000000},
 		{"exponent max", "9.223372036854775807e18", math.MaxInt64},
+		{"negative exponent", "-4.2e1", -42},
+		{"exponent min", "-9.223372036854775808e18", math.MinInt64},
 	}
 
 	for _, tc := range tt {
@@ -302,6 +304,18 @@ func Test_StringToInt64_error_tabular(t *testing.T) {
 			assert.Equal(t, int64(0), have)
 		})
 	}
+}
+
+func Test_StringToInt64_registered(t *testing.T) {
+	// --- Given ---
+	src := "9007199254740993"
+
+	// --- When ---
+	have, err := AnyToInt64(src)
+
+	// --- Then ---
+	assert.NoError(t, err)
+	assert.Equal(t, int64(9007199254740993), have)
 }
 
 func Test_StringToUint(t *testing.T) {
@@ -453,6 +467,7 @@ func Test_StringToUint64_success_tabular(t *testing.T) {
 		{"beyond float64 precision", "9007199254740993", 9007199254740993},
 		{"exponent", "4.2e1", 42},
 		{"plus sign max", "+18446744073709551615", math.MaxUint64},
+		{"negative zero", "-0.0", 0},
 	}
 
 	for _, tc := range tt {
@@ -520,14 +535,41 @@ func Test_StringToUint64_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_StringToInt64_registered(t *testing.T) {
+func Test_StringToUintptr(t *testing.T) {
+	t.Run("max", func(t *testing.T) {
+		// --- Given ---
+		src := strconv.FormatUint(MaxUintptr, 10)
+
+		// --- When ---
+		have, err := StringToUintptr(src)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Equal(t, uintptr(MaxUintptr), have)
+	})
+
+	t.Run("error - out of range", func(t *testing.T) {
+		// --- Given ---
+		src := "18446744073709551616"
+
+		// --- When ---
+		have, err := StringToUintptr(src)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrInvRange, err)
+		assert.ErrorEqual(t, "value out of range: from string to uintptr", err)
+		assert.Equal(t, uintptr(0), have)
+	})
+}
+
+func Test_StringToUintptr_registered(t *testing.T) {
 	// --- Given ---
-	src := "9007199254740993"
+	src := "42"
 
 	// --- When ---
-	have, err := AnyToInt64(src)
+	have, err := AnyToUintptr(src)
 
 	// --- Then ---
 	assert.NoError(t, err)
-	assert.Equal(t, int64(9007199254740993), have)
+	assert.Equal(t, uintptr(42), have)
 }

@@ -86,7 +86,7 @@ As well as converters implemented only between specific type pairs:
 
 - `convert.BoolToBool`
 - `convert.StringToDuration`
-- `convert.StringToInt` through `convert.StringToUint64` - parse base-10
+- `convert.StringToInt` through `convert.StringToUintptr` - parse base-10
   strings exactly over the whole integer range.
 - `convert.StringToFloat32`, `convert.StringToFloat64` - parse decimal
   strings; `StringToFloat32` rejects strings float32 cannot represent.
