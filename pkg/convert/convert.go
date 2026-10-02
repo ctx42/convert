@@ -196,6 +196,8 @@ func init() {
 	Register(StringToUint16)
 	Register(StringToUint32)
 	Register(StringToUint64)
+	Register(StringToFloat32)
+	Register(StringToFloat64)
 
 	// Generated numeric converters.
 	registerNumeric()
