@@ -1,3 +1,8 @@
+## v0.11.0 (Fri, 02 Oct 2026 19:53:47 UTC)
+- feat: add exact string to integer converters.
+- feat: add string to float converters.
+- feat: add string to uintptr converter.
+
 ## v0.10.0 (Wed, 30 Sep 2026 08:24:54 UTC)
 - chore: bump github.com/ctx42/testing to v0.56.0.
 - chore: add AGENTS.md with agent instructions.
