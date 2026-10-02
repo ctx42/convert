@@ -186,6 +186,16 @@ func init() {
 	Register(StringToDuration)
 	Register(StringToString)
 	Register(StringToTime(time.RFC3339Nano))
+	Register(StringToInt)
+	Register(StringToInt8)
+	Register(StringToInt16)
+	Register(StringToInt32)
+	Register(StringToInt64)
+	Register(StringToUint)
+	Register(StringToUint8)
+	Register(StringToUint16)
+	Register(StringToUint32)
+	Register(StringToUint64)
 
 	// Generated numeric converters.
 	registerNumeric()

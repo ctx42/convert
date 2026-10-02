@@ -86,6 +86,8 @@ As well as converters implemented only between specific type pairs:
 
 - `convert.BoolToBool`
 - `convert.StringToDuration`
+- `convert.StringToInt` through `convert.StringToUint64` - parse base-10
+  strings exactly over the whole integer range.
 - `convert.StringToString`
 - `convert.StringToTime(layout)` - registered by default with the
   `time.RFC3339Nano` layout.
