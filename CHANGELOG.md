@@ -1,3 +1,6 @@
+## v0.11.1 (Sat, 10 Oct 2026 19:09:38 UTC)
+- build(deps): update github.com/ctx42/testing to v0.57.0.
+
 ## v0.11.0 (Fri, 02 Oct 2026 19:53:47 UTC)
 - feat: add exact string to integer converters.
 - feat: add string to float converters.
