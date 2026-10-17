@@ -1,3 +1,7 @@
+## v0.11.2 (Sat, 17 Oct 2026 22:00:21 UTC)
+- ci: set C42_CC_RUN_ID in the workflow environment.
+- chore(deps): update dependencies.
+
 ## v0.11.1 (Sat, 10 Oct 2026 19:09:38 UTC)
 - build(deps): update github.com/ctx42/testing to v0.57.0.
 
